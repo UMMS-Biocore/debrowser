@@ -60,8 +60,8 @@ startDEBrowser()
 Once you have the DEBrowser running, a page will load asking to choose a TSV
 file or to load the demo data.  In order to run DESeq2, we are going to need
 gene quantifications for genes contained in a tab-seperated values (TSV) 
-format.  The file values must contain the gene, transcript(s), and the samples 
-count values you wish to enter into DEBrowser.
+format.  The file values must contain the gene, transcript(s), and the sample 
+raw count values you wish to enter into DEBrowser.
 
 It's important to note that if your rows contain duplicate gene names,
 DEBrowser will reject your TSV file.  Please try to keep unique gene names.
@@ -135,8 +135,8 @@ Entering this URL into your web browser will automatically load in your data as 
 object, allowing you to start browsing your data right away.
 
 After obtaining and loading in the gene quantifications file, you
-are then able to view QC information of your quantifications or to continue
-on to running DESeq2 (Figure 1).
+then have the option to view QC information of your quantifications or you can 
+continue on to running DESeq2 (Figure 1).
 
 ![*The initial options selection.*](https://i.imgur.com/7ZWbpz4.png "Initial option selection")
 
@@ -151,11 +151,14 @@ options you can alter to more easily view the all-to-all plot.
 
 Additionally, two more QC plots are available for you to use: Heatmap and
 PCA plots.  The heatmap (Figure 3) will display genes for each sample within your dataset
-in the form of a heatmap based on your dataset selection and PCA (Figure 4) will display
-Principal component analysis of your dataset. All of these plots will aid in viewing your preliminary data
-to see if there are any potential erros between replicates.  You have the option of veiwing an 
-interactive heatmap by selecting the 'Interactive' checkbox in the left side panel when 
-you have selected the Heatmap option.  You can select these various plot options by
+in the form of a heatmap based on your dataset selection and PCA (Figure 4) 
+will display Principal component analysis of your dataset. All of these plots 
+will aid in viewing your preliminary data to see if 
+there are any potential errors between replicates or batch effects.  
+You have the option of veiwing an interactive heatmap by selecting the 
+'Interactive' checkbox in the left side panel when you have selected the 
+Heatmap option.  This Interactive heatmap will display genes as you hover over 
+them for a more in-depth understanding.  You can select these various plot options by
 selecting the type of plot you wish to view on the left panel.
 
 ![*Display of the all-to-all plot in the initial QC plots page.*](https://i.imgur.com/CitQaoT.png "QC plots")
@@ -164,7 +167,7 @@ You can also view the genes within your quantification file in various
 ways.  The 'Tables' tab will bring you to a table setup based on the dataset
 you have selected on the left options panel. The 'All detected' option
 lists all of the genes present within your file.  The 'Selected' option
-lets your browser your gene selection based on your interactive heatmap
+lets you browse your gene selection based on your interactive heatmap
 selection.  The Last option, 'Most Varied' (Figure 5), will display your
 top N varied genes.  You can alter the value of N by selecting 'most-varied'
 from the dropdown menu on the left.
@@ -178,9 +181,11 @@ from the dropdown menu on the left.
 ## Starting DESeq:
 
 Upon selecting to run DESeq, you are then able to select
-which samples will be selected for your first condition and second condition
-to use for differential expression analysis.  By clicking the 'Add New
-Comparison' button, you can add as many different comparisons as you want.
+which samples will be used within your differential expression analysis
+By clicking the 'Add New Comparison' button, you can add as many different 
+sample comparisons as you want.  To alter the samples within each comparison,
+you can click on a sample and press delete to remove it or you can click the empty
+whitespace within the tab to bring a dropdown of samples to select from.
 Sample names are created based on the column headers within your data file.
 Once you've selected your comparisons, you are then ready to run DESeq2 to
 calculate differential expression by clicking on the 'Submit!' button (Figure 6).
@@ -191,10 +196,10 @@ calculate differential expression by clicking on the 'Submit!' button (Figure 6)
 
 After clicking on the 'Submit!' button, DESeq2 will analyze your comparisons
 and store the results into seperate data tables.  Shiny will then allow you
-to access this data, with multiple interactive features, at the click of a
+to access this data, with multiple interactive features, and at the click of a
 button.  It is important to note that the resulting data produced from DESeq
 is normalized. Upon finishing the DESeq analysis, a tab-based menu will appear
-with multiple options (Figure 7).
+with multiple options (Figure 7) at the top-center of the page.
 
 ![*List of the tabbed menus in DEBrowser.*](https://i.imgur.com/BPhxNR1.png "tab selection")
 
@@ -203,8 +208,10 @@ the interactive results plots.  On the left hand side of the screen will be
 the options panel used to alter the padj and fold change
 cutoff values, what specific data set to use such as up or down regulated
 genes, what comparison dataset you would like to use to plot,
-and what type of plot you would like to view your results in (Figure 8).  Plot
-choices include:
+and what type of plot you would like to view your results in (Figure 8).  
+Comparisons are ordered based on how they were entered by the user and 
+for information about samples within each comparison are displayed right under
+the option tabs.  Plot choices include:
 
 * Scatter plot (Figure 9)
 
@@ -213,14 +220,15 @@ choices include:
 * MA plot (Figure 11)
 
 Once you have selected your values, you can hit the 'Submit!' button to create
-your interactive plots!
+your interactive plots!  Depending on whether you are using the local install
+or the web-based application, rendering times my vary.
 
 ![*The Left parameter options panel*](https://i.imgur.com/WglVBQh.png "geneset plots")
 
-The top left plot is whichever plot you have
+The top left plot is the main plot of whichever plot you have
 selected to use to analyze your results.  Up-regulated genes are displayed
 in green while down-regulated genes are displayed in red (Figure 12).
-Hovering over a gene on this plot will display the bottom two plots: the
+Hovering over a gene on this plot will display the bottom two bar graphs: the
 genes normalized variation and colored by condition in the left graph,
 and the normalized variation between conditions within the right graph.
 Hovering over a gene will also display information about that gene in
@@ -230,9 +238,11 @@ you will create the top right plot, or the zoomed in version of your
 selection.  If you are going to change any of the parameters on the left,
 please make sure to re-click the 'Submit!' button to update the graphs.
 You can also change which type of dataset to use within the main plots by
-selecting from the drop down dataset box (Figure 13).  Additionally, you can further
+selecting from the drop down dataset box such as looking at the N most varied genes
+which are displayed in yellow(Figure 13).  Additionally, you can further
 filter these datasets by typing in the genes of interest, or regex for
 specific genes, to search for those specific genes within the dataset (Figrue 14).
+Specific gene searches are displayed in blue.
 All of these filtration options can be located on the left side panel which will
 also change based on the plot or dataset you wish to view/manipulate.
 It's also worth noting that the plots are resizable as well as downloable.
@@ -368,8 +378,8 @@ significance of your comparisons.
 Lastly, the tables have a bunch of features that allow you to view your DESeq
 results more conviently.  By clicking on a column header, you can sort the
 data within the table based either alphabetical or numeric sorting.
-You can also enter a term within the search box to search for a specific
-gene within the table.
+You can also enter a term, or regex query, within the search box on the left
+panel to filter for a specificgene within the table.
 
 With that, you've now successfully navigated the DEBrowser and are ready to
 start inserting your own data files and browsing your own experiments.  Enjoy
@@ -387,17 +397,18 @@ recreate similar heatmaps (Figure 29-30) displayed within the studies findings.
 
 ![*Most varied genes heatmap using case study data.*](http://i.imgur.com/rLF6DJ3.png "")
 
-The only main difference between the heatmaps created within DEBrowser
+The main difference between the heatmaps created within DEBrowser
 and the heatmaps created within the research paper is that the clustering
 method used within the paper was a k-means method with k equaling 6.
 
-**The JNK2 knock out has a stronger effect:**
+**The JNK2 Knock-out versus JNK1 Knock-out:**
 
-High fat diet JNK1 knock out and JNK2 knock out samples compered with high fat
-diet wild type samples.  From the figures below, JNK2 knock out has a 
-stronger effect than JNK1 KO samples. There are 177 genes (Fig. 31) have 
-padj < 0.01 and |log2 foldchange| > 1 in JNK2 KO comparison while there are 
-only 17 genes (Fig. 32) detected in JNK1 knockout comparison with same cutoffs.
+High fat diet JNK1 knock-out and JNK2 knock-out samples compared against high fat
+diet wild type samples showed a stronger effect from JNK2 KO.  
+From the figures below, JNK2 KO has a 
+stronger effect than JNK1 KO samples. There are 177 genes (Fig. 31) that have 
+padj < 0.01 and |log2 foldchange| > 1 in the JNK2 KO comparison while there are 
+only 17 genes (Fig. 32) detected in the JNK1 KO comparison with the same cutoffs.
 
 ![*High fat diet JNK2 vs. High fat diet wild type.*](https://i.imgur.com/FqixmyK.png "")
 
@@ -405,15 +416,16 @@ only 17 genes (Fig. 32) detected in JNK1 knockout comparison with same cutoffs.
 
 **JNK1 and JNK2 serve partially redundant functions:**
 
-HFD (High fat diet) JNK1 and HFD JNK2 double KO has 1018 significantly different genes.  When
-we compare HFD JNK1 KO only (177 Genes) and HFD JNK2 KO only (17 genes)  with 
-HFD wild type side by side, most of the up and down regulated genes are not 
-overlapping. Up regulated genes (Figure 33.) and down regulated (Figure 34.) in
-JNK1 KO. There is only 1 gene overlapping out of 17 that they were
+High fat diet JNK1 and High fat diet JNK2 double KO has 1018 significantly different genes.
+When we compare HFD JNK1 KO only (177 Genes) and HFD JNK2 KO only (17 genes)  with 
+HFD wild type side-by-side, most of the up and down regulated genes are not 
+overlapping.  Up regulated genes (Figure 33.) and down regulated (Figure 34.) in
+JNK1 KO was easy to analyze for these gene comparisons. 
+There is only 1 gene overlapping out of the 17 that were
 significantly different in JNK1 KO comparisons with padj < 0.01 and 
 |log2foldchange| > 1 cutoffs.  It shows that both individual KO might have 
-individual functions too in addition to their redundant functions. 
-When we looked at the genes in JNK1 KO in KEGG database,  they are enriched
+individual functions in addition to their redundant functions. 
+When we looked at the genes in JNK1 KO in the KEGG database,  they are enriched
 in "Fatty acid elongation”. JNK2 KO are enriched in "PPAR signaling pathway”
 and "Biosynthesis of unsaturated fatty acids”. DEBrowser’s powerful comparison
 function makes different condition comparisons and running GO Term analysis
