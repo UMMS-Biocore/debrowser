@@ -403,9 +403,9 @@ method used within the paper was a k-means method with k equaling 6.
 
 **The JNK2 Knock-out versus JNK1 Knock-out:**
 
-High fat diet JNK1 knock out and JNK2 knock-out samples compared against high fat
+High fat diet JNK1 knock-out and JNK2 knock-out samples compared against high fat
 diet wild type samples showed a stronger effect from JNK2 KO.  
-From the figures below, JNK2 knock out has a 
+From the figures below, JNK2 KO has a 
 stronger effect than JNK1 KO samples. There are 177 genes (Fig. 31) that have 
 padj < 0.01 and |log2 foldchange| > 1 in the JNK2 KO comparison while there are 
 only 17 genes (Fig. 32) detected in the JNK1 KO comparison with the same cutoffs.
