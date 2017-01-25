@@ -23,7 +23,8 @@ startDEBrowser <- function(){
         environment(deServer) <- environment()
         #shinyAppDir(system.file(package="debrowser"))
         app <- shinyApp( ui = shinyUI(deUI),
-                    server = shinyServer(deServer))
+                    server = shinyServer(deServer), 
+                    enableBookmarking = "server")
         runApp(app)
     }
 }
