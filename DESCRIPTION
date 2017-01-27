@@ -49,11 +49,12 @@ Imports:
     org.Hs.eg.db,
     org.Mm.eg.db,
     limma,
-    edgeR,  
+    edgeR,
     clusterProfiler,
     V8,
     methods,
-    sva
+    sva,
+    shinydashboard
 RoxygenNote: 5.0.1
 Suggests: testthat,
     rmarkdown,
