@@ -40,8 +40,18 @@ load_data <- function (input = NULL, session = NULL) {
     else if (is.null(input$file1) && loaddemo()$demo == TRUE) {
         return(loaddemo()$demodata)
     }
-    inFile <- input$file1
-    try(m <- read.table(inFile$datapath, sep = "\t",
+    # Restore from file 1
+    bookmark_file1_path <- paste0("shiny_bookmarks/", 
+        parseQueryString(session$clientData$url_search)[["_state_id_"]],
+        "/file1.tsv")
+    if(file.exists(bookmark_file1_path)){
+        to_read_from <- bookmark_file1_path
+    }
+    else {
+        inFile1 <- input$file1
+        to_read_from <- inFile1$datapath
+    }
+    try(m <- read.table(to_read_from, sep = "\t",
         header = TRUE, row.names = 1))
     m
 }
@@ -58,21 +68,23 @@ load_data <- function (input = NULL, session = NULL) {
 #'     x<-correctBatchEffect ()
 correctBatchEffect <- function (idata = NULL, input = NULL) {
     if (is.null(idata)) return(NULL)
-    inFile <- input$file2
-    try(metadata <- read.table(inFile$datapath, sep = "\t",
+    inFile2 <- input$file2
+    try(metadata <- read.table(inFile2$datapath, sep = "\t",
          header = TRUE, row.names = 1))
     batch <- metadata[, input$batchselect]
     columns <- rownames(metadata)
     meta <- data.frame(cbind(columns, batch))
     
-    data <- data.frame(idata[, columns])
-    data[, columns] <- apply(data[, columns], 2, function(x) as.integer(x))
+    datacor <- data.frame(idata[, columns])
+    datacor[, columns] <- apply(datacor[, columns], 2,
+                                function(x) as.integer(x))
     
-    data[, columns] <- apply(data[, columns], 2, function(x) return(x + runif(1, 0, 0.01)))
+    datacor[, columns] <- apply(datacor[, columns], 2,
+                                function(x) return(x + runif(1, 0, 0.01)))
     
     modcombat = model.matrix(~1, data = meta)
     
-    combat_blind = ComBat(dat=data, batch=batch)
+    combat_blind = ComBat(dat=datacor, batch=batch)
     
     a <- cbind(idata[rownames(combat_blind), 2], combat_blind)
     

@@ -21,14 +21,20 @@ getDataPrepPanel <- function(flag = FALSE){
         actionButton("goDE", "Go to DE Analysis!"),
         actionButton("goQCplots", "Go to QC plots!"),
         actionButton("resetsamples", "Reset!"),
-        #conditionalPanel(condition = paste0("(input.goDE) || (server_goDE.go > 0)"),
+        #conditionalPanel(
+        #condition = paste0("(input.goDE) || (server_goDE.go > 0)"),
         conditionalPanel(condition = "(input.goDE) || (output.restore_DE > 0)",
             helpText( "Please add new comparisons for DE analysis!" ),
             uiOutput("conditionSelector"),
             column(12,actionButton("add_btn", "Add New Comparison"),
             actionButton("rm_btn", "Remove"),
-            getHelpButton("method", "http://debrowser.readthedocs.io/en/develop/deseq/deseq.html")),
+            getHelpButton("method",
+            "http://debrowser.readthedocs.io/en/develop/deseq/deseq.html")),
+            
+            actionButton("bookmark_before_startDE", "Save!"),
             actionButton("startDE", "Submit!"),
+            br(),
+            textOutput("bookmark_saved_output"),
            tags$style(type='text/css', "#startDE { margin-top: 10px;}")  )
         # )
         ),
@@ -57,8 +63,8 @@ if (is.null(input)) return(NULL)
                                                    
         shinydashboard::menuItem("Select Plot Type", icon = icon("star-o"),
             conditionalPanel( (condition <- "input.methodtabs=='panel1'"),
-                wellPanel(radioButtons("mainplot", paste("Main Plots:", sep = ""),
-                    c(Scatter = "scatter", VolcanoPlot = "volcano",
+                wellPanel(radioButtons("mainplot", paste("Main Plots:",
+                    sep = ""), c(Scatter = "scatter", VolcanoPlot = "volcano",
                     MAPlot = "maplot"))),
                         actionButton("startPlots", "Submit!")),
                 conditionalPanel( (condition <- "input.methodtabs=='panel2'"),
@@ -247,9 +253,9 @@ getCutOffSelection <- function(nc = 1){
     a <- list( 
         conditionalPanel( (condition <- "input.dataset!='most-varied' &&
             input.methodtabs!='panel0'"),
-            shinydashboard::menuItem("Filter_MainPlots", icon = icon("star-o"),
+            shinydashboard::menuItem("Filter", icon = icon("star-o"),
                 tags$head(tags$script(HTML(logSliderJScode("padj")))),
-                h4("Filter"),
+                #h4("Filter"),
                 sliderInput("padj", "padj value cut off",
                     min=0, max=10, value=6, sep = "", 
                     animate = FALSE),
@@ -276,6 +282,7 @@ getCutOffSelection <- function(nc = 1){
 #' @export
 #'
 getInitialMenu <- function(input = NULL, output = NULL, session = NULL) {
+    cat("here")
     if (is.null(input)) return (NULL)
     a<-NULL
     if (is.null(parseQueryString(session$clientData$url_search)$jsonobject))
@@ -345,18 +352,18 @@ getLoadingMsg <- function() {
             #loadmessage {
             position: fixed;
             top: 0px;
-            left: 200px;
-            width: 70%;
-            height: 100;
-            padding: 5px 0px 5px 0px;
+            left: 0px;
+            width: 100%;
+            height: 100%;
+            padding: 0px 0px 0px 0px;
             text-align: center;
             font-weight: bold;
             font-size: 100%;
             color: #000000;
             opacity: 0.8;
-            background-color: #FFFFFFF;
             z-index: 100;
             }")),
+        
         conditionalPanel(condition = "$('html').hasClass('shiny-busy') & input.startDE",
             #tags$div("Please wait! Loading...", id = "loadmessage",
             tags$div("", id = "loadmessage",        

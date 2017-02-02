@@ -2,6 +2,10 @@
     text-align: left;
 }
 
+#bookmark_saved_output {
+    color: green;
+}
+
 .well {
     background-color: transparent;
     border: 0;
@@ -51,6 +55,7 @@ li.active {
 
 #loadmessage {
     position: relative;
+    background: rgb(25, 31, 38);
 }
 
 /*

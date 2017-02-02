@@ -35,7 +35,20 @@ deUI <- function() {
     
     addResourcePath(prefix = "www", directoryPath = system.file("extdata",
         "www", package = "debrowser"))
-    (fluidPage(
+
+    #if(exists(".GlobalEnv$.bm.counter")){
+    if (.bm.counter == 0){
+        cat("I'm at the ui.R", "\n")
+        a <- (fluidPage(
+            tags$script('Shiny.addCustomMessageHandler("testmessage",
+                function(message) {
+                    window.location.href = message.bookmarked_url;
+                }
+        );') ))
+    }
+    #}
+    else{
+    a <- (fluidPage(
     shinyjs::useShinyjs(),
     shinyjs::extendShinyjs(text = heatmapJScode, functions = c("getNames")),
     shinyjs::inlineCSS("
@@ -54,7 +67,8 @@ deUI <- function() {
     tags$div(h4("Loading DEBrowser"), id = "loading-debrowser",
         tags$img(src = "www/images/initial_loading.gif")),
     tags$head(
-        tags$link(rel = "stylesheet", type = "text/css", href = "www/shinydashboard_additional.css")
+        tags$link(rel = "stylesheet", type = "text/css",
+                  href = "www/shinydashboard_additional.css")
     ),
     #uiOutput("logo"),
     #uiOutput("programtitle"),
@@ -92,7 +106,9 @@ deUI <- function() {
             conditionalPanel(condition = "(output.dataready)",
                 uiOutput('cutoffSelection'))
             #)
-
+            # ,
+            # a("Refresh", href="", style='margin: 27px 27px 27px 27px')
+            
         ),
     shinydashboard::dashboardBody(
         
@@ -120,4 +136,6 @@ deUI <- function() {
             )
         )
     )
+    }
+    a
 }

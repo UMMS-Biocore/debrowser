@@ -22,7 +22,9 @@
 #'             sidebarPanel  sliderInput  stopApp  tabPanel  tabsetPanel
 #'             textInput  textOutput  titlePanel  uiOutput tags HTML
 #'             h4 img icon updateTabsetPanel  updateTextInput  validate
-#'             wellPanel checkboxInput br checkboxGroupInput
+#'             wellPanel checkboxInput br checkboxGroupInput onRestore
+#'             reactiveValuesToList renderText onBookmark onBookmarked 
+#'             updateQueryString 
 #' @importFrom shinyjs show hide enable disable useShinyjs extendShinyjs
 #'             js inlineCSS
 #' @importFrom d3heatmap d3heatmap renderD3heatmap d3heatmapOutput
@@ -36,6 +38,7 @@
 #'             hide_legend layer_bars layer_boxplots layer_points
 #'             scale_nominal set_options %>% group_by layer_rects
 #'             band scale_numeric hide_axis layer_densities scale_ordinal
+#'             layer_text
 #' @importFrom gplots heatmap.2 redblue
 #' @importFrom igraph layout.kamada.kawai
 #' @importFrom grDevices dev.off pdf
@@ -43,7 +46,7 @@
 #' @importFrom stats aggregate as.dist cor cor.test dist
 #'             hclust kmeans na.omit prcomp var sd model.matrix
 #'             p.adjust runif cov mahalanobis quantile
-#' @importFrom utils read.table write.table update.packages
+#' @importFrom utils read.csv read.table write.table update.packages
 #' @importFrom DOSE enrichDO enrichMap gseaplot dotplot
 #' @importMethodsFrom AnnotationDbi as.data.frame as.list colnames
 #'             head mappedkeys ncol nrow subset keys mapIds
@@ -74,13 +77,9 @@
 #' 
 
 deServer <- function(input, output, session) {
-
-    cdata <- session$clientData
-    output$get_url <- renderText({
-        cdata$url_port
-    })
     
-    # To hide the panels from 1 to 4 and only show
+
+    # To hide the panels from 1 to 4 and only show Data Prep
     togglePanels(0, c(0), session)
     
     ###############################################################
@@ -88,7 +87,7 @@ deServer <- function(input, output, session) {
     ###############################################################
     get_state_id <- function(prev_url){
         query_string <- paste0("?", strsplit(prev_url, "?",
-                                             fixed = TRUE)[[1]][2])
+                                            fixed = TRUE)[[1]][2])
         query_list <- parseQueryString(query_string)
         return(query_list[["_state_id_"]])
     }
@@ -98,7 +97,7 @@ deServer <- function(input, output, session) {
     ###############################################################
     delete_previous_bookmark <- function(prev_url){
         query_string <- paste0("?", strsplit(prev_url, "?",
-                                             fixed = TRUE)[[1]][2])
+                                            fixed = TRUE)[[1]][2])
         query_list <- parseQueryString(query_string)
         state_id <- query_list[["_state_id_"]]
         cat(paste0("previous url: ", state_id, "\n"))
@@ -124,9 +123,24 @@ deServer <- function(input, output, session) {
     #           Bookmark on every single user input               #
     ###############################################################
     observe({
-        # Trigger this observer every time an input changes
-        reactiveValuesToList(input)
-        session$doBookmark()
+        if(exists(".bm.counter")){
+            if(.bm.counter == 0){
+                cat("bm counter: ", .bm.counter , "\n")
+                .bm.counter <<- 1
+                cat(".bookmark.startup : " , "\n")
+                print(.bookmark.startup)
+                session$sendCustomMessage(type = 'testmessage',
+                    message = list(bookmarked_url = paste0("?_state_id_=",
+                    .bookmark.startup), controller = input$controller))
+            }
+        }
+        # if(!is_restoring$now){
+            # Trigger this observer every time an input changes
+            # reactiveValuesToList(input)
+            # session$doBookmark()
+        #     is_restoring$now <- FALSE
+        # }
+
     })
 
     ###############################################################
@@ -197,6 +211,9 @@ deServer <- function(input, output, session) {
     # Save extra values in state$values when we bookmark...
     onBookmark(function(state) {
         cat("on bookmark", "\n")
+        
+        # state$values can store data onBookmark to be restored later
+        state$values$input_save <- input
         cat(url_with_query$url_str, "\n")
         
         storeDataset <- function(){
@@ -206,14 +223,22 @@ deServer <- function(input, output, session) {
         
         state$values$nc <- choicecounter$nc
         
+        # file.copy(isolate(input$file1$datapath), "file1.tsv",
+        #           recursive = TRUE)
+        
+        state$values$samples <- input$samples
+        
         cat(paste0("+++++++++++++++++++++++++++++++++++++++++++++++++++++",
-                   " nc ", choicecounter$nc, "qc ", choicecounter$qc, "\n"))
+                    " nc ", choicecounter$nc, " qc ", choicecounter$qc, "\n"))
         
         # Delete the previously bookmarked state
         # Note that onBookmark precedes onBookmarked
         
         delete_previous_bookmark(url_with_query$url_str)
-    
+        if(!is.null(input$file2)){
+            cat("input$file2$datapath: ", input$file2$datapath,
+                " --------------++++++ \n")
+        }
     })
 
 
@@ -221,31 +246,59 @@ deServer <- function(input, output, session) {
         updateQueryString(url)
         url_with_query$url_str <- url
         cat(paste0("updating the url to: ", url, "\n"))
+        
+        bookmark_dir_id <- get_state_id(url)
+        file.copy(isolate(input$file1$datapath), 
+                  paste0("shiny_bookmarks/", bookmark_dir_id, "/file1.tsv"),
+                  recursive = TRUE)
+        # Save the url to go to the bookmark later in a file
+        # bookmark_log <- "saved_bookmark.txt"
+        # line <- paste0(url, "\t", Sys.time(), "\n")
+        # 
+        # if(!file.exists(bookmark_log))
+        #     file.create(bookmark_log)
+        # write(line, file=bookmark_log)
+
     })
 
 
     # Read values from state$values when we restore
     onRestore(function(state) {
+        cat(paste0("RESTORE++++++++++++++++++++++++++++++++++++++++++++++",
+                   " nc ", choicecounter$nc, "qc ", choicecounter$qc, "\n"))
+        .bm.counter <<- 2
+        
         if(!is.null(state$values$data)){
             cat("The file is uploaded, go to the next tab.", "\n")
             buttonValues$gotoanalysis <- TRUE
         }
         choicecounter$nc <- state$values$nc
+        
+        saveRDS(state$values$input_save, "input_save.rds")
+
         if(choicecounter$nc > 0){
             shinyjs::enable("startDE")
         }
         
-        cat(paste0("RESTORE++++++++++++++++++++++++++++++++++++++++++++++",
-                   " nc ", choicecounter$nc, "qc ", choicecounter$qc, "\n"))
+
+        cat("url_search", session$clientData$url_search, "\n")
+        # 
+        # fileName <- "up_down.txt"
+        # conn <- file(fileName,open="r")
+        # linn <-readLines(conn)
+        # for (i in 1:length(linn)){
+        #     print(linn[i])
+        # }
+        # close(conn)
         
-        dc <- prepDataContainer(state$values$data, choicecounter$nc,
-                                isolate(input))
         cat("Restoring ", "\n")
+        is_restoring$now <- TRUE
     })
 
-
-
-
+    onRestored(function(state) {
+        cat("here")
+    })
+    
     tryCatch(
     {
         if (!interactive()) {
@@ -257,30 +310,40 @@ deServer <- function(input, output, session) {
             #library(edgeR)
         }
         observeEvent(input$stopApp, {
-            stopApp(returnValue = invisible())
+            
+        })
+        observeEvent(input$bookmark_before_startDE, {
+            output$bookmark_saved_output <- renderText({ 
+                "Save Successful! URL updated."
+            })
         })
         output$programtitle <- renderUI({
             togglePanels(0, c(0), session)
             getProgramTitle(session)
         })
         output$mainpanel <- renderUI({
+            cat("output$mainpanel", "\n")
             a <- NULL
             if (!is.null(randstr()))
                 a <- getMainPanel(randstr())
             a
         })
         output$qcpanel <- renderUI({
+            cat("output$qcpanel", "\n")
             getQCPanel(input)
         })
         output$gopanel <- renderUI({
+            cat("output$gopanel", "\n")
             getGoPanel(!is.null(init_data()))
         })
         output$cutoffSelection <- renderUI({
+            cat("output$cutoffSelection", "\n")
             nc <- 1
             if (!is.null(choicecounter$nc)) nc <- choicecounter$nc
             getCutOffSelection(nc)
         })
         output$downloadSection <- renderUI({
+            cat("output$downloadSection", "\n")
             a <- getDownloadSection(TRUE, "QC")
             if (!is.null(input$goDE) && input$goDE &&
                 !is.null(comparison()$init_data))
@@ -289,15 +352,19 @@ deServer <- function(input, output, session) {
             a
         })
         output$preppanel <- renderUI({
+            cat("output$preppanel", "\n")
             getDataPrepPanel(!is.null(init_data))
         })
         output$leftMenu  <- renderUI({
+            cat("output$leftMenu", "\n")
             getLeftMenu(input)
         })
         output$initialmenu <-renderUI({
+            cat("initialmenu", "\n")
             getInitialMenu(input, output, session)
         })
         output$loading <- renderUI({
+            cat("output$loading", "\n")
             getLoadingMsg()
         })
         output$logo <- renderUI({
@@ -318,6 +385,9 @@ deServer <- function(input, output, session) {
         
         # Variables to help restore a session from bookmark
         url_with_query <- reactiveValues(url_str = "")
+        
+        # To see if currently restoring
+        is_restoring <- reactiveValues(now = FALSE)
 
 
         buttonValues <- reactiveValues(goQCplots = FALSE, goDE = FALSE,
@@ -338,8 +408,16 @@ deServer <- function(input, output, session) {
 
         observeEvent(input$gotoanalysis, {
             buttonValues$gotoanalysis <- TRUE
+            session$doBookmark()
         })
 
+        # observeEvent(input$file1, {
+        #     if((.bm.counter == 0) || (.bm.counter == 1)){
+        #         file.copy(isolate(input$file1$datapath), "file1.tsv",
+        #                   recursive = TRUE)
+        #     }
+        # })
+        
         Dataset <- reactive({
             a <- NULL
             query <- parseQueryString(session$clientData$url_search)
@@ -368,6 +446,8 @@ deServer <- function(input, output, session) {
             if (choicecounter$nc == 0)
                shinyjs::disable("startDE")
         })
+        
+        
         observeEvent(input$goDE, {
             if (choicecounter$nc < 1)
                 shinyjs::disable("startDE")
@@ -388,6 +468,7 @@ deServer <- function(input, output, session) {
             choicecounter$nc
         })
         outputOptions(output, 'restore_DE', suspendWhenHidden = FALSE)
+
         
         output$sampleSelector <- renderUI({
             if (is.null(samples())) return(NULL)
@@ -409,22 +490,28 @@ deServer <- function(input, output, session) {
             }
         })
         output$conditionSelector <- renderUI({
-            selectConditions(Dataset(), choicecounter, input)
+            selectConditions(isolate(Dataset()), choicecounter, isolate(input))
         })
         dc <- reactive({
             dc <- NULL
             if (buttonValues$startDE == TRUE){
-                dc <- prepDataContainer(Dataset(), choicecounter$nc,
+                dc <- prepDataContainer(isolate(Dataset()), choicecounter$nc,
                 isolate(input))
             }
             dc
         })
+        
+        observeEvent(input$bookmark_before_startDE, {
+            session$doBookmark()
+        })
+        
         observeEvent(input$startDE, {
             buttonValues$startDE <- TRUE
             buttonValues$goQCplots <- FALSE
             init_data <- NULL
             togglePanels(1, c( 0, 1, 2, 3, 4), session)
             choicecounter$qc <- 0
+            session$doBookmark()
         })
         observeEvent(input$goQCplots, {
             choicecounter$qc <- 1
@@ -503,7 +590,8 @@ deServer <- function(input, output, session) {
         output$columnSelForHeatmap <- renderUI({
             wellPanel(id = "tPanel",
                 style = "overflow-y:scroll; max-height: 200px",
-                shinydashboard::menuItem("Select Columns", icon = icon("star-o"),
+                shinydashboard::menuItem("Select Columns",
+                    icon = icon("star-o"),
                     checkboxGroupInput("col_list", "Select col to include:",
                     isolate(input$samples),
                     selected=isolate(input$samples))
@@ -516,7 +604,8 @@ deServer <- function(input, output, session) {
         })
 
         inputQCPlot <- reactiveValues(clustering_method = "ward.D2",
-            distance_method = "cor", interactive = FALSE, width = 700, height = 500)
+            distance_method = "cor", interactive = FALSE, width = 700,
+            height = 500)
         inputQCPlot <- eventReactive(input$startQCPlot, {
             m <- c()
             m$clustering_method <- input$clustering_method

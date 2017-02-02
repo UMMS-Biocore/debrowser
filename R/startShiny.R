@@ -22,6 +22,14 @@ startDEBrowser <- function(){
                         package = "debrowser"))
         environment(deServer) <- environment()
         #shinyAppDir(system.file(package="debrowser"))
+        
+        .GlobalEnv$.bookmark.startup <- system(paste0("ls -t1 shiny_bookmarks",
+            " |  head -n 1"), intern=TRUE)
+        on.exit(rm(.bookmark.startup, envir=.GlobalEnv))
+        
+        .GlobalEnv$.bm.counter <- 0
+        on.exit(rm(.bm.counter, envir=.GlobalEnv))
+        
         app <- shinyApp( ui = shinyUI(deUI),
                     server = shinyServer(deServer), 
                     enableBookmarking = "server")

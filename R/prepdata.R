@@ -429,7 +429,8 @@ getGeneSetData <- function(data = NULL, geneset = NULL) {
     dat2$ID<-factor(as.character(dat2$ID))
 
     geneset4 <- unique(as.vector(unlist(lapply(toupper(geneset2), 
-        function(x){ sapply(dat2[(grepl(x, toupper(dat2[,"ID"]))), "ID"], as.character) }))))
+        function(x){ sapply(dat2[(grepl(x, toupper(dat2[,"ID"]))), "ID"], 
+                            as.character) }))))
     retset <- data.frame(dat2[geneset4, ])
     retset
 }
