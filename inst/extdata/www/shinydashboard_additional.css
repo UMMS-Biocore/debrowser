@@ -84,3 +84,16 @@ li.active {
 #downloadPlot {
     color: black;
 }
+
+/*
+.ggvis-dropdown-toggle {
+    width: 28px !important;
+    height: 28px !important;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent url(www/images/download.png) no-repeat center top !important;
+    cursor: pointer; 
+    cursor: hand; 
+}
+*/

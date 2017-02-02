@@ -86,7 +86,7 @@ getConditionSelectorFromMeta <- function(input = NULL, index = 1, num=0,
         cat('here')
         # .bm.counter = 2 when Restoring from Bookmark
         if(.bm.counter == 2){
-            restored_input <- readRDS("input_save.rds")
+            restored_input <- readRDS("shiny_saves/input_save.rds")
             selected <- restored_input[[paste0("condition", num)]]
             if(is.null(restored_input[[paste0("condition", num + 1)]])){
                 .bm.counter <<- 3
@@ -102,7 +102,7 @@ getConditionSelectorFromMeta <- function(input = NULL, index = 1, num=0,
         
         selected_meta <- selectedInput("conditions_from_meta", index, NULL, 
                                        input)
-        a <- read.table(file = 'meta_selections.tsv', sep = '\t', 
+        a <- read.table(file = 'shiny_saves/meta_selections.tsv', sep = '\t', 
                         header = TRUE)
         x <- a[toString(index),]["selection"]
         old_selection <- toString(unlist(x)[[1]])
@@ -221,7 +221,7 @@ selectConditions<-function(Dataset = NULL,
             all_selections <- ""
         }
         allsamples <- getSampleNames( input$samples, "all" )
-        write("meta_index\tselection",file="meta_selections.tsv")
+        write("meta_index\tselection",file="shiny_saves/meta_selections.tsv")
         
         lapply(seq_len(nc), function(i) {
             if(typeof(input$file2) == "NULL"){
@@ -273,7 +273,8 @@ selectConditions<-function(Dataset = NULL,
                                      i, "\t", new_selection)
             print(all_selections)
             
-            write(all_selections,file="meta_selections.tsv",append=TRUE)
+            write(all_selections,file="shiny_saves/meta_selections.tsv",
+                  append=TRUE)
 
             
             return(to_return)

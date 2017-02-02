@@ -31,7 +31,8 @@ getDataPrepPanel <- function(flag = FALSE){
             getHelpButton("method",
             "http://debrowser.readthedocs.io/en/develop/deseq/deseq.html")),
             
-            actionButton("bookmark_before_startDE", "Save!"),
+            # actionButton("bookmark_before_startDE", "Save!"),
+            br(),
             actionButton("startDE", "Submit!"),
             br(),
             textOutput("bookmark_saved_output"),

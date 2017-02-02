@@ -159,7 +159,8 @@ deServer <- function(input, output, session) {
                 to_display <- "Please pick a new unique name."
             } else {
                 if (result == 42) {
-                    to_display <- "Successfully saved."
+                    to_display <- paste0("Successfully saved. ",
+                        "URL updated with your choice to access later.")
                 } else {
                     to_display <- "Something went wrong with the save."
                 }
@@ -174,37 +175,54 @@ deServer <- function(input, output, session) {
     copy_to_new_directory <- function(new_state_id){
         # Get the state id from the query string
         bookmark_dir <- "shiny_bookmarks/"
-        state_id <- get_state_id(url_with_query$url_str)
+        old_state_id <- system(paste0("ls -t1 shiny_bookmarks",
+                                       " |  head -n 1"), intern=TRUE)
         
-        check_if_unique_command <- paste0('
-        
-        dir="', bookmark_dir, new_state_id, '"
-        if [ -d "$dir" ]
-            then
-            exit 35
-        fi
-         ')
-        
-        # Now ready to copy the bookmark to a user chosen name
-        file_copy_unix_cmd <- paste0('
-        if [ -d "$dir" ] && [ "', state_id, '" != "', new_state_id, '"  ]
-        then
-            mv $dir ', bookmark_dir, state_id , ' ', bookmark_dir , 
-            new_state_id, '
-            exit 42
-        fi
-        exit 1
-        ')
-        
-        is_unique <- system( check_if_unique_command )
-        if(is_unique == 35){
-            cat(paste0("unique value: ", is_unique, "\n" ))
-            return(is_unique)
+        if(!dir.exists(paste0(bookmark_dir, new_state_id))){
+
+            if(file.rename(paste0(bookmark_dir, old_state_id), 
+                      paste0(bookmark_dir, new_state_id))){
+                updateQueryString(paste0("?_state_id_=", new_state_id))
+                return(42)
+            }
+            else{
+                return(13)
+            }
+            
         } else {
-            to_return <- system( file_copy_unix_cmd )
-            cat(paste0("returned value: ", to_return, "\n" ))
-            return(to_return)
+            return(35)
         }
+        
+
+        # check_if_unique_command <- paste0('
+        # 
+        # dir="', bookmark_dir, new_state_id, '"
+        # if [ -d "$dir" ]
+        #     then
+        #     exit 35
+        # fi
+        #  ')
+        # 
+        # # Now ready to copy the bookmark to a user chosen name
+        # file_copy_unix_cmd <- paste0('
+        # if [ -d "$dir" ] && [ "', state_id, '" != "', new_state_id, '"  ]
+        # then
+        #     mv $dir ', bookmark_dir, state_id , ' ', bookmark_dir , 
+        #     new_state_id, '
+        #     exit 42
+        # fi
+        # exit 1
+        # ')
+        # 
+        # is_unique <- system( check_if_unique_command )
+        # if(is_unique == 35){
+        #     cat(paste0("unique value: ", is_unique, "\n" ))
+        #     return(is_unique)
+        # } else {
+        #     to_return <- system( file_copy_unix_cmd )
+        #     cat(paste0("returned value: ", to_return, "\n" ))
+        #     return(to_return)
+        # }
     }
 
 
@@ -250,7 +268,7 @@ deServer <- function(input, output, session) {
         bookmark_dir_id <- get_state_id(url)
         file.copy(isolate(input$file1$datapath), 
                   paste0("shiny_bookmarks/", bookmark_dir_id, "/file1.tsv"),
-                  recursive = TRUE)
+                  overwrite = TRUE)
         # Save the url to go to the bookmark later in a file
         # bookmark_log <- "saved_bookmark.txt"
         # line <- paste0(url, "\t", Sys.time(), "\n")
@@ -272,10 +290,12 @@ deServer <- function(input, output, session) {
             cat("The file is uploaded, go to the next tab.", "\n")
             buttonValues$gotoanalysis <- TRUE
         }
-        choicecounter$nc <- state$values$nc
+        if(!is.null(state$values$nc)){
+            choicecounter$nc <- state$values$nc
+        }
         
-        saveRDS(state$values$input_save, "input_save.rds")
-
+        saveRDS(state$values$input_save, "shiny_saves/input_save.rds")
+    
         if(choicecounter$nc > 0){
             shinyjs::enable("startDE")
         }
@@ -502,6 +522,11 @@ deServer <- function(input, output, session) {
         })
         
         observeEvent(input$bookmark_before_startDE, {
+            session$doBookmark()
+        })
+        
+        observeEvent(input$save_state, {
+            shinyjs::hide("save_state")
             session$doBookmark()
         })
         

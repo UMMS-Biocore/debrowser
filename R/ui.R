@@ -85,16 +85,7 @@ deUI <- function() {
             
             #sidebarPanel(
             # To enable people to name their state save(bookmark)
-            #actionButton("save_state", "Save State!"),
-              
-            conditionalPanel(condition = "input.save_state",
-                textInput("bookmark_special_name", "Name your save:",
-                    value = "", placeholder = "At Least 5 Characters"),
-                actionButton("name_bookmark", "Submit!"),
-                textOutput("bookmark_length_error"),
-                br(), br(), br()
-        
-                               ),
+
             uiOutput("loading"),
             #width = 0,
             
@@ -104,11 +95,21 @@ deUI <- function() {
             conditionalPanel(condition = "(output.dataready)",
                 uiOutput("downloadSection")),
             conditionalPanel(condition = "(output.dataready)",
-                uiOutput('cutoffSelection'))
+                uiOutput('cutoffSelection')),
             #)
             # ,
             # a("Refresh", href="", style='margin: 27px 27px 27px 27px')
-            
+            conditionalPanel(condition = paste0("((input.goDE) || ",
+                "(output.restore_DE > 0)) && (!input.startDE)"),
+                style = "padding: 27px;",
+            actionButton("save_state", "Save State!"),
+            conditionalPanel(condition = "input.save_state",
+                textInput("bookmark_special_name", "Name your save:",
+                    value = "", placeholder = "At Least 5 Characters"),
+                    actionButton("name_bookmark", "Submit!"),
+                    textOutput("bookmark_length_error"),
+                    br(), br(), br()
+            ))
         ),
     shinydashboard::dashboardBody(
         
