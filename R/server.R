@@ -183,6 +183,12 @@ deServer <- function(input, output, session) {
     #     To copy the bookmarked folder into a user named directory     #
     #####################################################################
     copy_to_new_directory <- function(new_state_id){
+        query_list <- parseQueryString(session$clientData$url_search)
+        if(!is.null(query_list[['username']])){
+            new_state_id <- paste0(query_list[['username']], "0User0",
+                                   new_state_id)
+        }
+         
         # Get the state id from the query string
         bookmark_dir <- "shiny_bookmarks/"
         old_state_id <- system(paste0("ls -t1 shiny_bookmarks",
@@ -192,6 +198,12 @@ deServer <- function(input, output, session) {
 
             if(file.rename(paste0(bookmark_dir, old_state_id), 
                       paste0(bookmark_dir, new_state_id))){
+
+                if(!is.null(query_list[['username']])){
+                    download.file(query_list$jsonobject, paste0(bookmark_dir,
+                                new_state_id, "/file1.tsv"))
+                }
+                
                 updateQueryString(paste0("?_state_id_=", new_state_id))
                 startup <- readRDS("shiny_saves/startup.rds")
                 startup[['startup_bookmark']] <- new_state_id
@@ -564,7 +576,6 @@ deServer <- function(input, output, session) {
             }
         })
         output$conditionSelector <- renderUI({
-            cat("here14")
             selectConditions(isolate(Dataset()), isolate(choicecounter), isolate(input))
         })
         dc <- reactive({

@@ -48,7 +48,6 @@ deUI <- function() {
     startup <- readRDS("shiny_saves/startup.rds")
     
     if (startup[['bookmark_counter']] == 0){
-        cat("I'm at the ui.R", "\n")
         a <- (fluidPage(
             tags$script('Shiny.addCustomMessageHandler("testmessage",
                 function(message) {

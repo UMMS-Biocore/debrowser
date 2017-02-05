@@ -283,7 +283,6 @@ getCutOffSelection <- function(nc = 1){
 #' @export
 #'
 getInitialMenu <- function(input = NULL, output = NULL, session = NULL) {
-    cat("here")
     if (is.null(input)) return (NULL)
     a<-NULL
     if (is.null(parseQueryString(session$clientData$url_search)$jsonobject))

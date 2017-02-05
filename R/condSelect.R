@@ -83,7 +83,6 @@ getConditionSelectorFromMeta <- function(input = NULL, index = 1, num=0,
         return(NULL)
     }
     else{    
-        cat('here')
         startup <- readRDS("shiny_saves/startup.rds")
         
         # startup[['bookmark_counter']] = 2 when Restoring from Bookmark
@@ -123,7 +122,6 @@ getConditionSelectorFromMeta <- function(input = NULL, index = 1, num=0,
             old_selection <- ""
         }
 
-        cat("here")
         # a <- read.table(file = paste0('shiny_bookmarks/', 
         #     startup[['startup_bookmark']] , '/meta_selections.tsv'),
         #     sep = '\t', header = TRUE)
@@ -234,7 +232,6 @@ getSelectInputBox <- function(id = NULL, name = NULL,
 selectConditions<-function(Dataset = NULL,
                            choicecounter, input = NULL) {
     if (is.null(Dataset)) return(NULL)
-    cat("Select Conditions")
     selectedSamples <- function(num){
         if (is.null(input[[paste0("condition", num)]]))
             getSampleNames(input$samples, num %% 2 )
