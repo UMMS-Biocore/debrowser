@@ -18,15 +18,15 @@ getMethodDetails <- function(num = 0, input = NULL) {
             conditionalPanel(
                 (condition <- paste0("input.demethod",num," == 'DESeq2'")),
                 getSelectInputBox("fitType", "Fit Type", num, 
-                                  c("parametric", "local", "mean"), 
-                                  selectedInput("testType", num, "parametric",
+                                c("parametric", "local", "mean"), 
+                                selectedInput("testType", num, "parametric",
                                                 input)),
                 column(2, textInput(paste0("betaPrior", num), "Beta Prior", 
-                                    value = isolate(selectedInput(
+                                        value = isolate(selectedInput(
                                         "betaPrior", num, "0", input)) )),
                 getSelectInputBox("testType", "Test Type", num, 
-                                  c("Wald", "LRT"),  
-                                  selectedInput("testType", num, "Wald", input))),
+                            c("Wald", "LRT"),  
+                            selectedInput("testType", num, "Wald", input))),
             conditionalPanel(
                 (condition <- paste0("input.demethod",num," == 'EdgeR'")),
                 getSelectInputBox("edgeR_normfact", "Normalization", num, 
@@ -84,12 +84,18 @@ getConditionSelectorFromMeta <- function(input = NULL, index = 1, num=0,
     }
     else{    
         cat('here')
-        # .bm.counter = 2 when Restoring from Bookmark
-        if(.bm.counter == 2){
-            restored_input <- readRDS("shiny_saves/input_save.rds")
+        startup <- readRDS("shiny_saves/startup.rds")
+        
+        # startup[['bookmark_counter']] = 2 when Restoring from Bookmark
+        if(startup[['bookmark_counter']] == 2){
+            startup <- readRDS("shiny_saves/startup.rds")
+            restored_input <- readRDS(paste0("shiny_bookmarks/", 
+                    startup[['startup_bookmark']] , "/input_save.rds"))
+            
             selected <- restored_input[[paste0("condition", num)]]
             if(is.null(restored_input[[paste0("condition", num + 1)]])){
-                .bm.counter <<- 3
+                startup[['bookmark_counter']] <- 3
+                saveRDS(startup, "shiny_saves/startup.rds")
             }
         } 
         if (is.null(input$file2)){
@@ -102,17 +108,38 @@ getConditionSelectorFromMeta <- function(input = NULL, index = 1, num=0,
         
         selected_meta <- selectedInput("conditions_from_meta", index, NULL, 
                                        input)
-        a <- read.table(file = 'shiny_saves/meta_selections.tsv', sep = '\t', 
-                        header = TRUE)
-        x <- a[toString(index),]["selection"]
-        old_selection <- toString(unlist(x)[[1]])
+        
+        startup <- readRDS("shiny_saves/startup.rds")
+        
+        meta_rds_path <- paste0('shiny_bookmarks/',
+            startup[['startup_bookmark']] , '/meta_selections.rds')
+        
+        if(file.exists(meta_rds_path)){
+            meta_selections <- readRDS(meta_rds_path)
+            current_meta_condition <- paste0("conditions_from_meta", index)
+            old_selection <- meta_selections[[current_meta_condition]]
+        }
+        if(is.null(old_selection)){
+            old_selection <- ""
+        }
+
+        cat("here")
+        # a <- read.table(file = paste0('shiny_bookmarks/', 
+        #     startup[['startup_bookmark']] , '/meta_selections.tsv'),
+        #     sep = '\t', header = TRUE)
+        # x <- a[toString(index),]["selection"]
+        # old_selection <- toString(unlist(x)[[1]])
+        
+        
         
         if (is.null(selected_meta)) selected_meta <- "No Selection"
     
-        if(.bm.counter != 2) {
+        startup <- readRDS("shiny_saves/startup.rds")
+        if(startup[['bookmark_counter']] != 2) {
             if(!is.null(input[[paste0("condition", num)]])){
                 selected <- input[[paste0("condition", num)]]
-            } else {
+            } 
+            #else {
                 meta_choices_all <- NULL
                 if (!is.null(selected_meta))
                     meta_choices_all <- get_conditions_given_selection(input,
@@ -126,7 +153,7 @@ getConditionSelectorFromMeta <- function(input = NULL, index = 1, num=0,
                     }
                     selected <- meta_choices
                 }
-            }
+            #}
         }
     
         
@@ -221,8 +248,11 @@ selectConditions<-function(Dataset = NULL,
             all_selections <- ""
         }
         allsamples <- getSampleNames( input$samples, "all" )
-        write("meta_index\tselection",file="shiny_saves/meta_selections.tsv")
         
+        # startup <- readRDS("shiny_saves/startup.rds")
+        # write("meta_index\tselection", file = paste0('shiny_bookmarks/',
+        #     startup[['startup_bookmark']] , '/meta_selections.tsv'))
+
         lapply(seq_len(nc), function(i) {
             if(typeof(input$file2) == "NULL"){
                 current_selection <- 'No Selection'
@@ -268,13 +298,26 @@ selectConditions<-function(Dataset = NULL,
             new_selection <- selectedInput("conditions_from_meta", i, NULL, 
                                            input)
 
-            cat("\n", "-----------++++++++++++++++++++-------", "\n")
-            all_selections <- paste0(all_selections, "conditions_from_meta",
-                                     i, "\t", new_selection)
-            print(all_selections)
+            startup <- readRDS("shiny_saves/startup.rds")
             
-            write(all_selections,file="shiny_saves/meta_selections.tsv",
-                  append=TRUE)
+            meta_rds_path <- paste0('shiny_bookmarks/',
+                startup[['startup_bookmark']] , '/meta_selections.rds')
+            
+            if(!file.exists(meta_rds_path)){
+                saveRDS(list(), meta_rds_path)
+            }
+            meta_selections <- readRDS(meta_rds_path)
+            
+            current_meta_condition <- paste0("conditions_from_meta", i)
+            meta_selections[[current_meta_condition]] <- new_selection
+            
+            saveRDS(meta_selections, meta_rds_path)
+            
+            
+            # startup <- readRDS("shiny_saves/startup.rds")
+            # write(all_selections, file = paste0('shiny_bookmarks/',
+            #     startup[['startup_bookmark']] , '/meta_selections.tsv'), 
+            #     append=TRUE)
 
             
             return(to_return)

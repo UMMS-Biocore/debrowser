@@ -123,16 +123,17 @@ deServer <- function(input, output, session) {
     #           Bookmark on every single user input               #
     ###############################################################
     observe({
-        if(exists(".bm.counter")){
-            if(.bm.counter == 0){
-                cat("bm counter: ", .bm.counter , "\n")
-                .bm.counter <<- 1
-                cat(".bookmark.startup : " , "\n")
-                print(.bookmark.startup)
-                session$sendCustomMessage(type = 'testmessage',
-                    message = list(bookmarked_url = paste0("?_state_id_=",
-                    .bookmark.startup), controller = input$controller))
-            }
+        startup <- readRDS("shiny_saves/startup.rds")
+        if(startup[['bookmark_counter']] == 0){
+            cat("bookmark_counter: ", startup[['bookmark_counter']] , "\n")
+            startup[['bookmark_counter']] <- 1
+            saveRDS(startup, "shiny_saves/startup.rds")
+            
+            cat("startup[['bookmark_counter']] : " , "\n")
+            print(startup[['bookmark_counter']])
+            session$sendCustomMessage(type = 'testmessage',
+                message = list(bookmarked_url = paste0("?_state_id_=",
+                startup[['startup_bookmark']]), controller = input$controller))
         }
         # if(!is_restoring$now){
             # Trigger this observer every time an input changes
@@ -147,6 +148,9 @@ deServer <- function(input, output, session) {
     #         To save user chosen name as bookmark id             #
     ###############################################################
     observeEvent(input$name_bookmark, {
+        
+
+        
         chosen_name <- input$bookmark_special_name
         if(nchar(chosen_name) < 5){
             to_display <- "You must type in at least 5 characters."
@@ -161,6 +165,12 @@ deServer <- function(input, output, session) {
                 if (result == 42) {
                     to_display <- paste0("Successfully saved. ",
                         "URL updated with your choice to access later.")
+                    
+                    bm_link <- paste0('<a style="margin: 27px;" ',
+                                    'target="_blank" href="?_state_id_=',
+                                    chosen_name, '">', chosen_name, '</a>')
+                    output$new_bookmark <- renderText({bm_link})
+                    
                 } else {
                     to_display <- "Something went wrong with the save."
                 }
@@ -183,6 +193,13 @@ deServer <- function(input, output, session) {
             if(file.rename(paste0(bookmark_dir, old_state_id), 
                       paste0(bookmark_dir, new_state_id))){
                 updateQueryString(paste0("?_state_id_=", new_state_id))
+                startup <- readRDS("shiny_saves/startup.rds")
+                startup[['startup_bookmark']] <- new_state_id
+                saveRDS(startup, "shiny_saves/startup.rds")
+                
+                
+                write(new_state_id,file="shiny_saves/past_saves.txt",
+                    append=TRUE)
                 return(42)
             }
             else{
@@ -241,9 +258,6 @@ deServer <- function(input, output, session) {
         
         state$values$nc <- choicecounter$nc
         
-        # file.copy(isolate(input$file1$datapath), "file1.tsv",
-        #           recursive = TRUE)
-        
         state$values$samples <- input$samples
         
         cat(paste0("+++++++++++++++++++++++++++++++++++++++++++++++++++++",
@@ -252,7 +266,7 @@ deServer <- function(input, output, session) {
         # Delete the previously bookmarked state
         # Note that onBookmark precedes onBookmarked
         
-        delete_previous_bookmark(url_with_query$url_str)
+        #delete_previous_bookmark(url_with_query$url_str)
         if(!is.null(input$file2)){
             cat("input$file2$datapath: ", input$file2$datapath,
                 " --------------++++++ \n")
@@ -264,11 +278,13 @@ deServer <- function(input, output, session) {
         updateQueryString(url)
         url_with_query$url_str <- url
         cat(paste0("updating the url to: ", url, "\n"))
+        startup <- readRDS("shiny_saves/startup.rds")
+        startup[['startup_bookmark']] <- get_state_id(url)
+        saveRDS(startup, "shiny_saves/startup.rds")
         
         bookmark_dir_id <- get_state_id(url)
         file.copy(isolate(input$file1$datapath), 
-                  paste0("shiny_bookmarks/", bookmark_dir_id, "/file1.tsv"),
-                  overwrite = TRUE)
+            paste0("shiny_bookmarks/", bookmark_dir_id, "/file1.tsv"))
         # Save the url to go to the bookmark later in a file
         # bookmark_log <- "saved_bookmark.txt"
         # line <- paste0(url, "\t", Sys.time(), "\n")
@@ -284,7 +300,16 @@ deServer <- function(input, output, session) {
     onRestore(function(state) {
         cat(paste0("RESTORE++++++++++++++++++++++++++++++++++++++++++++++",
                    " nc ", choicecounter$nc, "qc ", choicecounter$qc, "\n"))
-        .bm.counter <<- 2
+        query_list <- parseQueryString(session$clientData$url_search)
+        
+        
+        startup <- readRDS("shiny_saves/startup.rds")
+        startup[['bookmark_counter']] <- 2
+        startup[['startup_bookmark']] <- query_list[["_state_id_"]]
+        saveRDS(startup, "shiny_saves/startup.rds")
+        
+        saveRDS(state$values$input_save, paste0("shiny_bookmarks/", 
+            query_list[["_state_id_"]] , "/input_save.rds"))
         
         if(!is.null(state$values$data)){
             cat("The file is uploaded, go to the next tab.", "\n")
@@ -294,8 +319,10 @@ deServer <- function(input, output, session) {
             choicecounter$nc <- state$values$nc
         }
         
-        saveRDS(state$values$input_save, "shiny_saves/input_save.rds")
-    
+        
+
+        
+
         if(choicecounter$nc > 0){
             shinyjs::enable("startDE")
         }
@@ -490,6 +517,33 @@ deServer <- function(input, output, session) {
         outputOptions(output, 'restore_DE', suspendWhenHidden = FALSE)
 
         
+        output$past_named_bookmarks <- renderText({
+            path <- "shiny_saves/past_saves.txt"
+            if(file.exists(path)){
+                conn <- file(path,open="r")
+                lines <- readLines(conn)
+                all_bookmarks <- "<div id='all_bookmarks' style='margin: 27px;'>"
+                if(length(lines) > 0){
+                    all_bookmarks <- paste0(all_bookmarks, "<p>History:</p>")
+                }
+                for (i in length(lines):1){
+                    bookmark_id <- lines[i]
+                    if(bookmark_id != ""){
+                        current <- paste0('<a target="_blank" href="?_state_id_=',
+                                          bookmark_id, '">', bookmark_id, '</a>')
+                        all_bookmarks <- paste0(all_bookmarks, current, "<br/>")
+                    }
+                }
+                all_bookmarks <- paste0(all_bookmarks, "</div>")
+                close(conn)
+                return(all_bookmarks)
+            }
+            else {
+                return("")
+            }
+        })
+        
+        
         output$sampleSelector <- renderUI({
             if (is.null(samples())) return(NULL)
             if (is.null(input$samples))
@@ -510,7 +564,8 @@ deServer <- function(input, output, session) {
             }
         })
         output$conditionSelector <- renderUI({
-            selectConditions(isolate(Dataset()), choicecounter, isolate(input))
+            cat("here14")
+            selectConditions(isolate(Dataset()), isolate(choicecounter), isolate(input))
         })
         dc <- reactive({
             dc <- NULL
@@ -739,6 +794,11 @@ deServer <- function(input, output, session) {
             if(!("ID" %in% names(dat2)))
                 dat2 <- addID(dat2)
             write.table(dat2, file, sep = ",", row.names = FALSE)
+        })
+        
+        output$startup_object <- reactive({
+            readRDS("shiny_saves/startup.rds")
+            return(startup[['bookmark_counter']] == 0)
         })
 
         output$downloadPlot <- downloadHandler(filename = function() {

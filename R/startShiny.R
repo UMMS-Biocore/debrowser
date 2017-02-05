@@ -23,16 +23,39 @@ startDEBrowser <- function(){
         environment(deServer) <- environment()
         #shinyAppDir(system.file(package="debrowser"))
         
-        .GlobalEnv$.bookmark.startup <- system(paste0("ls -t1 shiny_bookmarks",
-            " |  head -n 1"), intern=TRUE)
-        on.exit(rm(.bookmark.startup, envir=.GlobalEnv))
+
+        # Clean up the bookmark directory of unnamed bookmarks - begin
+        l <- list.files("shiny_bookmarks")
+        if(length(l) > 0){
+            last_bookmark_id <- system(paste0("ls -t1 shiny_bookmarks",
+                                              " |  head -n 1"), intern=TRUE)
+            l_without_last <- setdiff(l, list(last_bookmark_id))
+            named_bookmarks <- scan("shiny_saves/past_saves.txt", what="",
+                                    sep="\n")
+            bookmarks_to_delete <- setdiff(l_without_last, named_bookmarks)
+            lapply(bookmarks_to_delete, function(x) 
+                if(x != ""){
+                    unlink(paste0("shiny_bookmarks/", x), recursive = TRUE)
+                }
+            )
+        }
+        # Clean up the bookmark directory of unnamed bookmarks - end
         
-        .GlobalEnv$.bm.counter <- 0
-        on.exit(rm(.bm.counter, envir=.GlobalEnv))
         
+        startup_obj <- list()
+        # To restore, set counter to 0 and bookmark to the last bookmark dir
+        # startup_obj$bookmark_counter <- 0
+        # startup_obj$startup_bookmark <- system(paste0("ls -t1 ",
+        #                       "shiny_bookmarks |  head -n 1"), intern=TRUE)
+        
+        # To start normally, set the counter to 1 and bookmark to empty string
+        startup_obj$bookmark_counter <- 1
+        startup_obj$startup_bookmark <- ""
+        saveRDS(startup_obj, "shiny_saves/startup.rds")
+            
         app <- shinyApp( ui = shinyUI(deUI),
                     server = shinyServer(deServer), 
                     enableBookmarking = "server")
-        runApp(app)
+        runApp(app, port = 7575)
     }
 }

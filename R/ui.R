@@ -12,6 +12,7 @@
 #'
 
 deUI <- function() {
+
     heatmapJScode <-
         "shinyjs.getNames = function(){
         var count = document.getElementsByClassName('tick').length;
@@ -36,8 +37,17 @@ deUI <- function() {
     addResourcePath(prefix = "www", directoryPath = system.file("extdata",
         "www", package = "debrowser"))
 
-    #if(exists(".GlobalEnv$.bm.counter")){
-    if (.bm.counter == 0){
+    
+    if(!file.exists("shiny_saves/startup.rds")){
+        startup_obj <- list()
+        startup_obj$bookmark_counter <- 3
+        startup_obj$startup_bookmark <- ""
+        saveRDS(startup_obj, "shiny_saves/startup.rds")
+    }        
+        
+    startup <- readRDS("shiny_saves/startup.rds")
+    
+    if (startup[['bookmark_counter']] == 0){
         cat("I'm at the ui.R", "\n")
         a <- (fluidPage(
             tags$script('Shiny.addCustomMessageHandler("testmessage",
@@ -46,7 +56,7 @@ deUI <- function() {
                 }
         );') ))
     }
-    #}
+
     else{
     a <- (fluidPage(
     shinyjs::useShinyjs(),
@@ -109,7 +119,11 @@ deUI <- function() {
                     actionButton("name_bookmark", "Submit!"),
                     textOutput("bookmark_length_error"),
                     br(), br(), br()
-            ))
+            )),
+            conditionalPanel(condition <- paste0("input.methodtabs=='panel0'"),
+                htmlOutput("new_bookmark"),
+                htmlOutput("past_named_bookmarks")
+            )
         ),
     shinydashboard::dashboardBody(
         
