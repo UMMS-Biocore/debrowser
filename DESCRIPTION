@@ -49,12 +49,13 @@ Imports:
     org.Hs.eg.db,
     org.Mm.eg.db,
     limma,
-    edgeR,  
+    edgeR,
     clusterProfiler,
     V8,
     methods,
-    sva
-RoxygenNote: 5.0.1
+    sva,
+    shinydashboard
+RoxygenNote: 6.0.0
 Suggests: testthat,
     rmarkdown,
     knitr,
