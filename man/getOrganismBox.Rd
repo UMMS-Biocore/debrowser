@@ -22,4 +22,3 @@ makes the organism box
     x <- getOrganismBox()
 
 }
-

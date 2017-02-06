@@ -26,4 +26,3 @@ the main panel.
     x <- MAZoom()
 
 }
-

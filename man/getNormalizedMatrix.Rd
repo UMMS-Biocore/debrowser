@@ -25,4 +25,3 @@ within DEBrowser.  Requires edgeR package
     x <- getNormalizedMatrix(mtcars)
 
 }
-

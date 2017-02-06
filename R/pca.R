@@ -139,6 +139,7 @@ getPCAexplained <- function(datasetInput = NULL,
     if (input$qcplot == "pca"){
         dataset <- datasetInput[,input$col_list[c(input$col_list)
             %in% colnames(datasetInput)]]
+        if (dim(dataset)[2] == 0) return(NULL)
         pca_data <- run_pca(getNormalizedMatrix(dataset, input$norm_method))
         datexp <- data.frame(cbind(unlist(lapply(
             c(1:length(pca_data$explained)), 

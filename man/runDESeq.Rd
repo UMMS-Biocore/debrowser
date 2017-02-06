@@ -34,4 +34,3 @@ to be used for the interactive display.
     x <- runDESeq(data<-NULL, columns<-c())
 
 }
-

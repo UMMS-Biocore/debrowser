@@ -19,4 +19,3 @@ metadata file has to be loaded in this case
 \examples{
     x <- getColorShapeSelection()
 }
-

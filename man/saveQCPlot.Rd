@@ -30,4 +30,3 @@ Saves the current QC plot selection to the users local disk.
     saveQCPlot()
 
 }
-

@@ -27,4 +27,3 @@ used in DESeq.
     x<- selectConditions()
 
 }
-

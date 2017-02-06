@@ -36,4 +36,3 @@ each time it is pressed.
     actionButton("goDE", "Go to DE Analysis!")
 
 }
-

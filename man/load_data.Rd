@@ -20,4 +20,3 @@ Loads user selected data to be used for DESeq
 \examples{
     x<-load_data ()
 }
-

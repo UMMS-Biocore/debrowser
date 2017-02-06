@@ -18,4 +18,3 @@ Generates the GO Left menu to be displayed within the DEBrowser.
 \examples{
     x <- getGOLeftMenu()
 }
-

@@ -21,4 +21,3 @@ heatmap selection functionality
     x <- getSelHeat()
 
 }
-

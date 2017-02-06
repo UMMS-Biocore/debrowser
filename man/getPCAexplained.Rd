@@ -22,4 +22,3 @@ the selected dataset.
     x <- getPCAexplained()
 
 }
-

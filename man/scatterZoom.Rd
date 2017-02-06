@@ -31,4 +31,3 @@ the main panel.
     x <- scatterZoom()
 
 }
-

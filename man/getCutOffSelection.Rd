@@ -21,4 +21,3 @@ Gathers the cut off selection for DE analysis
 \examples{
     x <- getCutOffSelection()
 }
-

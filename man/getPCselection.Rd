@@ -23,4 +23,3 @@ Generates the PC selection number to be used within DEBrowser.
 \examples{
     x <- getPCselection()
 }
-

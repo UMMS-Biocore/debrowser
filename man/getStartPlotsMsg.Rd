@@ -19,4 +19,3 @@ the user has first seen the main plots page within DEBrowser.
 \examples{
     x <- getStartPlotsMsg()
 }
-

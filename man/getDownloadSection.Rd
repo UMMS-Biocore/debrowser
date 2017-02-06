@@ -25,4 +25,3 @@ menu for user to download selected data.
     x<- getDownloadSection()
 
 }
-

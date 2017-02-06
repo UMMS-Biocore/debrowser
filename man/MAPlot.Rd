@@ -28,4 +28,3 @@ Prepares MA plot to be used within the main plot panel.
     x <- MAPlot()
 
 }
-

@@ -19,4 +19,3 @@ Creates a shinyUI to be able to run DEBrowser interactively.
     x<-deUI()
 
 }
-

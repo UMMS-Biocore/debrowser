@@ -33,4 +33,3 @@ Prepares QCplots for comparisons and others
     x <- getQCReplot()
 
 }
-

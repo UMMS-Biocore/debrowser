@@ -18,4 +18,3 @@ It sets the filter parameters
     x <- setFilterParams()
 
 }
-

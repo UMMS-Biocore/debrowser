@@ -15,4 +15,3 @@ Hides a shiny object.
 \examples{
     x <- hideObj()
 }
-

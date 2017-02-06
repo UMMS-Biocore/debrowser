@@ -27,4 +27,3 @@ within the DEBrowser.
     x <- getMostVariedList()
 
 }
-

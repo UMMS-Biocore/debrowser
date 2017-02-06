@@ -24,4 +24,3 @@ DEBrowser.
     x <- applyFiltersToMergedComparison()
 
 }
-

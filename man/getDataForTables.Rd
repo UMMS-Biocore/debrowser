@@ -35,4 +35,3 @@ get data to fill up tables tab
     x <- getDataForTables()
 
 }
-

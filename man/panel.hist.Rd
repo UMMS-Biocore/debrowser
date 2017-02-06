@@ -21,4 +21,3 @@ Prepares the historgram for the all2all plot.
     panel.hist(1)
 
 }
-

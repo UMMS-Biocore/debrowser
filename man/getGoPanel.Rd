@@ -24,4 +24,3 @@ display.
     x <- getGoPanel()
 
 }
-

@@ -26,4 +26,3 @@ displayed within the DEBrowser.
     x <- applyFilters()
 
 }
-

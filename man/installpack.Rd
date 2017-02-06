@@ -20,4 +20,3 @@ display.
     x <- installpack()
 
 }
-

@@ -18,4 +18,3 @@ Generates and displays the logo to be shown within DEBrowser.
 \examples{
     x <- getLogo()
 }
-

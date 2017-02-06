@@ -27,4 +27,3 @@ Prepares the correlations for the all2all plot.
     panel.cor(c(1,2,3), c(4,5,6))
 
 }
-

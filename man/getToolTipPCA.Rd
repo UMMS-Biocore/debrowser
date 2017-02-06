@@ -19,4 +19,3 @@ Prepares tooltiptext for PCA plot
 x <- getToolTipPCA()
 
 }
-

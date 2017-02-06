@@ -20,4 +20,3 @@ Makes IQR boxplot plot
     getIQRPlot()
 
 }
-

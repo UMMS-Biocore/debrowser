@@ -26,4 +26,3 @@ Sets up shinyServer to be able to run DEBrowser interactively.
     deServer
 
 }
-

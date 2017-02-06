@@ -26,4 +26,3 @@ GO Term plots.
 \examples{
     x <- getEnrichKEGG()
 }
-

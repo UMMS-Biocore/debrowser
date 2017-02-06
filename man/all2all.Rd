@@ -21,4 +21,3 @@ Prepares all2all scatter plots for given datasets.
     plot<-all2all(mtcars)
 
 }
-

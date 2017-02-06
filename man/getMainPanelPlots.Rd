@@ -28,4 +28,3 @@ Gathers the the plots to be used within the main panel.
     x <- getMainPanelPlots()
 
 }
-

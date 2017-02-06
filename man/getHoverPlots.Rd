@@ -19,4 +19,3 @@ in the main plots
     getHoverPlots()
 
 }
-

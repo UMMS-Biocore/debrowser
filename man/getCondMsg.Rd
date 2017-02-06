@@ -28,4 +28,3 @@ within the DEBrowser.
 \examples{
     x <- getCondMsg()
 }
-

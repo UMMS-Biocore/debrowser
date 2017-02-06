@@ -20,4 +20,3 @@ the selected dataset.
     x <- drawPCAExplained()
 
 }
-

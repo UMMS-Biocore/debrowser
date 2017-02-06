@@ -21,4 +21,3 @@ it reads the sample names from the data and splits into two.
 \examples{
     x<-getSampleNames()
 }
-

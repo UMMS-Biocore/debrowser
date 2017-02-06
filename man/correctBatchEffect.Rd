@@ -20,4 +20,3 @@ Batch effect correction
 \examples{
     x<-correctBatchEffect ()
 }
-

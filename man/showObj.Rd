@@ -15,4 +15,3 @@ Displays a shiny object.
 \examples{
     x <- showObj()
 }
-

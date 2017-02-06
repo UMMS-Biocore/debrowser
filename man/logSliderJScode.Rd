@@ -22,4 +22,3 @@ DEBrowser.
 \examples{
     x <- logSliderJScode()
 }
-

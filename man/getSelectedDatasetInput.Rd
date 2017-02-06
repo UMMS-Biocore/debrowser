@@ -31,4 +31,3 @@ Gathers the user selected dataset output to be displayed.
     x <- getSelectedDatasetInput()
 
 }
-

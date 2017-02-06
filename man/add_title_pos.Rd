@@ -38,4 +38,3 @@ Adds a title with extra axis to ggvis plot and sets the positions
     set_options(width = 400, height = 350)
 
 }
-

@@ -23,4 +23,3 @@ DEBrowser.
 \examples{
     x <- togglePanels()
 }
-

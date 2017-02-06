@@ -23,4 +23,3 @@ Barplot and box plots are in this page as well.
     x <- getMainPanel()
 
 }
-

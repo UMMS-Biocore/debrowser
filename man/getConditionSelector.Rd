@@ -20,4 +20,3 @@ Selects user input conditions to run in DESeq.
     x <- getConditionSelector()
 
 }
-

@@ -15,4 +15,3 @@ select legend
 \examples{
     x <- getLegendSelect()
 }
-

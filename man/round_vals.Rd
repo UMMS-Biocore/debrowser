@@ -18,4 +18,3 @@ Plot PCA results.
 \examples{
     x<-round_vals(5.1323223)
 }
-

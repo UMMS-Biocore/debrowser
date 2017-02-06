@@ -19,4 +19,3 @@ Prepares selected data for QC plots.
     x <- prepDataForQC()
 
 }
-

@@ -19,4 +19,3 @@ Starts the DEBrowser to be able to run interactively.
     startDEBrowser()
 
 }
-

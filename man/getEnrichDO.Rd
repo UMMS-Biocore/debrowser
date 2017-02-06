@@ -24,4 +24,3 @@ GO Term plots.
 \examples{
     x <- getEnrichDO()
 }
-

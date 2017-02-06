@@ -19,4 +19,3 @@ DEBrowser.
 \examples{
     x <- getCompSelection(count = 2)
 }
-

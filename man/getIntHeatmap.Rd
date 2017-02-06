@@ -23,4 +23,3 @@ getIntHeatmap
     getIntHeatmap()
 
 }
-

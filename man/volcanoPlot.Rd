@@ -28,4 +28,3 @@ Prepares volcano plot to be used within the DEBrowser.
     x <- volcanoPlot()
 
 }
-

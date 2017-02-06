@@ -23,4 +23,3 @@ GO Term plots.
     mycluster <- clusterData()
 
 }
-

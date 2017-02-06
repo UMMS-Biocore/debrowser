@@ -19,4 +19,3 @@ Adds an id to the data frame being used.
     x <- addID()
 
 }
-

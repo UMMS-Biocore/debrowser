@@ -28,4 +28,3 @@ Runs PCA on the selected dataset.
         demodata[rowSums(demodata[,2:7])>10,2:7]))
 
 }
-

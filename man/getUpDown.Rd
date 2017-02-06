@@ -21,4 +21,3 @@ get up+down regulated data
     x <- getUpDown()
 
 }
-

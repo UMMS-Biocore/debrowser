@@ -18,4 +18,3 @@ read metadata file
 \examples{
     x <- readMetaData()
 }
-

@@ -21,4 +21,3 @@ search the geneset in the tables and return it
     x <- getSearchData()
 
 }
-

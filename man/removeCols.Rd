@@ -21,4 +21,3 @@ remove unnecessary columns
     x <- removeCols()
 
 }
-

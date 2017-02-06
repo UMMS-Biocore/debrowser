@@ -20,4 +20,3 @@ Makes Density plots
     getDensityPlot()
 
 }
-

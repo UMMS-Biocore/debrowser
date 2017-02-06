@@ -23,4 +23,3 @@ Prepares the data container that stores values used within DESeq.
     x <- prepDataContainer()
 
 }
-

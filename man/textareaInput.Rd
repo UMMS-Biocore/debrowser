@@ -28,4 +28,3 @@ the DEBrowser.
     x <- textareaInput("genesetarea", "Gene Set",
         "Fgf21", rows = 5, cols = 35)
 }
-

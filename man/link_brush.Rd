@@ -26,4 +26,3 @@ linked brush object for ggvis plots
     lb <- link_brush()
 
 }
-

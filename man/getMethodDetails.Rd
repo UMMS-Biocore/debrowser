@@ -18,4 +18,3 @@ get the detail boxes after DE method selected
     x <- getMethodDetails()
 
 }
-

@@ -21,4 +21,3 @@ Push an object to the list.
     mylist <- list()
     newlist <- push ( 1, mylist )
 }
-

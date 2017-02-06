@@ -23,4 +23,3 @@ Batch effect column selection
 \examples{
     x <- selectBatchEffect()
 }
-

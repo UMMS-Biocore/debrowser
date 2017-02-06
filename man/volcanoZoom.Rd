@@ -27,4 +27,3 @@ within the Debrowser.
     x <- volcanoZoom()
 
 }
-

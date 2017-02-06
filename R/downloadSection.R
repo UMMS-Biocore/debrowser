@@ -14,14 +14,9 @@
 #'
 #' @export
 #'
-getDownloadSection <- function(flag = FALSE, type = "main") {
+getDownloadSection <- function(flag = FALSE, choices=NULL) {
     a <- NULL
     if (flag){
-        if (type == "main")
-            choices <- c("up+down", "up", "down", "selected",
-                "comparisons", "alldetected", "most-varied", "pcaset")
-        else 
-            choices <- c("most-varied", "alldetected", "selected", "pcaset")
         a <- list(conditionalPanel( (condition <- "input.methodtabs!='panel0'"),
                 shinydashboard::menuItem("Select Plot Options", icon = icon("star-o"),                       
                     selectInput("dataset", "Choose a dataset:",

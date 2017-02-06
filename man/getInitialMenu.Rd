@@ -25,4 +25,3 @@ Displays the initial menu within DEBrowser.
 \examples{
     x <- getInitialMenu()
 }
-

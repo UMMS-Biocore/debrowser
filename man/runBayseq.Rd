@@ -30,4 +30,3 @@ to be used for the interactive display.
     x <- runBayseq()
 
 }
-

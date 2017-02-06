@@ -20,4 +20,3 @@ Prepares tooltiptext for the second scatter plot in the plots page
 x <- getToolTipText()
 
 }
-

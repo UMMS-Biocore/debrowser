@@ -22,4 +22,3 @@ getOrganismPathway
     x <- getOrganismPathway()
 
 }
-

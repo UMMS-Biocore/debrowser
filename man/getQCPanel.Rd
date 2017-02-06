@@ -22,4 +22,3 @@ Gathers the conditional panel for QC plots
     x <- getQCPanel()
 
 }
-

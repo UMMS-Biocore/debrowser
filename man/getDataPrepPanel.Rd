@@ -22,4 +22,3 @@ within the DEBrowser.
 \examples{
     x <- getDataPrepPanel()
 }
-

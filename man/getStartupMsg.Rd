@@ -18,4 +18,3 @@ Generates and displays the starting message within DEBrowser.
 \examples{
     x <- getStartupMsg()
 }
-

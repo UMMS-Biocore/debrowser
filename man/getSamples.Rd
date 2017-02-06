@@ -21,4 +21,3 @@ Gathers the sample names to be used within DEBrowser.
     x <- getSamples()
 
 }
-

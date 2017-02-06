@@ -24,4 +24,3 @@ based on user selection.
 \examples{
     x<- getGOPlots()
 }
-

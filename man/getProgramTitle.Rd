@@ -22,4 +22,3 @@ If it is called in a program, the program title will be hidden
 \examples{
     title<-getProgramTitle()
 }
-

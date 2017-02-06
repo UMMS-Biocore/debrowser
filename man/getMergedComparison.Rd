@@ -26,4 +26,3 @@ DEBrowser.
     x <- getMergedComparison()
 
 }
-

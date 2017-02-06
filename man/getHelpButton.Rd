@@ -23,4 +23,3 @@ prepares a helpbutton for to go to a specific site in the documentation
     x<- getHelpButton()
 
 }
-

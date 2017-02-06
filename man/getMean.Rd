@@ -26,4 +26,3 @@ Gathers the mean for selected condition.
     x <- getMean()
 
 }
-

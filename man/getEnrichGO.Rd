@@ -30,4 +30,3 @@ GO Term plots.
     x <- getEnrichGO()
 
 }
-

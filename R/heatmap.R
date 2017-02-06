@@ -94,12 +94,12 @@ getIntHeatmap <- function(data = NULL,  input = NULL, inputQCPlot = NULL) {
 #' @examples
 #'     x <- getSelHeat()
 #'
-getSelHeat <- function(data=NULL, input=NULL) {
+getSelHeat <- function(data=NULL, input) {
     randstr <- reactive({
         stri_rand_strings(n=1, length=8, pattern="[A-Za-z0-9]")
     })
     getSelected <- reactive({
-        selectedData <- data[unlist(strsplit(input$genenames, ",")), ]
+        selectedData <- data[unlist(strsplit(input, ",")), ]
     })
     list( getSelected = isolate(getSelected), 
         randstr=isolate(randstr) )

@@ -27,4 +27,3 @@ symobol to ENTREZ ID conversion
     x <- getGeneList(c('OCLN', 'ABCC2'))
 
 }
-

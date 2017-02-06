@@ -19,4 +19,3 @@ get colors for the domains
     x<-getColors()
 
 }
-
