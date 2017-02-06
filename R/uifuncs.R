@@ -12,7 +12,7 @@
 #'
 getDataPrepPanel <- function(flag = FALSE){
     a <- NULL
-    if(flag)  
+    if(flag)
     a<- list(
         conditionalPanel(condition = "input.demo ||
             output.dataready",
@@ -21,13 +21,15 @@ getDataPrepPanel <- function(flag = FALSE){
         actionButton("goDE", "Go to DE Analysis!"),
         actionButton("goQCplots", "Go to QC plots!"),
         actionButton("resetsamples", "Reset!"),
-        conditionalPanel(condition = "input.goDE",
+        conditionalPanel(condition = "(input.goDE) || (output.restore_DE > 0)",
             helpText( "Please add new comparisons for DE analysis!" ),
             uiOutput("conditionSelector"),
             column(12,actionButton("add_btn", "Add New Comparison"),
             actionButton("rm_btn", "Remove"),
             getHelpButton("method", "http://debrowser.readthedocs.io/en/develop/deseq/deseq.html")),
+            br(),
             actionButton("startDE", "Submit!"),
+            br(),
            tags$style(type='text/css', "#startDE { margin-top: 10px;}")  ))),
         conditionalPanel(condition = "!input.demo &&
             !output.fileUploaded",
@@ -50,6 +52,8 @@ getDataPrepPanel <- function(flag = FALSE){
 getLeftMenu <- function(input = NULL) {
 if (is.null(input)) return(NULL)
 a <- list( conditionalPanel( (condition <- "input.methodtabs=='panel1'"),
+        shinydashboard::menuItem("Select Plot Type", icon = icon("star-o"),
+                                                      
         wellPanel(radioButtons("mainplot", paste("Main Plots:", sep = ""),
             c(Scatter = "scatter", VolcanoPlot = "volcano",
             MAPlot = "maplot"))),
@@ -58,7 +62,7 @@ a <- list( conditionalPanel( (condition <- "input.methodtabs=='panel1'"),
         conditionalPanel( (condition <- "input.methodtabs=='panel2'"),
             wellPanel(radioButtons("qcplot",
                 paste("QC Plots:", sep = ""),
-                c(PCA = "pca", All2All = "all2all", Heatmap = "heatmap", IQR = "IQR", 
+                c(PCA = "pca", All2All = "all2all", Heatmap = "heatmap", IQR = "IQR",
                   Density = "Density"))),
             getQCLeftMenu(input)),
         conditionalPanel( (condition <- "input.methodtabs=='panel3'"),
@@ -70,6 +74,7 @@ a <- list( conditionalPanel( (condition <- "input.methodtabs=='panel1'"),
         conditionalPanel( (condition <- "input.methodtabs=='panel4'"),
              uiOutput("getColumnsForTables")
         ))
+    )
 }
 #' getMainPlotsLeftMenu
 #'
@@ -84,7 +89,7 @@ a <- list( conditionalPanel( (condition <- "input.methodtabs=='panel1'"),
 getMainPlotsLeftMenu <- function() {
     a <- list(
               sliderInput("backperc", "Background Data(%):",
-                          min=10, max=100, value=10, sep = "", 
+                          min=10, max=100, value=10, sep = "",
                           animate = FALSE)
              )
 }
@@ -103,7 +108,7 @@ getGOLeftMenu <- function() {
     a <- list(actionButton("startGO", "Submit!"),
     tags$head(tags$script(HTML(logSliderJScode("gopvalue")))),
     sliderInput("gopvalue", "p.adjust cut off",
-        min=0, max=10, value=6, sep = "", 
+        min=0, max=10, value=6, sep = "",
         animate = FALSE),
     textInput("pvaluetxt", "or p.adjust", value = "0.01" ),
         getOrganismBox(),
@@ -137,7 +142,7 @@ getGOLeftMenu <- function() {
 #' @export
 #'
 getPCselection <- function(num = 1, xy = "x" ) {
-    numericInput(paste0("pcsel", xy), 
+    numericInput(paste0("pcsel", xy),
         paste0("PC selection[", xy, "]"), num, 1, 6)
 }
 
@@ -163,7 +168,7 @@ getColorShapeSelection <- function(input = NULL) {
 #'
 #' Generates the left menu to be used for QC plots within the
 #' DEBrowser.
-#' 
+#'
 #' @param input, input values
 #' @note \code{getQCLeftMenu}
 #' @return QC left menu
@@ -195,7 +200,7 @@ getQCLeftMenu <- function( input = NULL) {
                 selectInput("distance_method", "Distance Method:",
                 choices <- c("cor", "euclidean", "maximum", "manhattan",
                 "canberra", "binary", "minkowski")),
-                getHelpButton("method", 
+                getHelpButton("method",
                               "http://debrowser.readthedocs.io/en/develop/quickstart/quickstart.html#heat-maps")
             ),
         conditionalPanel( (condition <- "input.qcplot=='pca'"),
@@ -253,19 +258,21 @@ logSliderJScode <- function(slidername = NULL){
 #'
 getCutOffSelection <- function(nc = 1){
     compselect <- getCompSelection(nc)
-    a <- list( 
+    a <- list(
     conditionalPanel( (condition <- "input.dataset!='most-varied' &&
                        input.methodtabs!='panel0'"),
         tags$head(tags$script(HTML(logSliderJScode("padj")))),
-        h4("Filter"),
-        sliderInput("padj", "padj value cut off",
-            min=0, max=10, value=6, sep = "", 
-            animate = FALSE),
-        textInput("padjtxt", "or padj", value = "0.01" ),
-        sliderInput("foldChange", "Fold Change cut off",
-            1, 10, 2, step = 0.1),
-        textInput("foldChangetxt", "or foldChange", value = "2" ),
-        compselect
+        shinydashboard::menuItem("Filter", icon = icon("star-o"),
+            #h4("Filter"),
+            sliderInput("padj", "padj value cut off",
+                min=0, max=10, value=6, sep = "",
+                animate = FALSE),
+            textInput("padjtxt", "or padj", value = "0.01" ),
+            sliderInput("foldChange", "Fold Change cut off",
+                1, 10, 2, step = 0.1),
+            textInput("foldChangetxt", "or foldChange", value = "2" ),
+            compselect
+        )
     ) )
 }
 
@@ -324,7 +331,7 @@ getProgramTitle <- function(session = NULL) {
     if (is.null(session)) return (NULL)
     a<-NULL
     title<-parseQueryString(session$clientData$url_search)$title
-    if (is.null(title) || title != "no" ) 
+    if (is.null(title) || title != "no" )
         a <- list(titlePanel("DEBrowser"))
     else
         a <- list(titlePanel(" "))
@@ -344,7 +351,7 @@ getProgramTitle <- function(session = NULL) {
 #'
 getLoadingMsg <- function() {
     addResourcePath(prefix = "www", directoryPath =
-        system.file("extdata", "www", 
+        system.file("extdata", "www",
         package = "debrowser"))
     imgsrc <- "www/images/loading.gif"
     a <- list(
@@ -352,20 +359,20 @@ getLoadingMsg <- function() {
             #loadmessage {
             position: fixed;
             top: 0px;
-            left: 200px;
-            width: 70%;
-            height: 100;
+            left: 0px;
+            width: 100%;
+            height: 100%;
             padding: 5px 0px 5px 0px;
             text-align: center;
             font-weight: bold;
             font-size: 100%;
             color: #000000;
             opacity: 0.8;
-            background-color: #FFFFFFF;
             z-index: 100;
             }")),
-        conditionalPanel(condition = "$('html').hasClass('shiny-busy')",
-            tags$div("Please wait! Loading...", id = "loadmessage",
+        conditionalPanel(condition = paste0("$('html').hasClass('shiny-busy')",
+                "& input.startDE"),
+            tags$div(id = "loadmessage",
             tags$img(src = imgsrc
             ))))
 }
@@ -382,7 +389,7 @@ getLoadingMsg <- function() {
 #'
 getLogo <- function(){
     addResourcePath(prefix = "www", directoryPath =
-        system.file("extdata", "www", 
+        system.file("extdata", "www",
         package = "debrowser"))
     imgsrc <- "www/images/logo.png"
     a<-list(img(src=imgsrc, align = "right"))
@@ -399,13 +406,13 @@ getLogo <- function(){
 #' @export
 #'
 getStartupMsg <- function() {
-a <- list( column( 12, wellPanel(
+a <- list( column( 12, 
 helpText("Please select a file or load the demo data!"),
 helpText( "For more information;" ),
 helpText(   a("Quick Start Guide",
 href = "http://debrowser.readthedocs.org",
-target = "_blank"), 
-getHelpButton("method", "http://debrowser.readthedocs.org")) ) ))
+target = "_blank"),
+getHelpButton("method", "http://debrowser.readthedocs.org")) ))
 }
 
 #' getAfterLoadMsg
@@ -442,10 +449,10 @@ helpText( "To be able to select conditions please click
 #'
 getStartPlotsMsg <- function() {
 a <- list( conditionalPanel(condition <- "!input.startPlots",
-    column( 12, wellPanel(
-    helpText( "Please choose the appropriate parameters and 
+    column( 12, 
+    helpText( "Please choose the appropriate parameters and
             press submit button to draw the plots!" ),
-    getHelpButton("method", "http://debrowser.readthedocs.io/en/develop/quickstart/quickstart.html#the-main-plots")))))
+    getHelpButton("method", "http://debrowser.readthedocs.io/en/develop/quickstart/quickstart.html#the-main-plots"))))
 }
 
 #' getCondMsg
@@ -472,13 +479,13 @@ getCondMsg <- function(dc = NULL, num = NULL, cols = NULL, conds = NULL) {
         column( 12, wellPanel(
             style = "overflow-x:scroll",
             HTML( paste0( "<b>Selected Parameters:</b> ", params_str,
-            "</br><b>",unique(conds)[1], ":</b> "), 
-            paste(cnd[cnd$conds == unique(conds)[1], "cols"], 
+            "</br><b>",unique(conds)[1], ":</b> "),
+            paste(cnd[cnd$conds == unique(conds)[1], "cols"],
             collapse =","),
             paste0(" vs. ","<b>",unique(conds)[2], ":", "</b> "),
-            paste(cnd[cnd$conds == unique(conds)[2], "cols"], 
+            paste(cnd[cnd$conds == unique(conds)[2], "cols"],
             collapse =",")),
-        getHelpButton("method", 
+        getHelpButton("method",
 "http://debrowser.readthedocs.io/en/develop/quickstart/quickstart.html#the-main-plots")))))
 }
 
@@ -487,7 +494,7 @@ getCondMsg <- function(dc = NULL, num = NULL, cols = NULL, conds = NULL) {
 #' User defined toggle to display which panels are to be shown within
 #' DEBrowser.
 #'
-#' @param num, selected panel 
+#' @param num, selected panel
 #' @param nums, all panels
 #' @param session, session info
 #' @note \code{togglePanels}
@@ -502,11 +509,11 @@ togglePanels <- function(num = NULL, nums = NULL, session = NULL){
             shinyjs::show(selector =
                 paste0("#methodtabs li a[data-value=panel",i,"]"))
         else
-            shinyjs::hide(selector = 
+            shinyjs::hide(selector =
                 paste0("#methodtabs li a[data-value=panel",i,"]"))
     }
     if(num)
-        updateTabsetPanel(session, "methodtabs", 
+        updateTabsetPanel(session, "methodtabs",
             selected = paste0("panel", num))
 }
 
@@ -524,7 +531,7 @@ togglePanels <- function(num = NULL, nums = NULL, session = NULL){
 getCompSelection <- function(count = NULL) {
   a <- NULL
   if (count>1){
-        a <- list(selectInput("compselect", 
+        a <- list(selectInput("compselect",
         label = "Choose a comparison:",
         choices = c(1:count) ))
   }
@@ -536,22 +543,22 @@ getCompSelection <- function(count = NULL) {
 #' Batch effect column selection
 #'
 #' @param input, input values
-#' @param selectname, name of the select box 
+#' @param selectname, name of the select box
 #' @param label, label of the select box
 #' @note \code{selectBatchEffect}
 #' @examples
 #'     x <- selectBatchEffect()
 #' @export
 #'
-selectBatchEffect <- function(input = NULL, 
+selectBatchEffect <- function(input = NULL,
     selectname = "batchselect",
     label = "Batch effect correction column") {
     if (is.null(input$file2)) return (NULL)
-    
+
      metadata <- readMetaData(input)
      lst.choices <- as.list(c("None", colnames(metadata)))
-     selectInput(selectname, label = label, 
-            choices = lst.choices, 
+     selectInput(selectname, label = label,
+            choices = lst.choices,
             selected = 1)
 }
 
@@ -583,8 +590,8 @@ metadata <- read.table(input$file2$datapath, sep = "\t",
 #'
 getTextOnOff <- function() {
     lst.choices <- as.list(c("On", "Off"))
-    selectInput("textonoff", label = "Text On/Off", 
-                choices = lst.choices, 
+    selectInput("textonoff", label = "Text On/Off",
+                choices = lst.choices,
                 selected = "Off")
 }
 
@@ -599,8 +606,8 @@ getTextOnOff <- function() {
 #'
 getLegendSelect <- function() {
     lst.choices <- as.list(c("color", "shape"))
-    selectInput("legendSelect", label = "Select legend", 
-                choices = lst.choices, 
+    selectInput("legendSelect", label = "Select legend",
+                choices = lst.choices,
                 selected = "color")
 }
 
@@ -620,27 +627,27 @@ getLegendSelect <- function() {
 #'     x <- getTableStyle()
 #' @export
 #'
-getTableStyle <- function(dat = NULL, input = NULL, 
+getTableStyle <- function(dat = NULL, input = NULL,
     padj = c("padj"), foldChange=c("foldChange"), DEsection = TRUE){
     if (is.null(dat)) return (NULL)
     a <- dat
     if(!is.null(padj) && padj != "" && DEsection)
         a <- a %>% formatStyle(
             padj,
-            color = styleInterval(c(0, input$padjtxt), 
+            color = styleInterval(c(0, input$padjtxt),
             c('black', "white", "black")),
             backgroundColor = styleInterval(
             input$padjtxt, c('green', 'white'))
-        ) 
+        )
     if(!is.null(foldChange) && foldChange != "" && DEsection)
         a <- a %>%
             formatStyle(
             foldChange,
-            color = styleInterval(c(1/as.numeric(input$foldChangetxt), 
+            color = styleInterval(c(1/as.numeric(input$foldChangetxt),
             as.numeric(input$foldChangetxt)), c('white', 'black', 'white')),
             backgroundColor = styleInterval(
-            c(1/as.numeric(input$foldChangetxt), 
-            as.numeric(input$foldChangetxt)), 
+            c(1/as.numeric(input$foldChangetxt),
+            as.numeric(input$foldChangetxt)),
             c('red', 'white', 'green'))
     )
     a
@@ -662,7 +669,7 @@ getTableStyle <- function(dat = NULL, input = NULL,
 #'         "Fgf21", rows = 5, cols = 35)
 #' @export
 #'
-textareaInput <- function(id, label, value, rows=20, cols=35, 
+textareaInput <- function(id, label, value, rows=20, cols=35,
     class="form-control"){
     tags$div(
     class="form-group shiny-input-container",
@@ -701,50 +708,50 @@ hideObj <- function(btns = NULL) {
 }
 
 #' Buttons including Action Buttons and Event Buttons
-#' 
+#'
 #' Creates an action button whose value is initially zero, and increments by one
 #' each time it is pressed.
-#' 
-#' @param inputId Specifies the input slot that will be used to access the 
+#'
+#' @param inputId Specifies the input slot that will be used to access the
 #'   value.
-#' @param label The contents of the button--usually a text label, but you could 
+#' @param label The contents of the button--usually a text label, but you could
 #'   also use any other HTML, like an image.
-#' @param styleclass The Bootstrap styling class of the button--options are 
+#' @param styleclass The Bootstrap styling class of the button--options are
 #'   primary, info, success, warning, danger, inverse, link or blank
 #' @param size The size of the button--options are large, small, mini
 #' @param block Whehter the button should fill the block
 #' @param icon Display an icon for the button
-#' @param css.class Any additional CSS class one wishes to add to the action 
+#' @param css.class Any additional CSS class one wishes to add to the action
 #'   button
 #' @param ... Other argument to feed into shiny::actionButton
 #'
 #' @export
-#' 
+#'
 #' @examples
 #'     actionButton("goDE", "Go to DE Analysis!")
-#' 
-actionButton <- function(inputId, label, styleclass = "", size = "", 
+#'
+actionButton <- function(inputId, label, styleclass = "", size = "",
                          block = FALSE, icon = NULL, css.class = "", ...) {
-    if (styleclass %in% c("primary", "info", "success", "warning", 
+    if (styleclass %in% c("primary", "info", "success", "warning",
                           "danger", "inverse", "link")) {
         btn.css.class <- paste("btn", styleclass, sep = "-")
     } else btn.css.class = ""
-    
+
     if (size %in% c("large", "small", "mini")) {
         btn.size.class <- paste("btn", size, sep = "-")
     } else btn.size.class = ""
-    
+
     if (block) {
         btn.block = "btn-block"
     } else btn.block = ""
-    
+
     if (!is.null(icon)) {
         icon.code <- HTML(paste0("<i class='fa fa-", icon, "'></i>"))
     } else icon.code = ""
-    tags$button(id = inputId, type = "button", class = paste("btn action-button", 
-        btn.css.class, btn.size.class, btn.block, css.class, collapse = " "), 
+    tags$button(id = inputId, type = "button", class = paste("btn action-button",
+        btn.css.class, btn.size.class, btn.block, css.class, collapse = " "),
         icon.code, label, ...)
-} 
+}
 
 #' getHelpButton
 #' prepares a helpbutton for to go to a specific site in the documentation

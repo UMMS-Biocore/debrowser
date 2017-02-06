@@ -1,0 +1,99 @@
+#university-name {
+    text-align: left;
+}
+
+#bookmark_saved_output {
+    color: green;
+}
+
+.well {
+    background-color: transparent;
+    border: 0;
+}
+
+.container-fluid {
+    padding-right: 0;
+    padding-left: 0;
+}
+
+
+.content-wrapper {
+    min-height: 3500px !important; 
+}
+
+
+/*
+li {
+    display: none !important;
+}
+
+li.active {
+    display: block !important;
+}
+*/
+
+.content-wrapper, .right-side{
+    display:block;
+    overflow:auto;
+}
+
+#initialmenu {
+    padding: 30px 15px 30px 15px;
+}
+
+#demo {
+    margin: 12px 12px 12px 12px;
+}
+
+.btn {
+    margin: 12px 12px 12px 12px;
+}
+
+.btn-file{
+    margin: 0 0 0 0;
+}
+
+#loadmessage {
+    position: relative;
+    background: rgb(25, 31, 38);
+}
+
+/*
+.treeview-menu{
+    display: none;
+}
+
+.menu-open{
+    display: block !important;
+
+}
+*/
+
+.action-button {
+    color: black;
+}
+
+.btn-default {
+    color: black;
+}
+
+.fa-info {
+    color: white;
+}
+
+#downloadPlot {
+    color: black;
+}
+
+/*
+.ggvis-dropdown-toggle {
+    width: 28px !important;
+    height: 28px !important;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent url(www/images/download.png) no-repeat center top !important;
+    cursor: pointer; 
+    cursor: hand; 
+}
+*/
