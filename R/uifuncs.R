@@ -13,36 +13,28 @@
 getDataPrepPanel <- function(flag = FALSE){
     a <- NULL
     if(flag)
-        a<- list(
-            conditionalPanel(condition = "input.demo ||
-                             output.dataready",
-                             # wellPanel(
-                             uiOutput("sampleSelector"),
-                             actionButton("goDE", "Go to DE Analysis!"),
-                             actionButton("goQCplots", "Go to QC plots!"),
-                             actionButton("resetsamples", "Reset!"),
-                             #conditionalPanel(
-                             #condition = paste0("(input.goDE) || (server_goDE.go > 0)"),
-                             conditionalPanel(condition = "(input.goDE) || (output.restore_DE > 0)",
-                                              helpText( "Please add new comparisons for DE analysis!" ),
-                                              uiOutput("conditionSelector"),
-                                              column(12,actionButton("add_btn", "Add New Comparison"),
-                                                     actionButton("rm_btn", "Remove"),
-                                                     getHelpButton("method",
-                                                                   "http://debrowser.readthedocs.io/en/develop/deseq/deseq.html")),
-                                              
-                                              # actionButton("bookmark_before_startDE", "Save!"),
-                                              br(),
-                                              actionButton("startDE", "Submit!"),
-                                              br(),
-                                              textOutput("bookmark_saved_output"),
-                                              tags$style(type='text/css', "#startDE { margin-top: 10px;}")  )
-                             # )
-            ),
-            conditionalPanel(condition = "!input.demo &&
-                             !output.fileUploaded",
-                             uiOutput("startup"))
-        )
+    a<- list(
+        conditionalPanel(condition = "input.demo ||
+            output.dataready",
+        wellPanel(
+        uiOutput("sampleSelector"),
+        actionButton("goDE", "Go to DE Analysis!"),
+        actionButton("goQCplots", "Go to QC plots!"),
+        actionButton("resetsamples", "Reset!"),
+        conditionalPanel(condition = "(input.goDE) || (output.restore_DE > 0)",
+            helpText( "Please add new comparisons for DE analysis!" ),
+            uiOutput("conditionSelector"),
+            column(12,actionButton("add_btn", "Add New Comparison"),
+            actionButton("rm_btn", "Remove"),
+            getHelpButton("method", "http://debrowser.readthedocs.io/en/develop/deseq/deseq.html")),
+            br(),
+            actionButton("startDE", "Submit!"),
+            br(),
+           tags$style(type='text/css', "#startDE { margin-top: 10px;}")  ))),
+        conditionalPanel(condition = "!input.demo &&
+            !output.fileUploaded",
+            uiOutput("startup"))
+    )
     a
 }
 
@@ -58,35 +50,32 @@ getDataPrepPanel <- function(flag = FALSE){
 #' @export
 #'
 getLeftMenu <- function(input = NULL) {
-    if (is.null(input)) return(NULL)
-    a <- list(conditionalPanel(condition <- paste0("input.methodtabs=='panel1'",
-                                                   "|| input.methodtabs=='panel2' || input.methodtabs=='panel3'"),
-                               
-                               shinydashboard::menuItem("Select Plot Type", icon = icon("star-o"),
-                                                        conditionalPanel( (condition <- "input.methodtabs=='panel1'"),
-                                                                          wellPanel(radioButtons("mainplot", paste("Main Plots:",
-                                                                                                                   sep = ""), c(Scatter = "scatter", VolcanoPlot = "volcano",
-                                                                                                                                MAPlot = "maplot"))),
-                                                                          actionButton("startPlots", "Submit!")),
-                                                        conditionalPanel( (condition <- "input.methodtabs=='panel2'"),
-                                                                          wellPanel(radioButtons("qcplot",
-                                                                                                 paste("QC Plots:", sep = ""),
-                                                                                                 c(PCA = "pca", All2All = "all2all", 
-                                                                                                   Heatmap = "heatmap", IQR = "IQR",
-                                                                                                   Density = "Density"))),
-                                                                          getQCLeftMenu(input)),
-                                                        conditionalPanel( (condition <- "input.methodtabs=='panel3'"),
-                                                                          wellPanel(radioButtons("goplot", paste("Go Plots:", sep = ""),
-                                                                                                 c(enrichGO = "enrichGO", enrichKEGG = "enrichKEGG",
-                                                                                                   Disease = "disease", compareClusters = "compare"))),
-                                                                          getGOLeftMenu()
-                                                        ),
-                                                        conditionalPanel( (condition <- "input.methodtabs=='panel4'"),
-                                                                          uiOutput("getColumnsForTables"))           
-                               ))
+if (is.null(input)) return(NULL)
+a <- list( conditionalPanel( (condition <- "input.methodtabs=='panel1'"),
+        shinydashboard::menuItem("Select Plot Type", icon = icon("star-o"),
+                                                      
+        wellPanel(radioButtons("mainplot", paste("Main Plots:", sep = ""),
+            c(Scatter = "scatter", VolcanoPlot = "volcano",
+            MAPlot = "maplot"))),
+                actionButton("startPlots", "Submit!"),
+            getMainPlotsLeftMenu()),
+        conditionalPanel( (condition <- "input.methodtabs=='panel2'"),
+            wellPanel(radioButtons("qcplot",
+                paste("QC Plots:", sep = ""),
+                c(PCA = "pca", All2All = "all2all", Heatmap = "heatmap", IQR = "IQR",
+                  Density = "Density"))),
+            getQCLeftMenu(input)),
+        conditionalPanel( (condition <- "input.methodtabs=='panel3'"),
+            wellPanel(radioButtons("goplot", paste("Go Plots:", sep = ""),
+                c(enrichGO = "enrichGO", enrichKEGG = "enrichKEGG",
+                Disease = "disease", compareClusters = "compare"))),
+                getGOLeftMenu()
+                ),
+        conditionalPanel( (condition <- "input.methodtabs=='panel4'"),
+             uiOutput("getColumnsForTables")
+        ))
     )
 }
-
 #' getMainPlotsLeftMenu
 #'
 #' Generates the Main PLots Left menu to be displayed within the DEBrowser.
@@ -99,10 +88,10 @@ getLeftMenu <- function(input = NULL) {
 #'
 getMainPlotsLeftMenu <- function() {
     a <- list(
-        sliderInput("backperc", "Background Data(%):",
-                    min=10, max=100, value=10, sep = "", 
-                    animate = FALSE)
-    )
+              sliderInput("backperc", "Background Data(%):",
+                          min=10, max=100, value=10, sep = "",
+                          animate = FALSE)
+             )
 }
 
 #' getGOLeftMenu
@@ -117,27 +106,27 @@ getMainPlotsLeftMenu <- function() {
 #'
 getGOLeftMenu <- function() {
     a <- list(actionButton("startGO", "Submit!"),
-              tags$head(tags$script(HTML(logSliderJScode("gopvalue")))),
-              sliderInput("gopvalue", "p.adjust cut off",
-                          min=0, max=10, value=6, sep = "",
-                          animate = FALSE),
-              textInput("pvaluetxt", "or p.adjust", value = "0.01" ),
-              getOrganismBox(),
-              conditionalPanel( ( condition <- "(input.goplot=='enrichGO' ||
-                                  (input.goplot=='compare' && input.gofunc!='enrichDO' &&
-                                  input.gofunc!='enrichKEGG'))" ),
-                                selectInput("ontology", "Choose an ontology:",
-                                            choices =  c( "CC", "MF", "BP"))
-              ),
-              conditionalPanel( ( condition <- "input.goplot!='compare'"),
-                                selectInput("goextplot", "Plot Type:",
-                                            choices =  c("Summary", "Dotplot"))
-              ),
-              conditionalPanel( ( condition <- "input.goplot=='compare'"),
-                                selectInput("gofunc", "Plot Function:",
-                                            choices =  c( "enrichGO", "enrichDO", "enrichKEGG"))
-              ),
-              downloadButton("downloadGOPlot", "Download Plots"))
+    tags$head(tags$script(HTML(logSliderJScode("gopvalue")))),
+    sliderInput("gopvalue", "p.adjust cut off",
+        min=0, max=10, value=6, sep = "",
+        animate = FALSE),
+    textInput("pvaluetxt", "or p.adjust", value = "0.01" ),
+        getOrganismBox(),
+        conditionalPanel( ( condition <- "(input.goplot=='enrichGO' ||
+            (input.goplot=='compare' && input.gofunc!='enrichDO' &&
+            input.gofunc!='enrichKEGG'))" ),
+            selectInput("ontology", "Choose an ontology:",
+                choices =  c( "CC", "MF", "BP"))
+            ),
+            conditionalPanel( ( condition <- "input.goplot!='compare'"),
+                selectInput("goextplot", "Plot Type:",
+                choices =  c("Summary", "Dotplot"))
+            ),
+            conditionalPanel( ( condition <- "input.goplot=='compare'"),
+                selectInput("gofunc", "Plot Function:",
+                choices =  c( "enrichGO", "enrichDO", "enrichKEGG"))
+            ),
+            downloadButton("downloadGOPlot", "Download Plots"))
 }
 
 #' getPCselection
@@ -154,7 +143,7 @@ getGOLeftMenu <- function() {
 #'
 getPCselection <- function(num = 1, xy = "x" ) {
     numericInput(paste0("pcsel", xy),
-                 paste0("PC selection[", xy, "]"), num, 1, 6)
+        paste0("PC selection[", xy, "]"), num, 1, 6)
 }
 
 #' getColorShapeSelection
@@ -171,7 +160,7 @@ getPCselection <- function(num = 1, xy = "x" ) {
 getColorShapeSelection <- function(input = NULL) {
     if (is.null(input)) return (NULL)
     a <- list(selectBatchEffect(input, "color_pca", "Color field"),
-              selectBatchEffect(input, "shape_pca", "Shape field"))
+           selectBatchEffect(input, "shape_pca", "Shape field"))
 }
 
 
@@ -190,41 +179,39 @@ getColorShapeSelection <- function(input = NULL) {
 getQCLeftMenu <- function( input = NULL) {
     if (is.null(input)) return(NULL)
     a <- list(
-        uiOutput("columnSelForHeatmap"),
-        conditionalPanel( (condition <- "input.qcplot=='all2all' ||
-                           input.qcplot=='heatmap' ||
-                           input.qcplot=='pca'"),
-                          actionButton("startQCPlot", "Submit!"),
-                          sliderInput("width", "width",
-                                      min = 100, max = 2000, step = 10, value = 700),
-                          sliderInput("height", "height",
-                                      min = 100, max = 2000, step = 10, value = 500),
-                          conditionalPanel( (condition <- "input.qcplot=='all2all'"),
-                                            sliderInput("cex", "corr font size",
-                                                        min = 0.1, max = 10,
-                                                        step = 0.1, value = 2)),
-                          conditionalPanel( (condition <- "input.qcplot=='heatmap'"),
-                                            checkboxInput("interactive", "Interactive", value = FALSE),
-                                            selectInput("clustering_method", "Clustering Method:",
-                                                        choices <- c("complete", "ward.D2", "single", "average",
-                                                                     "mcquitty", "median", "centroid")),
-                                            selectInput("distance_method", "Distance Method:",
-                                                        choices <- c("cor", "euclidean", "maximum", "manhattan",
-                                                                     "canberra", "binary", "minkowski")),
-                                            getHelpButton("method",
-                                                          "http://debrowser.readthedocs.io/en/develop/quickstart/quickstart.html#heat-maps")
-                          ),
-                          conditionalPanel( (condition <- "input.qcplot=='pca'"),
-                                            shinydashboard::menuItem("QC Parameters", icon = icon("star-o"),              
-                                                                     getPCselection(1, "x"),
-                                                                     getPCselection(2, "y"),
-                                                                     textInput("pctile", "Top %", value = "0.05" ),
-                                                                     getTextOnOff(),
-                                                                     getLegendSelect(),
-                                                                     getColorShapeSelection(input)
-                                            )
-                          ),
-                          downloadButton("downloadPlot", "Download Plot")))
+            uiOutput("columnSelForHeatmap"),
+            conditionalPanel( (condition <- "input.qcplot=='all2all' ||
+            input.qcplot=='heatmap' ||
+            input.qcplot=='pca'"),
+            actionButton("startQCPlot", "Submit!"),
+            sliderInput("width", "width",
+            min = 100, max = 2000, step = 10, value = 700),
+            sliderInput("height", "height",
+            min = 100, max = 2000, step = 10, value = 500),
+            conditionalPanel( (condition <- "input.qcplot=='all2all'"),
+                sliderInput("cex", "corr font size",
+                min = 0.1, max = 10,
+                step = 0.1, value = 2)),
+            conditionalPanel( (condition <- "input.qcplot=='heatmap'"),
+                checkboxInput("interactive", "Interactive", value = FALSE),
+                selectInput("clustering_method", "Clustering Method:",
+                choices <- c("complete", "ward.D2", "single", "average",
+                "mcquitty", "median", "centroid")),
+                selectInput("distance_method", "Distance Method:",
+                choices <- c("cor", "euclidean", "maximum", "manhattan",
+                "canberra", "binary", "minkowski")),
+                getHelpButton("method",
+                              "http://debrowser.readthedocs.io/en/develop/quickstart/quickstart.html#heat-maps")
+            ),
+        conditionalPanel( (condition <- "input.qcplot=='pca'"),
+            getPCselection(1, "x"),
+            getPCselection(2, "y"),
+            textInput("pctile", "Top %", value = "0.05" ),
+            getTextOnOff(),
+            getLegendSelect(),
+            getColorShapeSelection(input)
+        ),
+        downloadButton("downloadPlot", "Download Plot")))
 }
 
 #' logSliderJScode
@@ -242,20 +229,20 @@ getQCLeftMenu <- function( input = NULL) {
 logSliderJScode <- function(slidername = NULL){
     if (is.null(slidername)) return (NULL)
     a <- paste0("$(function() {
-                setTimeout(function(){
-                var vals = [0];
-                var powStart = 4;
-                var powStop = 0;
-                for (i = powStart; i >= powStop; i--) {
-                var val = Math.pow(10, -i)/2;
-                val = parseFloat(val.toFixed(8));
-                vals.push(val);
-                var val = Math.pow(10, -i);
-                val = parseFloat(val.toFixed(8));
-                vals.push(val);
-                }
-                $('#", slidername,"').data('ionRangeSlider').update({'values':vals})
-                }, 4)})")
+    setTimeout(function(){
+    var vals = [0];
+    var powStart = 4;
+    var powStop = 0;
+    for (i = powStart; i >= powStop; i--) {
+    var val = Math.pow(10, -i)/2;
+    val = parseFloat(val.toFixed(8));
+    vals.push(val);
+    var val = Math.pow(10, -i);
+    val = parseFloat(val.toFixed(8));
+    vals.push(val);
+    }
+    $('#", slidername,"').data('ionRangeSlider').update({'values':vals})
+    }, 4)})")
 }
 
 #' getCutOffSelection
@@ -271,22 +258,22 @@ logSliderJScode <- function(slidername = NULL){
 #'
 getCutOffSelection <- function(nc = 1){
     compselect <- getCompSelection(nc)
-    a <- list( 
-        conditionalPanel( (condition <- "input.dataset!='most-varied' &&
-                           input.methodtabs!='panel0'"),
-                          shinydashboard::menuItem("Filter", icon = icon("star-o"),
-                                                   tags$head(tags$script(HTML(logSliderJScode("padj")))),
-                                                   #h4("Filter"),
-                                                   sliderInput("padj", "padj value cut off",
-                                                               min=0, max=10, value=6, sep = "", 
-                                                               animate = FALSE),
-                                                   textInput("padjtxt", "or padj", value = "0.01" ),
-                                                   sliderInput("foldChange", "Fold Change cut off",
-                                                               1, 10, 2, step = 0.1),
-                                                   textInput("foldChangetxt", "or foldChange", value = "2" ),
-                                                   compselect
-                          )
-        ) )
+    a <- list(
+    conditionalPanel( (condition <- "input.dataset!='most-varied' &&
+                       input.methodtabs!='panel0'"),
+        tags$head(tags$script(HTML(logSliderJScode("padj")))),
+        shinydashboard::menuItem("Filter", icon = icon("star-o"),
+            #h4("Filter"),
+            sliderInput("padj", "padj value cut off",
+                min=0, max=10, value=6, sep = "",
+                animate = FALSE),
+            textInput("padjtxt", "or padj", value = "0.01" ),
+            sliderInput("foldChange", "Fold Change cut off",
+                1, 10, 2, step = 0.1),
+            textInput("foldChangetxt", "or foldChange", value = "2" ),
+            compselect
+        )
+    ) )
 }
 
 #' getInitialMenu
@@ -309,21 +296,21 @@ getInitialMenu <- function(input = NULL, output = NULL, session = NULL) {
     {
         a<-list(
             conditionalPanel(condition = "!input.demo &&
-                             !output.dataready",
-                             actionLink("demo", "Load Demo!"),
-                             getHelpButton("method", "http://debrowser.readthedocs.io/en/develop/quickstart/quickstart.html"),
-                             fileInput("file1", "Choose TSV File",
-                                       accept = c("text/tsv",
-                                                  "text/comma-separated-values,text/plain",
-                                                  ".tsv")),
-                             fileInput("file2", "Choose Meta Data File (Optional)",
-                                       accept = c("text/tsv",
-                                                  "text/comma-separated-values,text/plain",
-                                                  ".tsv"))
-                             ,
-                             uiOutput("batchEffect"),
-                             actionButton("gotoanalysis", "Go to Analysis!"))
-        )
+                !output.dataready",
+                actionLink("demo", "Load Demo!"),
+                getHelpButton("method", "http://debrowser.readthedocs.io/en/develop/quickstart/quickstart.html"),
+                fileInput("file1", "Choose TSV File",
+                    accept = c("text/tsv",
+                        "text/comma-separated-values,text/plain",
+                        ".tsv")),
+                fileInput("file2", "Choose Meta Data File (Optional)",
+                          accept = c("text/tsv",
+                                     "text/comma-separated-values,text/plain",
+                        ".tsv"))
+                ,
+                uiOutput("batchEffect"),
+                actionButton("gotoanalysis", "Go to Analysis!"))
+            )
     }
     a
 }
@@ -364,32 +351,31 @@ getProgramTitle <- function(session = NULL) {
 #'
 getLoadingMsg <- function() {
     addResourcePath(prefix = "www", directoryPath =
-                        system.file("extdata", "www",
-                                    package = "debrowser"))
+        system.file("extdata", "www",
+        package = "debrowser"))
     imgsrc <- "www/images/loading.gif"
     a <- list(
         tags$head(tags$style(type = "text/css", "
-                             #loadmessage {
-                             position: fixed;
-                             top: 0px;
-                             left: 0px;
-                             width: 100%;
-                             height: 100%;
-                             padding: 0px 0px 0px 0px;
-                             text-align: center;
-                             font-weight: bold;
-                             font-size: 100%;
-                             color: #000000;
-                             opacity: 0.8;
-                             z-index: 100;
-}")),
-        
-        conditionalPanel(condition = "$('html').hasClass('shiny-busy') & input.startDE",
-                         #tags$div("Please wait! Loading...", id = "loadmessage",
-                         tags$div("", id = "loadmessage",        
-                                  tags$img(src = imgsrc
-                                  ))))
-    }
+            #loadmessage {
+            position: fixed;
+            top: 0px;
+            left: 0px;
+            width: 100%;
+            height: 100%;
+            padding: 5px 0px 5px 0px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 100%;
+            color: #000000;
+            opacity: 0.8;
+            z-index: 100;
+            }")),
+        conditionalPanel(condition = paste0("$('html').hasClass('shiny-busy')",
+                "& input.startDE"),
+            tags$div(id = "loadmessage",
+            tags$img(src = imgsrc
+            ))))
+}
 
 #' getLogo
 #'
@@ -403,8 +389,8 @@ getLoadingMsg <- function() {
 #'
 getLogo <- function(){
     addResourcePath(prefix = "www", directoryPath =
-                        system.file("extdata", "www",
-                                    package = "debrowser"))
+        system.file("extdata", "www",
+        package = "debrowser"))
     imgsrc <- "www/images/logo.png"
     a<-list(img(src=imgsrc, align = "right"))
 }
@@ -420,16 +406,13 @@ getLogo <- function(){
 #' @export
 #'
 getStartupMsg <- function() {
-    a <- list( column( 12, 
-                       #wellPanel( 
-                       helpText("Please select a file or load the demo data!"),
-                       helpText( "For more information;" ),
-                       helpText(   a("Quick Start Guide",
-                                     href = "http://debrowser.readthedocs.org",
-                                     target = "_blank"),
-                                   getHelpButton("method", "http://debrowser.readthedocs.org")) 
-                       #)
-    ))
+a <- list( column( 12, 
+helpText("Please select a file or load the demo data!"),
+helpText( "For more information;" ),
+helpText(   a("Quick Start Guide",
+href = "http://debrowser.readthedocs.org",
+target = "_blank"),
+getHelpButton("method", "http://debrowser.readthedocs.org")) ))
 }
 
 #' getAfterLoadMsg
@@ -444,16 +427,13 @@ getStartupMsg <- function() {
 #' @export
 #'
 getAfterLoadMsg <- function() {
-    a <- list( column( 12, 
-                       #wellPanel(
-                       helpText( "Please choose the appropriate conditions for DESeq analysis
-                                 and press 'Run DESeq!' button in the left menu" ),
-                       helpText( "To be able to select conditions please click
-                                 'Condition1' or 'Condition2' boxes.
-                                 You can also use delete button to remove the
-                                 samples from the list.")
-                       #)
-                       ))
+a <- list( column( 12, wellPanel(
+helpText( "Please choose the appropriate conditions for DESeq analysis
+            and press 'Run DESeq!' button in the left menu" ),
+helpText( "To be able to select conditions please click
+            'Condition1' or 'Condition2' boxes.
+            You can also use delete button to remove the
+            samples from the list."))))
 }
 
 #' getStartPlotsMsg
@@ -468,14 +448,11 @@ getAfterLoadMsg <- function() {
 #' @export
 #'
 getStartPlotsMsg <- function() {
-    a <- list( conditionalPanel(condition <- "!input.startPlots",
-                                column( 12, 
-                                        #wellPanel(
-                                        helpText( "Please choose the appropriate parameters and
-                                                  press submit button to draw the plots!" ),
-                                        getHelpButton("method", "http://debrowser.readthedocs.io/en/develop/quickstart/quickstart.html#the-main-plots")
-                                        #)
-                                        )))
+a <- list( conditionalPanel(condition <- "!input.startPlots",
+    column( 12, 
+    helpText( "Please choose the appropriate parameters and
+            press submit button to draw the plots!" ),
+    getHelpButton("method", "http://debrowser.readthedocs.io/en/develop/quickstart/quickstart.html#the-main-plots"))))
 }
 
 #' getCondMsg
@@ -499,17 +476,17 @@ getCondMsg <- function(dc = NULL, num = NULL, cols = NULL, conds = NULL) {
     cnd <- data.frame(cbind(conds, cols))
     params_str <- paste(dc[[num]]$demethod_params, collapse = ',')
     a <-list( conditionalPanel(condition <- "input.startPlots",
-                               column( 12, wellPanel(
-                                   style = "overflow-x:scroll",
-                                   HTML( paste0( "<b>Selected Parameters:</b> ", params_str,
-                                                 "</br><b>",unique(conds)[1], ":</b> "),
-                                         paste(cnd[cnd$conds == unique(conds)[1], "cols"],
-                                               collapse =","),
-                                         paste0(" vs. ","<b>",unique(conds)[2], ":", "</b> "),
-                                         paste(cnd[cnd$conds == unique(conds)[2], "cols"],
-                                               collapse =",")),
-                                   getHelpButton("method",
-                                                 "http://debrowser.readthedocs.io/en/develop/quickstart/quickstart.html#the-main-plots")))))
+        column( 12, wellPanel(
+            style = "overflow-x:scroll",
+            HTML( paste0( "<b>Selected Parameters:</b> ", params_str,
+            "</br><b>",unique(conds)[1], ":</b> "),
+            paste(cnd[cnd$conds == unique(conds)[1], "cols"],
+            collapse =","),
+            paste0(" vs. ","<b>",unique(conds)[2], ":", "</b> "),
+            paste(cnd[cnd$conds == unique(conds)[2], "cols"],
+            collapse =",")),
+        getHelpButton("method",
+"http://debrowser.readthedocs.io/en/develop/quickstart/quickstart.html#the-main-plots")))))
 }
 
 #' togglePanels
@@ -530,14 +507,14 @@ togglePanels <- function(num = NULL, nums = NULL, session = NULL){
     for(i in 0:4){
         if (i %in% nums)
             shinyjs::show(selector =
-                              paste0("#methodtabs li a[data-value=panel",i,"]"))
+                paste0("#methodtabs li a[data-value=panel",i,"]"))
         else
             shinyjs::hide(selector =
-                              paste0("#methodtabs li a[data-value=panel",i,"]"))
+                paste0("#methodtabs li a[data-value=panel",i,"]"))
     }
     if(num)
         updateTabsetPanel(session, "methodtabs",
-                          selected = paste0("panel", num))
+            selected = paste0("panel", num))
 }
 
 #' getCompSelection
@@ -552,13 +529,13 @@ togglePanels <- function(num = NULL, nums = NULL, session = NULL){
 #' @export
 #'
 getCompSelection <- function(count = NULL) {
-    a <- NULL
-    if (count>1){
+  a <- NULL
+  if (count>1){
         a <- list(selectInput("compselect",
-                              label = "Choose a comparison:",
-                              choices = c(1:count) ))
-    }
-    a
+        label = "Choose a comparison:",
+        choices = c(1:count) ))
+  }
+  a
 }
 
 #' selectBatchEffect
@@ -574,15 +551,15 @@ getCompSelection <- function(count = NULL) {
 #' @export
 #'
 selectBatchEffect <- function(input = NULL,
-                              selectname = "batchselect",
-                              label = "Batch effect correction column") {
+    selectname = "batchselect",
+    label = "Batch effect correction column") {
     if (is.null(input$file2)) return (NULL)
-    
-    metadata <- readMetaData(input)
-    lst.choices <- as.list(c("None", colnames(metadata)))
-    selectInput(selectname, label = label,
-                choices = lst.choices,
-                selected = 1)
+
+     metadata <- readMetaData(input)
+     lst.choices <- as.list(c("None", colnames(metadata)))
+     selectInput(selectname, label = label,
+            choices = lst.choices,
+            selected = 1)
 }
 
 #' readMetaData
@@ -596,10 +573,10 @@ selectBatchEffect <- function(input = NULL,
 #' @export
 #'
 readMetaData <- function(input = NULL) {
-    if (is.null(input$file2)) return (NULL)
-    
-    metadata <- read.table(input$file2$datapath, sep = "\t",
-                           header = TRUE, row.names = 1)
+if (is.null(input$file2)) return (NULL)
+
+metadata <- read.table(input$file2$datapath, sep = "\t",
+                       header = TRUE, row.names = 1)
 }
 
 #' getTextOnOff
@@ -651,28 +628,28 @@ getLegendSelect <- function() {
 #' @export
 #'
 getTableStyle <- function(dat = NULL, input = NULL,
-                          padj = c("padj"), foldChange=c("foldChange"), DEsection = TRUE){
+    padj = c("padj"), foldChange=c("foldChange"), DEsection = TRUE){
     if (is.null(dat)) return (NULL)
     a <- dat
     if(!is.null(padj) && padj != "" && DEsection)
         a <- a %>% formatStyle(
             padj,
             color = styleInterval(c(0, input$padjtxt),
-                                  c('black', "white", "black")),
+            c('black', "white", "black")),
             backgroundColor = styleInterval(
-                input$padjtxt, c('green', 'white'))
+            input$padjtxt, c('green', 'white'))
         )
     if(!is.null(foldChange) && foldChange != "" && DEsection)
         a <- a %>%
-        formatStyle(
+            formatStyle(
             foldChange,
             color = styleInterval(c(1/as.numeric(input$foldChangetxt),
-                                    as.numeric(input$foldChangetxt)), c('white', 'black', 'white')),
+            as.numeric(input$foldChangetxt)), c('white', 'black', 'white')),
             backgroundColor = styleInterval(
-                c(1/as.numeric(input$foldChangetxt),
-                  as.numeric(input$foldChangetxt)),
-                c('red', 'white', 'green'))
-        )
+            c(1/as.numeric(input$foldChangetxt),
+            as.numeric(input$foldChangetxt)),
+            c('red', 'white', 'green'))
+    )
     a
 }
 
@@ -693,11 +670,11 @@ getTableStyle <- function(dat = NULL, input = NULL,
 #' @export
 #'
 textareaInput <- function(id, label, value, rows=20, cols=35,
-                          class="form-control"){
+    class="form-control"){
     tags$div(
-        class="form-group shiny-input-container",
-        tags$label('for'=id,label),
-        tags$textarea(id=id,class=class,rows=rows,cols=cols,value))
+    class="form-group shiny-input-container",
+    tags$label('for'=id,label),
+    tags$textarea(id=id,class=class,rows=rows,cols=cols,value))
 }
 
 #' showObj
@@ -759,21 +736,21 @@ actionButton <- function(inputId, label, styleclass = "", size = "",
                           "danger", "inverse", "link")) {
         btn.css.class <- paste("btn", styleclass, sep = "-")
     } else btn.css.class = ""
-    
+
     if (size %in% c("large", "small", "mini")) {
         btn.size.class <- paste("btn", size, sep = "-")
     } else btn.size.class = ""
-    
+
     if (block) {
         btn.block = "btn-block"
     } else btn.block = ""
-    
+
     if (!is.null(icon)) {
         icon.code <- HTML(paste0("<i class='fa fa-", icon, "'></i>"))
     } else icon.code = ""
     tags$button(id = inputId, type = "button", class = paste("btn action-button",
-                                                             btn.css.class, btn.size.class, btn.block, css.class, collapse = " "),
-                icon.code, label, ...)
+        btn.css.class, btn.size.class, btn.block, css.class, collapse = " "),
+        icon.code, label, ...)
 }
 
 #' getHelpButton
@@ -788,11 +765,11 @@ actionButton <- function(inputId, label, styleclass = "", size = "",
 #'
 #' @export
 getHelpButton<-function(name = NULL, link = NULL){
-    if (is.null(name)) return(NULL)
-    btn <- actionButton(paste0("info_",name),"",icon="info",
-                        styleclass="info", size="small")
-    
-    a <- HTML(paste0("<a id=\"info_",name,"\" href=\"",link,"\" target=\"_blank\">",
-                     btn,"</a>"))
-    
+if (is.null(name)) return(NULL)
+btn <- actionButton(paste0("info_",name),"",icon="info",
+                  styleclass="info", size="small")
+
+a <- HTML(paste0("<a id=\"info_",name,"\" href=\"",link,"\" target=\"_blank\">",
+                 btn,"</a>"))
+
 }

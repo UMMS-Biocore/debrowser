@@ -12,19 +12,19 @@
 #'     deServer
 #'
 #' @export
-#' @importFrom shiny  actionButton  actionLink  addResourcePath  column
-#'             conditionalPanel  downloadButton  downloadHandler
-#'             eventReactive  fileInput  fluidPage  helpText  isolate
-#'             mainPanel  need  numericInput  observe  observeEvent
-#'             outputOptions  parseQueryString  plotOutput  radioButtons
-#'             reactive  reactiveValues  renderPlot  renderUI  runApp
-#'             selectInput  shinyApp  shinyServer  shinyUI  sidebarLayout
-#'             sidebarPanel  sliderInput  stopApp  tabPanel  tabsetPanel
+#' @importFrom shiny  actionButton  actionLink  addResourcePath  column 
+#'             conditionalPanel  downloadButton  downloadHandler 
+#'             eventReactive  fileInput  fluidPage  helpText  isolate 
+#'             mainPanel  need  numericInput  observe  observeEvent 
+#'             outputOptions  parseQueryString  plotOutput  radioButtons 
+#'             reactive  reactiveValues  renderPlot  renderUI  runApp 
+#'             selectInput  shinyApp  shinyServer  shinyUI  sidebarLayout 
+#'             sidebarPanel  sliderInput  stopApp  tabPanel  tabsetPanel 
 #'             textInput  textOutput  titlePanel  uiOutput tags HTML
-#'             h4 img icon updateTabsetPanel  updateTextInput  validate
+#'             h4 img icon updateTabsetPanel  updateTextInput  validate 
 #'             wellPanel checkboxInput br checkboxGroupInput onRestore
 #'             reactiveValuesToList renderText onBookmark onBookmarked 
-#'             updateQueryString 
+#'             updateQueryString           
 #' @importFrom shinyjs show hide enable disable useShinyjs extendShinyjs
 #'             js inlineCSS
 #' @importFrom d3heatmap d3heatmap renderD3heatmap d3heatmapOutput
@@ -40,7 +40,7 @@
 #'             band scale_numeric hide_axis layer_densities scale_ordinal
 #'             layer_text
 #' @importFrom gplots heatmap.2 redblue
-#' @importFrom igraph layout.kamada.kawai
+#' @importFrom igraph layout.kamada.kawai  
 #' @importFrom grDevices dev.off pdf
 #' @importFrom graphics barplot hist pairs par rect text plot
 #' @importFrom stats aggregate as.dist cor cor.test dist
@@ -64,7 +64,7 @@
 #' @importFrom baySeq getLibsizes getLikelihoods getLikelihoods.NB
 #'             getPriors getPriors.NB nbinomDensity
 #' @importMethodsFrom baySeq "densityFunction<-" "libsizes<-"
-#' @importFrom clusterProfiler compareCluster enrichKEGG dotplot
+#' @importFrom clusterProfiler compareCluster enrichKEGG dotplot 
 #' @importFrom DESeq2 DESeq DESeqDataSetFromMatrix results
 #' @importFrom edgeR calcNormFactors equalizeLibSizes DGEList glmLRT
 #'             exactTest estimateCommonDisp glmFit
@@ -74,10 +74,8 @@
 #' @import org.Mm.eg.db
 #' @import V8
 #' @import shinydashboard
-#' 
 
 deServer <- function(input, output, session) {
-    
     
     # To hide the panels from 1 to 4 and only show Data Prep
     togglePanels(0, c(0), session)
@@ -135,12 +133,6 @@ deServer <- function(input, output, session) {
                                       message = list(bookmarked_url = paste0("?_state_id_=",
                                                                              startup[['startup_bookmark']]), controller = input$controller))
         }
-        # if(!is_restoring$now){
-        # Trigger this observer every time an input changes
-        # reactiveValuesToList(input)
-        # session$doBookmark()
-        #     is_restoring$now <- FALSE
-        # }
         
     })
     
@@ -261,8 +253,7 @@ deServer <- function(input, output, session) {
         
         # state$values can store data onBookmark to be restored later
         state$values$input_save <- input
-        cat(url_with_query$url_str, "\n")
-        
+
         storeDataset <- function(){
             state$values$data <- Dataset()
         }
@@ -278,7 +269,6 @@ deServer <- function(input, output, session) {
         # Delete the previously bookmarked state
         # Note that onBookmark precedes onBookmarked
         
-        #delete_previous_bookmark(url_with_query$url_str)
         if(!is.null(input$file2)){
             cat("input$file2$datapath: ", input$file2$datapath,
                 " --------------++++++ \n")
@@ -288,7 +278,6 @@ deServer <- function(input, output, session) {
     
     onBookmarked(function(url) {
         updateQueryString(url)
-        url_with_query$url_str <- url
         cat(paste0("updating the url to: ", url, "\n"))
         startup <- readRDS("shiny_saves/startup.rds")
         startup[['startup_bookmark']] <- get_state_id(url)
@@ -351,18 +340,18 @@ deServer <- function(input, output, session) {
         # close(conn)
         
         cat("Restoring ", "\n")
-        is_restoring$now <- TRUE
     })
     
     onRestored(function(state) {
         cat("here")
     })
     
+    
     tryCatch(
         {
             if (!interactive()) {
                 options( shiny.maxRequestSize = 30 * 1024 ^ 2,
-                         shiny.fullstacktrace = FALSE, shiny.trace=FALSE,
+                         shiny.fullstacktrace = FALSE, shiny.trace=FALSE, 
                          shiny.autoreload=TRUE)
                 #library(debrowser)
                 #library(d3heatmap)
@@ -381,22 +370,18 @@ deServer <- function(input, output, session) {
                 getProgramTitle(session)
             })
             output$mainpanel <- renderUI({
-                cat("output$mainpanel", "\n")
                 a <- NULL
                 if (!is.null(randstr()))
                     a <- getMainPanel(randstr())
                 a
             })
             output$qcpanel <- renderUI({
-                cat("output$qcpanel", "\n")
                 getQCPanel(input)
             })
             output$gopanel <- renderUI({
-                cat("output$gopanel", "\n")
                 getGoPanel(!is.null(init_data()))
             })
             output$cutoffSelection <- renderUI({
-                cat("output$cutoffSelection", "\n")
                 nc <- 1
                 if (!is.null(choicecounter$nc)) nc <- choicecounter$nc
                 getCutOffSelection(nc)
@@ -418,19 +403,15 @@ deServer <- function(input, output, session) {
                     a
             })
             output$preppanel <- renderUI({
-                cat("output$preppanel", "\n")
                 getDataPrepPanel(!is.null(init_data))
             })
             output$leftMenu  <- renderUI({
-                cat("output$leftMenu", "\n")
                 getLeftMenu(input)
             })
             output$initialmenu <-renderUI({
-                cat("initialmenu", "\n")
                 getInitialMenu(input, output, session)
             })
             output$loading <- renderUI({
-                cat("output$loading", "\n")
                 getLoadingMsg()
             })
             output$logo <- renderUI({
@@ -446,49 +427,40 @@ deServer <- function(input, output, session) {
                 if (is.null(condmsg$text))
                     getStartPlotsMsg()
                 else
-                    condmsg$text
+                    condmsg$text 
             })
-            
-            # Variables to help restore a session from bookmark
-            url_with_query <- reactiveValues(url_str = "")
-            
-            # To see if currently restoring
-            is_restoring <- reactiveValues(now = FALSE)
-            
             
             buttonValues <- reactiveValues(goQCplots = FALSE, goDE = FALSE,
                                            startDE = FALSE, gotoanalysis = FALSE)
             
             output$dataready <- reactive({
-                hide(id = "loading-debrowser", anim = TRUE, animType = "fade")
+                hide(id = "loading-debrowser", anim = TRUE, animType = "fade")    
                 return(!is.null(Dataset()))
             })
-            outputOptions(output, "dataready",
+            outputOptions(output, "dataready", 
                           suspendWhenHidden = FALSE)
             
             output$definished <- reactive({
                 return(!is.null(filt_data()))
             })
-            outputOptions(output, "definished",
+            outputOptions(output, "definished", 
                           suspendWhenHidden = FALSE)
             
             observeEvent(input$gotoanalysis, {
                 buttonValues$gotoanalysis <- TRUE
                 session$doBookmark()
             })
-            
-            # observeEvent(input$file1, {
-            #     if((.bm.counter == 0) || (.bm.counter == 1)){
-            #         file.copy(isolate(input$file1$datapath), "file1.tsv",
-            #                   recursive = TRUE)
-            #     }
+            # observeEvent(input$file1, {		
+            #     if((.bm.counter == 0) || (.bm.counter == 1)){		
+            #         file.copy(isolate(input$file1$datapath), "file1.tsv",		
+            #                   recursive = TRUE)		
+            #     }		
             # })
-            
             Dataset <- reactive({
                 a <- NULL
                 query <- parseQueryString(session$clientData$url_search)
                 jsonobj<-query$jsonobject
-                if ( buttonValues$gotoanalysis == TRUE || (!is.null(input$demo) &&
+                if ( buttonValues$gotoanalysis == TRUE || (!is.null(input$demo) && 
                                                            input$demo == TRUE) || !is.null(jsonobj) ){
                     a <- load_data(input, session)
                     if (!is.null(input$batchselect) && input$batchselect!="None")
@@ -498,7 +470,7 @@ deServer <- function(input, output, session) {
                 }
                 a
             })
-            choicecounter <- reactiveValues(nc = 0, qc = 0,
+            choicecounter <- reactiveValues(nc = 0, qc = 0, 
                                             lastselecteddataset = "")
             observeEvent(input$add_btn, {
                 shinyjs::enable("startDE")
@@ -507,16 +479,13 @@ deServer <- function(input, output, session) {
             )
             observeEvent(input$rm_btn, {
                 buttonValues$startDE <- FALSE
-                if (choicecounter$nc > 0)
+                if (choicecounter$nc > 0) 
                     choicecounter$nc <- choicecounter$nc - 1
-                if (choicecounter$nc == 0)
+                if (choicecounter$nc == 0) 
                     shinyjs::disable("startDE")
             })
-            
-            
             observeEvent(input$goDE, {
-                if (choicecounter$nc < 1)
-                    shinyjs::disable("startDE")
+                shinyjs::disable("startDE")
                 hideObj(c("goQCplots", "goDE"))
                 showObj(c("add_btn","rm_btn","startDE", "fittype"))
             })
@@ -534,7 +503,6 @@ deServer <- function(input, output, session) {
                 choicecounter$nc
             })
             outputOptions(output, 'restore_DE', suspendWhenHidden = FALSE)
-            
             
             output$past_named_bookmarks <- renderText({
                 path <- "shiny_saves/past_saves.txt"
@@ -562,7 +530,6 @@ deServer <- function(input, output, session) {
                 }
             })
             
-            
             output$sampleSelector <- renderUI({
                 if (is.null(samples())) return(NULL)
                 if (is.null(input$samples))
@@ -573,8 +540,7 @@ deServer <- function(input, output, session) {
                     selectInput("samples",
                                 label = "Samples",
                                 choices = samp, multiple = TRUE,
-                                selected = samp,
-                                width = "100%")
+                                selected = samp)
                 )
             })
             output$batchEffect <- renderUI({
@@ -583,17 +549,16 @@ deServer <- function(input, output, session) {
                 }
             })
             output$conditionSelector <- renderUI({
-                selectConditions(isolate(Dataset()), isolate(choicecounter), isolate(input))
+                selectConditions(Dataset(), choicecounter, input)
             })
             dc <- reactive({
                 dc <- NULL
                 if (buttonValues$startDE == TRUE){
-                    dc <- prepDataContainer(isolate(Dataset()), choicecounter$nc,
+                    dc <- prepDataContainer(Dataset(), choicecounter$nc, 
                                             isolate(input))
                 }
                 dc
             })
-            
             observeEvent(input$bookmark_before_startDE, {
                 session$doBookmark()
             })
@@ -602,14 +567,12 @@ deServer <- function(input, output, session) {
                 shinyjs::hide("save_state")
                 session$doBookmark()
             })
-            
             observeEvent(input$startDE, {
                 buttonValues$startDE <- TRUE
                 buttonValues$goQCplots <- FALSE
-                init_data <- NULL
+                init_data <- NULL 
                 togglePanels(1, c( 0, 1, 2, 3, 4), session)
                 choicecounter$qc <- 0
-                session$doBookmark()
             })
             observeEvent(input$goQCplots, {
                 choicecounter$qc <- 1
@@ -625,9 +588,9 @@ deServer <- function(input, output, session) {
             })
             conds <- reactive({ comparison()$conds })
             cols <- reactive({ comparison()$cols })
-            init_data <- reactive({
+            init_data <- reactive({ 
                 if (!is.null(comparison()$init_data))
-                    comparison()$init_data
+                    comparison()$init_data 
                 else
                     qcdata()
             })
@@ -638,10 +601,10 @@ deServer <- function(input, output, session) {
                     applyFilters(init_data(), isolate(cols()), isolate(conds()),
                                  input)
             })
-            randstr <- reactive({
+            randstr <- reactive({ 
                 a<-NULL
                 if (!is.null(selected$data$randstr))
-                    a<-selected$data$randstr()
+                    a<-selected$data$randstr() 
                 a
             })
             selected <- reactiveValues(data = NULL)
@@ -657,13 +620,13 @@ deServer <- function(input, output, session) {
             condmsg <- reactiveValues(text = NULL)
             observeEvent(input$startPlots, {
                 compselect <- 1
-                if (!is.null(input$compselect) )
+                if (!is.null(input$compselect) ) 
                     compselect <- as.integer(input$compselect)
-                if (!is.null(isolate(filt_data())) && !is.null(input$padjtxt) &&
+                if (!is.null(isolate(filt_data())) && !is.null(input$padjtxt) && 
                     !is.null(input$foldChangetxt)) {
                     condmsg$text <- getCondMsg(isolate(dc()), input$compselect,
                                                isolate(cols()), isolate(conds()))
-                    selected$data <- getMainPanelPlots(isolate(filt_data()),
+                    selected$data <- getMainPanelPlots(isolate(filt_data()), 
                                                        isolate(cols()), isolate(conds()), input, compselect)
                 }
             })
@@ -672,13 +635,14 @@ deServer <- function(input, output, session) {
             })
             edat <- reactiveValues(val = NULL)
             output$qcplotout <- renderPlot({
-                if (!is.null(input$col_list) || !is.null(isolate(df_select())))
-                    updateTextInput(session, "dataset",
+                if (!is.null(input$col_list) || !is.null(isolate(df_select()))){
+                    updateTextInput(session, "dataset", 
                                     value =  choicecounter$lastselecteddataset)
-                edat$val <- explainedData()
-                getQCReplot(isolate(cols()), isolate(conds()),
-                            df_select(), isolate(input), inputQCPlot(),
-                            drawPCAExplained(edat$val$plotdata) )
+                    edat$val <- explainedData()
+                    getQCReplot(isolate(cols()), isolate(conds()), 
+                                df_select(), isolate(input), inputQCPlot(),
+                                drawPCAExplained(edat$val$plotdata) )
+                }
             })
             df_select <- reactive({
                 if (!is.null(isolate(Dataset())))
@@ -694,12 +658,9 @@ deServer <- function(input, output, session) {
             output$columnSelForHeatmap <- renderUI({
                 wellPanel(id = "tPanel",
                           style = "overflow-y:scroll; max-height: 200px",
-                          shinydashboard::menuItem("Select Columns",
-                                                   icon = icon("star-o"),
-                                                   checkboxGroupInput("col_list", "Select col to include:",
-                                                                      isolate(input$samples),
-                                                                      selected=isolate(input$samples))
-                          )
+                          checkboxGroupInput("col_list", "Select col to include:",
+                                             isolate(input$samples), 
+                                             selected=isolate(input$samples))
                 )
             })
             
@@ -708,8 +669,7 @@ deServer <- function(input, output, session) {
             })
             
             inputQCPlot <- reactiveValues(clustering_method = "ward.D2",
-                                          distance_method = "cor", interactive = FALSE, width = 700,
-                                          height = 500)
+                                          distance_method = "cor", interactive = FALSE, width = 700, height = 500)
             inputQCPlot <- eventReactive(input$startQCPlot, {
                 m <- c()
                 m$clustering_method <- input$clustering_method
@@ -835,12 +795,12 @@ deServer <- function(input, output, session) {
                     mergedCompDat <- NULL
                     if (input$dataset == "comparisons")
                         mergedCompDat <- mergedComp()
-                    m <- getSelectedDatasetInput(filt_data(),
+                    m <- getSelectedDatasetInput(filt_data(), 
                                                  selected$data$getSelected(), getMostVaried(),
                                                  mergedCompDat, isolate(edat$val$pcaset), input)
                 }
                 else
-                    m <- getSelectedDatasetInput(init_data(),
+                    m <- getSelectedDatasetInput(init_data(), 
                                                  getMostVaried = getMostVaried(),
                                                  explainedData = isolate(edat$val$pcaset),
                                                  input = input)
@@ -873,7 +833,7 @@ deServer <- function(input, output, session) {
                 paste(input$qcplot, ".pdf", sep = "")
             }, content = function(file) {
                 if (choicecounter$qc == 0)
-                    saveQCPlot(file, input, datasetInput(),
+                    saveQCPlot(file, input, datasetInput(), 
                                cols(), conds(), inputQCPlot())
                 else
                     saveQCPlot(file, input, datasetInput(),
@@ -896,4 +856,4 @@ deServer <- function(input, output, session) {
             cat("in warn handler")
             message(warningCondition)
         })
-    }
+}
