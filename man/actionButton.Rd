@@ -8,13 +8,13 @@ actionButton(inputId, label, styleclass = "", size = "", block = FALSE,
   icon = NULL, css.class = "", ...)
 }
 \arguments{
-\item{inputId}{Specifies the input slot that will be used to access the 
+\item{inputId}{Specifies the input slot that will be used to access the
 value.}
 
-\item{label}{The contents of the button--usually a text label, but you could 
+\item{label}{The contents of the button--usually a text label, but you could
 also use any other HTML, like an image.}
 
-\item{styleclass}{The Bootstrap styling class of the button--options are 
+\item{styleclass}{The Bootstrap styling class of the button--options are
 primary, info, success, warning, danger, inverse, link or blank}
 
 \item{size}{The size of the button--options are large, small, mini}
@@ -23,7 +23,7 @@ primary, info, success, warning, danger, inverse, link or blank}
 
 \item{icon}{Display an icon for the button}
 
-\item{css.class}{Any additional CSS class one wishes to add to the action 
+\item{css.class}{Any additional CSS class one wishes to add to the action
 button}
 
 \item{...}{Other argument to feed into shiny::actionButton}
