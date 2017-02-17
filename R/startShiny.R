@@ -53,6 +53,10 @@ startDEBrowser <- function(){
         startup_obj$bookmark_counter <- 1
         startup_obj$startup_bookmark <- ""
         saveRDS(startup_obj, "shiny_saves/startup.rds")
+        
+        # to assign username as 'local' from startDEBrowser() call
+        .GlobalEnv$.startdebrowser.called <- "1"
+        on.exit(rm(.startdebrowser.called, envir=.GlobalEnv))
             
         app <- shinyApp( ui = shinyUI(deUI),
                     server = shinyServer(deServer), 

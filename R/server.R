@@ -78,32 +78,48 @@
 #' @import googleAuthR
 #' @import devtools
 
+
+
 deServer <- function(input, output, session) {
     enableBookmarking("server")
-    installpack("googleID", github = "UMMS-Biocore/googleID")
-    options("googleAuthR.webapp.client_id" = "850223937079-t620nr1rdi48fl19tpur500qojao8l24.apps.googleusercontent.com")
-    options("googleAuthR.webapp.client_secret" = "z7PteMYITcBHnvtRGcU9m9n9")
+    # library(debrowser)
+    tryCatch(
+    {
+        if (!interactive()) {
+            options( shiny.maxRequestSize = 30 * 1024 ^ 2,
+                    shiny.fullstacktrace = FALSE, shiny.trace=FALSE, 
+                     shiny.autoreload=TRUE)
+            library(debrowser)
+            
+        }
+    shinyjs::js$setButtonHref()
+    if(exists(".startdebrowser.called")){
+        shinyjs::hide("logout")
+    }
+        
+    library("googleID")
+    # devtools::install_github("trestletech/shinyStore")
+    options("googleAuthR.webapp.client_id" = "186441708690-n65idoo8t19ghi7ieopat6mlqkht9jts.apps.googleusercontent.com")
+    options("googleAuthR.webapp.client_secret" = "ulK-sj8bhvduC9kLU4VQl5ih")
     options(googleAuthR.scopes.selected = c("https://www.googleapis.com/auth/userinfo.email",
                                             "https://www.googleapis.com/auth/userinfo.profile"))
     
-    access_token <- callModule(googleAuth, "example1")
+    access_token <- callModule(googleAuthR::googleAuth, "initial_google_button")
     ## to use in a shiny app:
     user_details <- reactive({
         if(!is.null(access_token())){
-            with_shiny(get_user_info, shiny_access_token = access_token())
+            googleAuthR::with_shiny(get_user_info, shiny_access_token = access_token())
         }
     })
     
     output$user_name <- renderText({
-        if(!is.null(user_details())){
-            user_details()$displayName
+        if(exists(".startdebrowser.called")){
+            return("local")
         }
-        
+        loadingJSON$username
     })
     
 
-    tryCatch(
-    {
         # username_to_add <- parseQueryString(session$clientData$url_search)[['username']]
         # if(username_to_add != ""){
         #     username_to_add <- paste0("?username=", username_to_add)
@@ -154,6 +170,12 @@ deServer <- function(input, output, session) {
             
         if(file.exists(past_saves_path)){
             if(file.size(past_saves_path) > 0){
+                query <- parseQueryString(session$clientData$url_search)
+                json_addition <- ""
+                if(!is.null(query$jsonobject)){
+                    json_addition <- "&jsonobject=saved"
+                }
+                
                 conn <- file(past_saves_path,open="r")
                 lines <- readLines(conn)
                 bookmark_count <- length(lines)
@@ -168,13 +190,17 @@ deServer <- function(input, output, session) {
                         to_show <- lines[i]
                         user_addition <- ""
                     }
+                    
                     output[[paste0('bookmark', i)]] <- renderUI({
                         list(
-                            a(paste0(to_show), target='_blank', class="bm_id",
-                              href= paste0("?_state_id_=", lines[i], user_addition)),
-                            a(href="#", id=paste0("remove_bm", i), class="removebm",
-                              img(src="www/images/delete_button.png"),
-                              onclick=paste0('remove_bookmark("',  lines[i], '")'))
+                            a(paste0(to_show), class="bm_id",
+                                href= paste0("?_state_id_=", lines[i],
+                                    user_addition, json_addition)),
+                            a(href="#", id=paste0("remove_bm", i), 
+                                class="removebm",
+                                img(src="www/images/delete_button.png"),
+                                onclick=paste0('remove_bookmark("',  
+                                    lines[i], '")'))
                         )
                     })
                 })
@@ -186,7 +212,7 @@ deServer <- function(input, output, session) {
         })
         
         # To hide the panels from 1 to 4 and only show Data Prep
-        #togglePanels(0, c(0), session)
+        togglePanels(0, c(0), session)
         
         ###############################################################
         #     Helper to copy the bookmark to a user named directory   #
@@ -293,21 +319,28 @@ deServer <- function(input, output, session) {
                         if(file.exists(old_json_path)){
                             file.copy(old_json_path, paste0("shiny_bookmarks/", chosen_link, "/file1.JSON"))
                         }
-                        old_tsv_path <- paste0("shiny_bookmarks/", old_bookmark_id, "/file1.tsv")
+                        old_tsv_path <- paste0("shiny_bookmarks/",
+                                               old_bookmark_id, "/file1.tsv")
                         if(file.exists(old_tsv_path)){
                             file.copy(old_tsv_path, paste0("shiny_bookmarks/", 
-                                                           chosen_link, "/file1.tsv"), overwrite = TRUE)
+                                chosen_link, "/file1.tsv"), overwrite = TRUE)
                         }    
 
+                        query <- parseQueryString(session$clientData$url_search)
+                        json_addition <- ""
+                        if(!is.null(query$jsonobject)){
+                            json_addition <- "&jsonobject=saved"
+                        }
                         
                         bm_link <- paste0('<p style="margin-left: 27px;">New Save:</p><a style="margin: 27px;" ',
-                                          'target="_blank" href="?_state_id_=',
-                                          chosen_link, user_addition, '">', chosen_name, '</a>')
+                                          ' href="?_state_id_=',
+                            chosen_link, user_addition, 
+                            json_addition, '">', chosen_name, '</a>')
 
                         output$new_bookmark <- renderText({bm_link})
                         shinyjs::show("save_state")
                         to_display <- paste0("Successfully saved. ",
-                                             "URL updated with your choice to access later.")
+                            "URL updated with your choice to access later.")
                     } else {
                         to_display <- "Something went wrong with the save."
                     }
@@ -421,9 +454,14 @@ deServer <- function(input, output, session) {
             } else {
                 startup <- list()
             }
-            dir.create("shiny_saves")
-            dir.create(paste0("shiny_saves/", loadingJSON$username))
-
+            if(!file.exists("shiny_saves")){
+                dir.create("shiny_saves")
+            }
+            shiny_saves_dir <- paste0("shiny_saves/", loadingJSON$username)
+            if(!file.exists(shiny_saves_dir)){
+                dir.create(shiny_saves_dir)
+            }
+                
             
             startup[['startup_bookmark']] <- get_state_id(url)
             saveRDS(startup, startup_path)
@@ -436,21 +474,65 @@ deServer <- function(input, output, session) {
         
         # Read values from state$values when we restore
         onRestore(function(state) {
-            user_email <- user_details()$emails$value
-            username_from_email <- gsub("[[:punct:]]", "", user_email)
-            if(!is.null(user_email) && (username_from_email != "")){
-                loadingJSON$username <- username_from_email
+            log_out <- parseQueryString(session$clientData$url_search)[['logout']]
+            if(!is.null(log_out) && (log_out != "")){
+                shinyStore::updateStore(session, "text",
+                                        isolate(""))
+            } else {
+            json_obj <- parseQueryString(session$clientData$url_search)[['jsonobject']]
+            # coming from json
+            if(!is.null(json_obj) && (json_obj != "")){
+                loadingJSON$username <- parseQueryString(session$clientData$url_search)[['username']]
+            } else{
+                user_email <- user_details()$emails$value
+                username_from_email <- gsub("[[:punct:]]", "", user_email)
+                # just logged in via google
+                if(!is.null(user_email) && (username_from_email != "")){
+                    loadingJSON$username <- username_from_email
+                    shinyStore::updateStore(session, "text",
+                                            isolate(loadingJSON$username))
+                    
+                } else{
+                    # Check local storage
+                    if(!is.null(input$store$text) && (input$store$text != "")){
+                        start_state <- parseQueryString(session$clientData$url_search)[['start']]
+                        if(!is.null(start_state) && (start_state != "") &&
+                           start_state == "true"){
+                            loadingJSON$username <- input$store$text
+                        }
+                        else{
+                            state_id_current <- parseQueryString(session$clientData$url_search)[['_state_id_']]
+                            if(!is.null(state_id_current) && (state_id_current != "") &
+                               !grepl(input$store$text, state_id_current)){
+                                # Someone is trying to restore someone else's bookmark
+                            } else{
+                                # Own bookmark
+                                loadingJSON$username <- input$store$text
+                            }
+                        }
+                    }
+                }
             }
+            
 
             cat(paste0("RESTORE++++++++++++++++++++++++++++++++++++++++++++++",
                        " nc ", choicecounter$nc, "qc ", choicecounter$qc, "\n"))
             query_list <- parseQueryString(session$clientData$url_search)
             
-            username_from_url <- parseQueryString(session$clientData$url_search)$username
-            if(!is.null(username_from_url) && (username_from_url != "")){
-                loadingJSON$username <- username_from_url
+            
+            # username_from_url <- parseQueryString(session$clientData$url_search)$username
+            # bookmark_from_url <- parseQueryString(session$clientData$url_search)[['_state_id_']]
+            # if(!is.null(username_from_url) && (username_from_url != "")){
+            #     if(!is.null(bookmark_from_url) && (bookmark_from_url != "")
+            #        && file.exists(paste0("shiny_bookmarks/", bookmark_from_url)) ){
+            #         loadingJSON$username <- username_from_url
+            #     }
+            # }
+            dir_to_create <- paste0("shiny_saves/", loadingJSON$username)
+            if(!file.exists(dir_to_create)){
+                dir.create(dir_to_create)
             }
-            dir.create(paste0("shiny_saves/", loadingJSON$username))
+            
 
             startup_path <- "shiny_saves/startup.rds"
             if(!is.null(loadingJSON$username) && loadingJSON$username != ""){
@@ -478,7 +560,7 @@ deServer <- function(input, output, session) {
                     shinyjs::enable("startDE")
                 }
                 cat("url_search", session$clientData$url_search, "\n")
-            }
+            }}
 
             cat("Restoring ", "\n")
         })
@@ -486,14 +568,6 @@ deServer <- function(input, output, session) {
         onRestored(function(state) {
             cat("here")
         })
-                if (!interactive()) {
-                options( shiny.maxRequestSize = 30 * 1024 ^ 2,
-                         shiny.fullstacktrace = FALSE, shiny.trace=TRUE, 
-                         shiny.autoreload=TRUE)
-                #library(debrowser)
-                #library(d3heatmap)
-                #library(edgeR)
-            }
             observeEvent(input$stopApp, {
                 stopApp(returnValue = invisible())
             })

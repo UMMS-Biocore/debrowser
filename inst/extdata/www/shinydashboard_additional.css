@@ -1,3 +1,9 @@
+html, body
+{
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
 #university-name {
     text-align: left;
 }
@@ -20,6 +26,10 @@
 
 #past_named_bookmarks{
     margin: 27px 27px 0 27px !important;
+}
+
+#refresh{
+    margin: 15px;
 }
 
 
