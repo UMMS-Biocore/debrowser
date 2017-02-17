@@ -30,7 +30,7 @@ load_data <- function (input = NULL, session = NULL) {
     if(file.exists(existing_json_path)){
         jsonobj <- existing_json_path
     }
-    if (!is.null(jsonobj))
+    if (!is.null(jsonobj) && (jsonobj != "saved"))
     {
         jsondata<-data.frame(fromJSON(jsonobj, simplifyDataFrame = TRUE),
                              stringsAsFactors = TRUE)
