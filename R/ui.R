@@ -17,8 +17,10 @@ deUI <- function() {
         shinyjs.setButtonHref = function(params) {
             var current_url = window.location.href.split(\"?\")[0];
             top_logo.href = current_url + "?start=true";
-            document.getElementsByClassName("fa fa-sign-out")[0].parentElement.setAttribute("href", current_url);
-            document.getElementsByClassName("fa fa-refresh")[0].parentElement.setAttribute("href", current_url + "?start=true"); 
+            document.getElementsByClassName("fa fa-sign-out")[0].parentElement.setAttribute("href", current_url + "?logout=true");
+            document.getElementsByClassName("fa fa-refresh")[0].parentElement.setAttribute("href", current_url + "?start=true");
+            document.getElementsByClassName("header")[0].innerHTML = "";
+            document.getElementsByClassName("label-primary")[0].innerHTML = "";
     }'
     
 enableBookmarking("server")
@@ -42,7 +44,7 @@ enableBookmarking("server")
 
     dbHeader <- shinydashboard::dashboardHeader(titleWidth = 350,
         shinydashboard::dropdownMenu(type = "notifications", 
-            badgeStatus = "primary", icon = shiny::icon("user-circle-o"),
+            badgeStatus = "primary", icon = shiny::icon("cog"),
             shinydashboard::messageItem("Sign Out", "",
                                         icon = shiny::icon("sign-out")),
             shinydashboard::messageItem("Refresh", "", 

@@ -474,6 +474,11 @@ deServer <- function(input, output, session) {
         
         # Read values from state$values when we restore
         onRestore(function(state) {
+            log_out <- parseQueryString(session$clientData$url_search)[['logout']]
+            if(!is.null(log_out) && (log_out != "")){
+                shinyStore::updateStore(session, "text",
+                                        isolate(""))
+            } else {
             json_obj <- parseQueryString(session$clientData$url_search)[['jsonobject']]
             # coming from json
             if(!is.null(json_obj) && (json_obj != "")){
@@ -555,7 +560,7 @@ deServer <- function(input, output, session) {
                     shinyjs::enable("startDE")
                 }
                 cat("url_search", session$clientData$url_search, "\n")
-            }
+            }}
 
             cat("Restoring ", "\n")
         })
