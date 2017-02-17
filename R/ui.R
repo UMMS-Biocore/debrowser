@@ -16,9 +16,7 @@ deUI <- function() {
     getUrlJSCode <- '
         shinyjs.setButtonHref = function(params) {
             var current_url = window.location.href.split(\"?\")[0];
-            refresh.href = current_url + "?start=true";
             top_logo.href = current_url + "?start=true";
-            logout.href = current_url;
             document.getElementsByClassName("fa fa-sign-out")[0].parentElement.setAttribute("href", current_url);
             document.getElementsByClassName("fa fa-refresh")[0].parentElement.setAttribute("href", current_url + "?start=true"); 
     }'
