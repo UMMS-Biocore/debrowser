@@ -62,8 +62,7 @@ a <- list(
             getMainPlotsLeftMenu()),
         conditionalPanel( (condition <- "input.methodtabs=='panel2'"),
                           
-            conditionalPanel( (condition <- "(input.qcplot=='all2all' ||
-                input.qcplot=='heatmap') && !(input.interactive)"),
+            conditionalPanel( condition <- "input.qcplot=='heatmap'",
                 actionButton("startQCPlot", "Submit!")),
                           
         shinydashboard::menuItem(" Plot Type", icon = icon("star-o"),
@@ -98,9 +97,11 @@ a <- list(
 #'
 getMainPlotsLeftMenu <- function() {
     a <- list(
+        shinydashboard::menuItem(" Background Selection", icon = icon("star-o"),
+                                 
               sliderInput("backperc", "Background Data(%):",
                           min=10, max=100, value=10, sep = "",
-                          animate = FALSE)
+                          animate = FALSE))
              )
 }
 
@@ -193,7 +194,8 @@ getColorShapeSelection <- function(input = NULL) {
 getQCLeftMenu <- function( input = NULL) {
     if (is.null(input)) return(NULL)
     a <- list(
-            uiOutput("columnSelForHeatmap"),
+        shinydashboard::menuItem(" Select Columns", icon = icon("star-o"),
+            uiOutput("columnSelForHeatmap")),
             conditionalPanel( (condition <- "input.qcplot=='heatmap'"),
                  checkboxInput("interactive", "Interactive", value = FALSE)),
             conditionalPanel( (condition <- "(input.qcplot=='all2all' ||
