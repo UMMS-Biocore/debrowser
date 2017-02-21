@@ -1,6 +1,6 @@
 ---
 title: "DEBrowser user guide"
-author: "Alper Kucukural, Nicholas Merowsky"
+author: "Alper Kucukural, Berk Sarioz, Nicholas Merowsky"
 output: BiocStyle::html_document
 vignette: >
     %\VignetteIndexEntry{DEBrowser Vignette}
@@ -207,6 +207,34 @@ continue on to running DESeq2 (Figure 1).
 
 ![*(A) The initial data selection menu.  Intial TSV data is loaded in the 'Choose TSV File' while the optional meta data file is loaded in under 'Choose Mera Data File (Optional)'.  (B) Options list once data/meta data have been loaded in.*](http://debrowser.umassmed.edu/imgs/debrowser_pics/figure_1.png "Initial option selection")
 
+## Metadata Upload
+
+If you prefer to select conditions beforehand, and save them as a TSV file to upload, you have this option
+as of February 2017. You can split up conditions into two groups in a TSV file, and have as many selections as
+you want for different groupings.
+
+To load in the specific file that contains the meta data, at the start of the DEBrowser there will be a
+"Choose Meta Data File (Optional)" which you can then select the meta data file to use for this analysis.
+In the metadata file, you will need to have a sample column as the first column and from then on exactly 2
+groups in each column([cond1, cond2], [1, 2], etc) to be matched to the sample column. Sample TSV:
+
+| sample        | select1      | selection2  |
+|---------------|--------------|-------------|
+| exper_rep1    | cond1	       | 1           |
+| exper_rep2	| cond1	       | 2           |
+| exper_rep3	| cond2        | 1           |
+| control_rep1	| cond2	       | 2           |
+| control_rep2	| cond2	       | 1           |
+| control_rep3	| cond2	       | 2           |
+
+The example above would result in 'select1' having the first set of conditions as {exper_rep1, exper_rep2}
+from 'cond1' and second set of conditions as {exper_rep3, control_rep1, control_rep2, control_rep3} from
+'cond2' as they correspond to those conditions in the 'sample' column.
+
+In the same way, 'selection2' would have the first set as {exper_rep1, exper_rep3, control_rep2} from '1'
+and second set as {exper_rep2, control_rep1, control_rep3} from '2'  as they correspond to those conditions
+in the 'sample' column.
+
 ## Quality Control Information:
 
 Upon selection of QC information, you will be shown an all-to-all plot of your 
@@ -370,6 +398,28 @@ than DESeq2 or EdgeR.
 * **rowsum.filter:**
 	Regions/Genes/Isoforms with total count (across all samples) below this
 	value will be filtered out
+	
+
+# Saving the State
+
+After the file upload is complete and a pair of conditions are selected, "Save Selection!"
+button should appear on the sidebar on the left. If you click this button, you will be able
+to name your save and access it later with the name you choose. There are certain limitations
+on the naming, but you will be given an error message to make the necessary correction as it is
+based on bookmarking functionality of Shiny.
+
+![*Button to save.*](http://debrowser.umassmed.edu/imgs/debrowser_pics/save_selection.png "Save Selection)
+![*Button to name the save.*](http://debrowser.umassmed.edu/imgs/debrowser_pics/name_the_save.png "Name Your Save)
+
+
+Your new save will appear as a clickable link under "New Save:" and as you make more saves, those
+will be available under "History:" after refreshing the page. Only the last 20 saves will appear
+for better user interface, so it is advisable to delete the unused saves by clicking "X" icon.
+
+![*Save successful message.*](http://debrowser.umassmed.edu/imgs/debrowser_pics/save_successful.png "Save Successful)
+
+![*List of saves from history.*](http://debrowser.umassmed.edu/imgs/debrowser_pics/history.png "History)
+
 
 #Analyzing the Results
 

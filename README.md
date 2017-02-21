@@ -1,4 +1,4 @@
-# DEBrowser: 
+# DEBrowser:
 Interactive Differential Expression Analysis Tool
 
 # Introduction
@@ -14,14 +14,14 @@ data from high-throughput sequencing assays such as RNA-Seq and test for
 differential expression (Love et al. 2014).  With multiple parameters such as
 padjust values, log fold changes, plot styles, and so on, altering plots
 created with your DE data can be a hassle as well as time consuming. The
-Differential Expression Browser uses DESeq2 (Love et al., 2014), 
+Differential Expression Browser uses DESeq2 (Love et al., 2014),
 [EdgeR](https://bioconductor.org/packages/release/bioc/html/edgeR.html)
-(Robinson et al., 2010), and 
+(Robinson et al., 2010), and
 [Limma](https://bioconductor.org/packages/release/bioc/html/limma.html)
-(Ritchie et al., 2015) coupled with 
-shiny (Chang, W. et al., 2016)  to produce real-time changes within your 
-plot queries and allows for interactive browsing of your DE results. 
-In addition to DE analysis, DEBrowser also offers a variety of other plots 
+(Ritchie et al., 2015) coupled with
+shiny (Chang, W. et al., 2016)  to produce real-time changes within your
+plot queries and allows for interactive browsing of your DE results.
+In addition to DE analysis, DEBrowser also offers a variety of other plots
 and analysis tools to help visualize your data even further.
 
 ## DEBrowser
@@ -72,10 +72,10 @@ startDEBrowser()
 
 Once you have the DEBrowser running, a page will load asking to choose a TSV
 file or to load the demo data.  In order to run DESeq2, we are going to need
-gene quantifications for genes contained in a tab-separated values (TSV) 
-format. Gene quantifications table can be obtained running standard software 
-like HTSeq (Anders,S. et al, 2014) or RSEM (Li and Dewey, 2011). The file 
-values must contain the gene, transcript(s), and the sample raw count values 
+gene quantifications for genes contained in a tab-separated values (TSV)
+format. Gene quantifications table can be obtained running standard software
+like HTSeq (Anders,S. et al, 2014) or RSEM (Li and Dewey, 2011). The file
+values must contain the gene, transcript(s), and the sample raw count values
 you wish to enter into DEBrowser.
 
 It's important to note that if your rows contain duplicate gene names,
@@ -90,7 +90,7 @@ sample file looks like:
 
 You can also view/use the demo data by clicking the 'Load Demo!' text as an
 example.  For the case study demo data, feel free to download our case study
-demo files at http://bioinfo.umassmed.edu/pub/debrowser/advanced_demo.tsv or 
+demo files at http://bioinfo.umassmed.edu/pub/debrowser/advanced_demo.tsv or
 a simplified version http://bioinfo.umassmed.edu/pub/debrowser/simple_demo.tsv.
 Please also note that, DEBrowser skips second column and starts reading the quantification values from the 3rd column.
 
@@ -108,7 +108,7 @@ The Two parameters it accepts (and examples) are:
 
 	1. source=http://bioinfo.umassmed.edu/pub/debrowser/advanced_demo.tsv
 	2. format=JSON
-	
+
 Leaving you with a hyperlink for:
 
 ```
@@ -168,30 +168,58 @@ You can have as many conditions as you may require, as long as all of the sample
 data TSV file, DEBrowser uses ComBat (part of the SVA bioconductor package) to adjust for possible batch effect or conditional biases.  For more information
 about ComBat within the SVA package you can visit here: https://bioconductor.org/packages/release/bioc/vignettes/sva/inst/doc/sva.pdf.
 
-To load in the specific file that contains the batch meta data, at the start of the DEBrowser there will be a 
+To load in the specific file that contains the batch meta data, at the start of the DEBrowser there will be a
 "Choose Meta Data File (Optional)" which you can then select the batch meta data file to use for this analysis.
 Upon meta-data loading, you will then be able to select from a drop down box that will specify which condition
 column you want to use for analysis.
 
-After obtaining and loading in the gene quantifications file, and if specified the 
+After obtaining and loading in the gene quantifications file, and if specified the
 meta data file containing your batch correction fields, you
-then have the option to view QC information of your quantifications or you can 
+then have the option to view QC information of your quantifications or you can
 continue on to running DESeq2 (Figure 1).
 
 ![*(A) The initial data selection menu.  Intial TSV data is loaded in the 'Choose TSV File' while the optional meta data file is loaded in under 'Choose Mera Data File (Optional)'.  (B) Options list once data/meta data have been loaded in.*](http://debrowser.umassmed.edu/imgs/debrowser_pics/figure_1.png "Initial option selection")
 
+## Metadata Upload
+
+If you prefer to select conditions beforehand, and save them as a TSV file to upload, you have this option
+as of February 2017. You can split up conditions into two groups in a TSV file, and have as many selections as
+you want for different groupings.
+
+To load in the specific file that contains the meta data, at the start of the DEBrowser there will be a
+"Choose Meta Data File (Optional)" which you can then select the meta data file to use for this analysis.
+In the metadata file, you will need to have a sample column as the first column and from then on exactly 2
+groups in each column([cond1, cond2], [1, 2], etc) to be matched to the sample column. Sample TSV:
+
+| sample        | select1      | selection2  |
+|---------------|--------------|-------------|
+| exper_rep1    | cond1	       | 1           |
+| exper_rep2	  | cond1	       | 2           |
+| exper_rep3	  | cond2        | 1           |
+| control_rep1	| cond2	       | 2           |
+| control_rep2	| cond2	       | 1           |
+| control_rep3	| cond2	       | 2           |
+
+The example above would result in 'select1' having the first set of conditions as {exper_rep1, exper_rep2}
+from 'cond1' and second set of conditions as {exper_rep3, control_rep1, control_rep2, control_rep3} from
+'cond2' as they correspond to those conditions in the 'sample' column.
+
+In the same way, 'selection2' would have the first set as {exper_rep1, exper_rep3, control_rep2} from '1'
+and second set as {exper_rep2, control_rep1, control_rep3} from '2'  as they correspond to those conditions
+in the 'sample' column.
+
 ## Quality Control Information:
 
-Upon selection of QC information, you will be shown an all-to-all plot of your 
-samples (Figure 2). This sample-by-sample comparison will help you visualize possible 
-discrepancies between replicate samples, in case you may want to omit them 
+Upon selection of QC information, you will be shown an all-to-all plot of your
+samples (Figure 2). This sample-by-sample comparison will help you visualize possible
+discrepancies between replicate samples, in case you may want to omit them
 for further analysis.  This graph includes sample-to-sample dotplot correlations
-as well as sample histograms. To the left of this plot are various plot-shaping 
+as well as sample histograms. To the left of this plot are various plot-shaping
 options you can alter to more easily view the all-to-all plot.
 
 Additionally, two more QC plots are available for you to use: heatmap and
 PCA plots.  The heatmap (Figure 3) will display genes for each sample within your dataset
-in the form of a heatmap based on your dataset selection and PCA (Figure 4) 
+in the form of a heatmap based on your dataset selection and PCA (Figure 4)
 will display Principal component analysis of your dataset.
 Additionally, you can view the IRQ (Interquartile  Range) for both your raw data and your
 data after normalization (Figure 5).  You can also view a density plot for your
@@ -200,13 +228,13 @@ IQR and Density plots are another great visualization too to help you spot
 outliers within your sample data incase you want to remove or look into
 any possible discrepancies.
 
-All of these plots will aid in viewing your preliminary data to see if 
-there are any potential errors between replicates or batch effects 
-(Reese et. al, 2013; Risso et al., 2014). You have the option of viewing an 
-interactive heatmap by selecting the 'Interactive' checkbox in the left side 
-panel when you have selected the Heatmap option.  This Interactive heatmap will 
+All of these plots will aid in viewing your preliminary data to see if
+there are any potential errors between replicates or batch effects
+(Reese et. al, 2013; Risso et al., 2014). You have the option of viewing an
+interactive heatmap by selecting the 'Interactive' checkbox in the left side
+panel when you have selected the Heatmap option.  This Interactive heatmap will
 display genes as you hover over them for a more in-depth understanding.  
-You can select these various plot options by selecting the type of plot you 
+You can select these various plot options by selecting the type of plot you
 wish to view on the left panel.
 
 ![*Display of the all-to-all plot in the initial QC plots page.*](http://debrowser.umassmed.edu/imgs/debrowser_pics/figure_2.png "QC plots")
@@ -234,7 +262,7 @@ from the dropdown menu on the left.
 
 Upon selecting to run DESeq, you are then able to select
 which samples will be used within your differential expression analysis
-By clicking the 'Add New Comparison' button, you can add as many different 
+By clicking the 'Add New Comparison' button, you can add as many different
 sample comparisons as you want.  To alter the samples within each comparison,
 you can click on a sample and press delete to remove it or you can click the empty
 whitespace within the tab to bring a dropdown of samples to select from.
@@ -344,6 +372,31 @@ than DESeq2 or EdgeR.
 	Regions/Genes/Isoforms with total count (across all samples) below this
 	value will be filtered out
 
+# Saving the State
+
+After the file upload is complete and a pair of conditions are selected, "Save Selection!"
+button should appear on the sidebar on the left. If you click this button, you will be able
+to name your save and access it later with the name you choose. There are certain limitations
+on the naming, but you will be given an error message to make the necessary correction as it is
+based on bookmarking functionality of Shiny.
+
+Your new save will appear as a clickable link under "New Save:" and as you make more saves, those
+will be available under "History:" after refreshing the page. Only the last 20 saves will appear
+for better user interface, so it is advisable to delete the unused saves by clicking "X" icon.
+
+## Google Login
+
+If you start up the shiny server using startDEBrowser(), you will automatically be logged in as 'local'.
+However, if you use the runApp() command to start the server, you'll be asked to log in using a
+Google account. This is to ensure the past saves correspond to the right person. You can log in using
+any Google account, and then give permission to the DEBrowser to log in for the first time.
+
+Once you are done using DEBrowser, you can either choose to stay logged in for your next use or sign out
+to stop access to your account. In order to sign out, click on the gear icon on the top right corner and
+then click on "Sign Out". If you want to start over from the beginning while staying logged in, you can
+click on "Refresh" to go back to the beginning. You will still be able to access your save history when
+you sign out or refresh.
+
 #Analyzing the Results
 
 After clicking on the 'Submit!' button, DESeq2 will analyze your comparisons
@@ -361,7 +414,7 @@ the options panel used to alter the padj and fold change
 cutoff values, what specific data set to use such as up or down regulated
 genes, what comparison dataset you would like to use to plot,
 and what type of plot you would like to view your results in (Figure 10).  
-Comparisons are ordered based on how they were entered by the user and 
+Comparisons are ordered based on how they were entered by the user and
 for information about samples within each comparison are displayed right under
 the option tabs.  Plot choices include:
 
@@ -436,33 +489,33 @@ generate your heatmap.
 	In each step of clustering, closest cluster pairs are always merged up to a specified distance
 	threshold. Distance between clusters for complete link clustering is the maximum of
 	the distances between the members of the clusters.
-	
+
 * **ward D2:**
-	Ward method aims to find compact and spherical clusters. The distance between two clusters 
+	Ward method aims to find compact and spherical clusters. The distance between two clusters
 	is calculated by the sum of squared deviations from points to centroids. "ward.D2" method uses
 	criterion (Murtagh and Legendre 2014) to minimize ward clustering method. The only difference
 	ward.D2 and ward is the dissimilarities from ward method squared before cluster updating. This
 	method tends to be sensitive to the outliers.
 
 * **single:**
-	Distance between clusters for single linkage is the minimum of	the distances between 
+	Distance between clusters for single linkage is the minimum of	the distances between
 	the members of the clusters.
-	
+
 * **average:**
-	Distance between clusters for average linkage is the average of the distances between 
+	Distance between clusters for average linkage is the average of the distances between
 	the members of the clusters.
 
 * **mcquitty:**
-	mcquitty linkage is when two clusters are joined, the distance of the new cluster 
-	to any other cluster is calculated by the average of the distances of the soon to be 
+	mcquitty linkage is when two clusters are joined, the distance of the new cluster
+	to any other cluster is calculated by the average of the distances of the soon to be
 	joined clusters to that other cluster.
-	
+
 * **median:**
 	This is a different averaging method that uses the median instead of the mean.
 	It is used to reduce the effect of outliers.
 
 * **centroid:**
-	The distance between cluster pairs is defined as the Euclidean distance 
+	The distance between cluster pairs is defined as the Euclidean distance
 	between their centroids or means.
 
 ## Used distance methods in heatmap
@@ -472,26 +525,26 @@ generate your heatmap.
 	sensitive to the outliers and scaling.
 
 * **euclidean:**
-	It is the most common use of distance. It is sensitive to the outliers and scaling. 
+	It is the most common use of distance. It is sensitive to the outliers and scaling.
 	It is defined as the square root of the sum of the square differences between gene counts.
 
 * **maximum:**
-	The maximum distance between two samples is the sum of the maximum expression value of the 
+	The maximum distance between two samples is the sum of the maximum expression value of the
 	corresponding genes.
 
 * **manhattan:**
-	The Manhattan distance between two samples is the sum of the differences of their 
+	The Manhattan distance between two samples is the sum of the differences of their
 	corresponding genes.
 
 * **canberra:**
-	Canberra distance is similar to the Manhattan distance and it is a special form of 
-	the Minkowski distance. The difference is that the absolute difference between the 
-	gene counts of the two genes is divided by the sum of the absolute counts 
-	prior to summing. 
-	
+	Canberra distance is similar to the Manhattan distance and it is a special form of
+	the Minkowski distance. The difference is that the absolute difference between the
+	gene counts of the two genes is divided by the sum of the absolute counts
+	prior to summing.
+
 * **minkowsky:**
 	It is generalized form of euclidean distance.
-	 
+
 You can also select to view an interactive version of the heatmap by clicking
 on the 'Interactive' checkbox on the left panel under the height and width
 options.  Selecting this feature changes the heatmap into an interactive
@@ -515,8 +568,8 @@ components.  Within the PCA plot section you can select the p-adjust
 value, fold change cut off value, which comparison set to use, which dataset
 to use, the height and width of the corresponding plots, as well as which
 principal components to analyze by changing the appropriate values on the
-left menu.  If loaded with a batch meta data file, you can select from a 
-specific dropdown within the PCA QC plots in order to group specific points on 
+left menu.  If loaded with a batch meta data file, you can select from a
+specific dropdown within the PCA QC plots in order to group specific points on
 color or shape based on specified groups within your meta data file.
 
 The next tab, 'GO Term', takes you to the ontology comparison portion of
@@ -525,8 +578,8 @@ p-adjust value, fold change cut off value, which comparison set to use, and
 which dataset to use on the left menu.  In addition to these parameters, you
 also can choose from the 4 different ontology plot options: 'enrichGO' (Figure 20-21),
 'Disease' (Figure 22-23), 'enrichKEGG' (Figure 24), and 'compareCluster'.  
-Selecting one of these plot options queries their specific databases with your 
-current DESeq results. By selecting the 'selection' dataset on the left panel after 
+Selecting one of these plot options queries their specific databases with your
+current DESeq results. By selecting the 'selection' dataset on the left panel after
 selecting specific genes from the interactive heatmap, you will be able to compare
 your specific gene selection within the various GO Term databases.
 
@@ -556,7 +609,7 @@ are displayed in red.  To view any particular dataset's custom options,
 the dataset type must be selected.
 
 The 'Up+Down' option contains a list of all the up and down-regulated genes based on the
-options selected on the left panel (Figure 26). 
+options selected on the left panel (Figure 26).
 The 'Up' option contains a list of all the up-regulated genes based on the
 options selected on the left panel.  The 'Down' option contains a list of all
 the down-regulated genes based on the options selected (Figure 27).
@@ -622,9 +675,9 @@ method used within the paper was a k-means method with k equaling 6.
 
 High fat diet JNK1 knock-out and JNK2 knock-out samples compared against high fat
 diet wild type samples showed a stronger effect from JNK2 KO.  
-From the figures below, JNK2 KO has a 
-stronger effect than JNK1 KO samples. There are 177 genes (Figure 33) that have 
-padj < 0.01 and |log2 foldchange| > 1 in the JNK2 KO comparison while there are 
+From the figures below, JNK2 KO has a
+stronger effect than JNK1 KO samples. There are 177 genes (Figure 33) that have
+padj < 0.01 and |log2 foldchange| > 1 in the JNK2 KO comparison while there are
 only 17 genes (Figure 34) detected in the JNK1 KO comparison with the same cutoffs.
 
 ![*High fat diet JNK2 vs. High fat diet wild type.*](http://debrowser.umassmed.edu/imgs/debrowser_pics/figure_33.png "")
@@ -634,14 +687,14 @@ only 17 genes (Figure 34) detected in the JNK1 KO comparison with the same cutof
 **JNK1 and JNK2 serve partially redundant functions:**
 
 High fat diet JNK1 and High fat diet JNK2 double KO has 1018 significantly different genes.
-When we compare HFD JNK1 KO only (177 Genes) and HFD JNK2 KO only (17 genes)  with 
-HFD wild type side-by-side, most of the up and down regulated genes are not 
+When we compare HFD JNK1 KO only (177 Genes) and HFD JNK2 KO only (17 genes)  with
+HFD wild type side-by-side, most of the up and down regulated genes are not
 overlapping.  Up regulated genes (Figure 35.) and down regulated (Figure 36.) in
-JNK1 KO was easy to analyze for these gene comparisons. 
+JNK1 KO was easy to analyze for these gene comparisons.
 There is only 1 gene overlapping out of the 17 that were
-significantly different in JNK1 KO comparisons with padj < 0.01 and 
-|log2foldchange| > 1 cutoffs.  It shows that both individual KO might have 
-individual functions in addition to their redundant functions. 
+significantly different in JNK1 KO comparisons with padj < 0.01 and
+|log2foldchange| > 1 cutoffs.  It shows that both individual KO might have
+individual functions in addition to their redundant functions.
 When we looked at the genes in JNK1 KO in the KEGG database,  they are enriched
 in "Fatty acid elongation”. JNK2 KO are enriched in "PPAR signaling pathway”
 and "Biosynthesis of unsaturated fatty acids”. DEBrowser’s powerful comparison
@@ -689,7 +742,7 @@ Figures 41-44, we show both before batch and after batch correction IQR plots an
 
 Future plans will include the following:
 
-	* Venn Diagrams to compare overlapping differentially expressed genes in different 
+	* Venn Diagrams to compare overlapping differentially expressed genes in different
 	  condition comparison results.
 	* Increase in the number of used clustering methods.
 	* GO term analysis gene lists will be added for found GO categories.

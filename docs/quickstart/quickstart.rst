@@ -54,7 +54,7 @@ The Two parameters it accepts (and examples) are:
 
 	1. source=http://bioinfo.umassmed.edu/pub/debrowser/advanced_demo.tsv
 	2. format=JSON
-	
+
 Leaving you with a hyperlink for:
 
 *http://dolphin.umassmed.edu/public/api/?source=http://bioinfo.umass*
@@ -80,9 +80,9 @@ Now this link can be be used in debrowser as:
 It accepts two parameters:
 
 	1. *jsonobject=http%3A%2F%2Fdolphin.umassmed.edu%2Fpublic%2Fapi%2F%3F*
-	
+
 	   *source%3Dhttp%3A%2F%2Fbioinfo.umassmed.edu%2Fpub%2Fdebrowser%2F*
-	   
+
 	   *advanced_demo.tsv%26format%3DJSON*
 	2. *title=no*
 
@@ -117,12 +117,12 @@ about ComBat within the SVA package you can visit here: `ComBat`_.
 
 .. _ComBat: https://bioconductor.org/packages/release/bioc/vignettes/sva/inst/doc/sva.pdf
 
-To load in the specific file that contains the batch meta data, at the start of the DEBrowser there will be a 
+To load in the specific file that contains the batch meta data, at the start of the DEBrowser there will be a
 "Choose Meta Data File (Optional)" which you can then select the batch meta data file to use for this analysis.
-Upon meta-data loading, you will then be able to select from a drop down box that will specify which 
+Upon meta-data loading, you will then be able to select from a drop down box that will specify which
 column you want to use for analysis.
 
-After obtaining and loading in the gene quantifications file, and if specified the 
+After obtaining and loading in the gene quantifications file, and if specified the
 meta data file containing your batch correction fields, you then have the option to view QC information of your
 quantifications or you can continue on to running DEBrowser.
 
@@ -163,16 +163,16 @@ left menu.
 
 .. image:: ../debrowser_pics/intro_qc_all2all.png
 	:align: center
-	
+
 .. image:: ../debrowser_pics/intro_qc_heatmap.png
 	:align: center
-	
+
 .. image:: ../debrowser_pics/intro_qc_pca.png
 	:align: center
-	
+
 .. image:: ../debrowser_pics/iqr_plot.png
 	:align: center
-	
+
 .. image:: ../debrowser_pics/density_plot.png
 	:align: center
 
@@ -186,6 +186,35 @@ button on the 'Data Prep' page.
 
 Once you are happy with your dataset and you have selected your conditions within the 'DE Analysis' section,
 you can then hit 'Submit!' to begin.
+
+Metadata Upload
+===============
+
+If you prefer to select conditions beforehand, and save them as a TSV file to upload, you have this option
+as of February 2017. You can split up conditions into two groups in a TSV file, and have as many selections as
+you want for different groupings.
+
+To load in the specific file that contains the meta data, at the start of the DEBrowser there will be a
+"Choose Meta Data File (Optional)" which you can then select the meta data file to use for this analysis.
+In the metadata file, you will need to have a sample column as the first column and from then on exactly 2
+groups in each column([cond1, cond2], [1, 2], etc) to be matched to the sample column. Sample TSV:
+
+| sample        | select1      | selection2  |
+|---------------|--------------|-------------|
+| exper_rep1    | cond1	       | 1           |
+| exper_rep2	  | cond1	       | 2           |
+| exper_rep3	  | cond2        | 1           |
+| control_rep1	| cond2	       | 2           |
+| control_rep2	| cond2	       | 1           |
+| control_rep3	| cond2	       | 2           |
+
+The example above would result in 'select1' having the first set of conditions as {exper_rep1, exper_rep2}
+from 'cond1' and second set of conditions as {exper_rep3, control_rep1, control_rep2, control_rep3} from
+'cond2' as they correspond to those conditions in the 'sample' column.
+
+In the same way, 'selection2' would have the first set as {exper_rep1, exper_rep3, control_rep2} from '1'
+and second set as {exper_rep2, control_rep1, control_rep3} from '2'  as they correspond to those conditions
+in the 'sample' column.
 
 The Main Plots
 ==============
@@ -212,33 +241,33 @@ Volcano plot
 
 .. image:: ../debrowser_pics/volcano.png
 	:align: center
-	
+
 MA plot
 
 .. image:: ../debrowser_pics/ma.png
 	:align: center
-	
+
 You can hover over the scatterplot points to display more information about the point selected.
 A few bargraphs will be generated for the user to view as soon as a scatterplot point is hovered over.
 
 .. image:: ../debrowser_pics/bargraph.png
 	:align: center
-	
+
 .. image:: ../debrowser_pics/barplot.png
 	:align: center
-	
+
 You can also select a specific region within the scatter plot and zoom in on the selected window.
 
 .. image:: ../debrowser_pics/scatter_plot_selection.png
 	:align: center
-	
+
 Once you've selected a specific region, a new scatterplot of the selected area will appear on the right
 
 .. image:: ../debrowser_pics/scatter_plot_zoom.png
 	:align: center
-	
+
 You also have a wide array of options when it comes to fold change cut-off levels, padj cut-off values,
-which comparison set to use, and dataset of genes to analyze. 
+which comparison set to use, and dataset of genes to analyze.
 
 .. image:: ../debrowser_pics/filters.png
 	:align: center
@@ -255,7 +284,7 @@ If you can select the type of plot at the bottom of the filter tab.
 
 .. image:: ../debrowser_pics/main_plots.png
 	:align: center
-	
+
 You can download the results in CSV or TSV format by selecting your 'File type' and clicking the 'download' button once you've ran DESeq.
 You can also download the plot or graphs themselves by clicking on the gear in the upper-left corner of each plot or graph.
 
@@ -289,12 +318,12 @@ GO Term plots for specific queries on your selection.
 
 .. image:: ../debrowser_pics/interactive_heatmap.png
 	:align: center
-	
+
 Your selection will also zoom in for better viewing resolution.
-	
+
 .. image:: ../debrowser_pics/interactive_heatmap_zoom.png
 	:align: center
-	
+
 Heat Maps
 =========
 The heatmap is a great way to analyze replicate results of genes all in
@@ -311,33 +340,33 @@ generate your heatmap.
 	Complete-linkage clustering is one of the linkage method used in hierarchical clustering.
 	In each step of clustering, closest cluster pairs are always merged up to a specified distance     threshold. Distance between clusters for complete link clustering is the maximum of
 	the distances between the members of the clusters.
-	
+
 * **ward D2:**
-	Ward method aims to find compact and spherical clusters. The distance between two clusters 
+	Ward method aims to find compact and spherical clusters. The distance between two clusters
 	is calculated by the sum of squared deviations from points to centroids. "ward.D2" method uses
 	criterion (Murtagh and Legendre 2014) to minimize ward clustering method. The only difference
 	ward.D2 and ward is the dissimilarities from ward method squared before cluster updating. This
 	method tends to be sensitive to the outliers.
 
 * **single:**
-	Distance between clusters for single linkage is the minimum of	the distances between 
+	Distance between clusters for single linkage is the minimum of	the distances between
 	the members of the clusters.
-	
+
 * **average:**
-	Distance between clusters for average linkage is the average of the distances between 
+	Distance between clusters for average linkage is the average of the distances between
 	the members of the clusters.
 
 * **mcquitty:**
-	mcquitty linkage is when two clusters are joined, the distance of the new cluster 
-	to any other cluster is calculated by the average of the distances of the soon to be 
+	mcquitty linkage is when two clusters are joined, the distance of the new cluster
+	to any other cluster is calculated by the average of the distances of the soon to be
 	joined clusters to that other cluster.
-	
+
 * **median:**
 	This is a different averaging method that uses the median instead of the mean.
 	It is used to reduce the effect of outliers.
 
 * **centroid:**
-	The distance between cluster pairs is defined as the Euclidean distance 
+	The distance between cluster pairs is defined as the Euclidean distance
 	between their centroids or means.
 
 ## Used distance methods in heatmap
@@ -347,26 +376,26 @@ generate your heatmap.
 	sensitive to the outliers and scaling.
 
 * **euclidean:**
-	It is the most common use of distance. It is sensitive to the outliers and scaling. 
+	It is the most common use of distance. It is sensitive to the outliers and scaling.
 	It is defined as the square root of the sum of the square differences between gene counts.
 
 * **maximum:**
-	The maximum distance between two samples is the sum of the maximum expression value of the 
+	The maximum distance between two samples is the sum of the maximum expression value of the
 	corresponding genes.
 
 * **manhattan:**
-	The Manhattan distance between two samples is the sum of the differences of their 
+	The Manhattan distance between two samples is the sum of the differences of their
 	corresponding genes.
 
 * **canberra:**
-	Canberra distance is similar to the Manhattan distance and it is a special form of 
-	the Minkowski distance. The difference is that the absolute difference between the 
-	gene counts of the two genes is divided by the sum of the absolute counts 
-	prior to summing. 
-	
+	Canberra distance is similar to the Manhattan distance and it is a special form of
+	the Minkowski distance. The difference is that the absolute difference between the
+	gene counts of the two genes is divided by the sum of the absolute counts
+	prior to summing.
+
 * **minkowsky:**
 	It is generalized form of euclidean distance.
-	 
+
 You can also select to view an interactive version of the heatmap by clicking
 on the 'Interactive' checkbox on the left panel under the height and width
 options.  Selecting this feature changes the heatmap into an interactive
@@ -374,7 +403,7 @@ version with two colors, allowing you to select specific genes to be compared
 within the GO term plots.  In order to use the interactive heatmap selection
 within your GO term query, you must use either the up+down dataset or the
 most varied dataset for the heatmap display.
-	
+
 GO Term Plots
 =============
 
@@ -388,7 +417,7 @@ options queries their specific databases with your current DESeq results.
 
 .. image:: ../debrowser_pics/go_plots_opts.png
 	:align: center
-	
+
 Your GO plots include:
 
 * enrichGO - use enriched GO terms
@@ -413,7 +442,7 @@ left option panel.
 
 Once you have adjusted all of your parameters, you may hit the submit button in the top right and then wait
 for the results to show on screen!
-	
+
 Data Tables
 ===========
 
@@ -430,7 +459,7 @@ These datatables include:
 
 .. image:: ../debrowser_pics/datatable.png
 	:align: center
-	
+
 All of the tables tables, except the Comparisons table, contain the following information:
 
 * ID - The specific gene ID
@@ -444,17 +473,44 @@ All of the tables tables, except the Comparisons table, contain the following in
 The Comparisons table generates values based on the number of comparisons you have conducted.
 For each pairwise comparison, these values will be generated:
 
-* Values for each sample used 
+* Values for each sample used
 * foldChange of comparison A vs B
 * pvalue of comparison A vs B
 * padj value of comparison A vs B
 
 .. image:: ../debrowser_pics/comparisons.png
 	:align: center
-	
+
 You can further customize and filter each specific table a multitude of ways.  For unique table or dataset options, select the type of
 table dataset you would like to customize on the left panel under 'Choose a dataset' to view it's additional options.
 All of the tables have a built in search function at the top right of the table and you can further sort the table
 by column by clicking on the column header you wish to sort by.  The 'Search' box on the left panel allows for multiple searches via
 a comma-seperated list.  You can additionally use regex terms such as "^al" or "\*lm" for even more advanced searching.
 This search will be applied to wherever you are within DEBrowser, including both the plots and the tables.
+
+Saving the State
+================
+
+After the file upload is complete and a pair of conditions are selected, "Save Selection!"
+button should appear on the sidebar on the left. If you click this button, you will be able
+to name your save and access it later with the name you choose. There are certain limitations
+on the naming, but you will be given an error message to make the necessary correction as it is
+based on bookmarking functionality of Shiny.
+
+Your new save will appear as a clickable link under "New Save:" and as you make more saves, those
+will be available under "History:" after refreshing the page. Only the last 20 saves will appear
+for better user interface, so it is advisable to delete the unused saves by clicking "X" icon.
+
+Google Login
+============
+
+If you start up the shiny server using startDEBrowser(), you will automatically be logged in as 'local'.
+However, if you use the runApp() command to start the server, you'll be asked to log in using a
+Google account. This is to ensure the past saves correspond to the right person. You can log in using
+any Google account, and then give permission to the DEBrowser to log in for the first time.
+
+Once you are done using DEBrowser, you can either choose to stay logged in for your next use or sign out
+to stop access to your account. In order to sign out, click on the gear icon on the top right corner and
+then click on "Sign Out". If you want to start over from the beginning while staying logged in, you can
+click on "Refresh" to go back to the beginning. You will still be able to access your save history when
+you sign out or refresh.
