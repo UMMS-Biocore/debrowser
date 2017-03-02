@@ -199,14 +199,16 @@ To load in the specific file that contains the meta data, at the start of the DE
 In the metadata file, you will need to have a sample column as the first column and from then on exactly 2
 groups in each column([cond1, cond2], [1, 2], etc) to be matched to the sample column. Sample TSV:
 
-| sample        | select1      | selection2  |
-|---------------|--------------|-------------|
-| exper_rep1    | cond1	       | 1           |
-| exper_rep2	  | cond1	       | 2           |
-| exper_rep3	  | cond2        | 1           |
-| control_rep1	| cond2	       | 2           |
-| control_rep2	| cond2	       | 1           |
-| control_rep3	| cond2	       | 2           |
+==============  ==========  ==========
+sample          select1     selection2
+==============  ==========  ==========
+exper_rep1      cond1	      1
+exper_rep2	    cond1	      2
+exper_rep3	    cond2       1
+control_rep1	  cond2	      2
+control_rep2	  cond2	      1
+control_rep3	  cond2	      2
+==============  ==========  ==========
 
 The example above would result in 'select1' having the first set of conditions as {exper_rep1, exper_rep2}
 from 'cond1' and second set of conditions as {exper_rep3, control_rep1, control_rep2, control_rep3} from
