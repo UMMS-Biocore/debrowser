@@ -63,9 +63,8 @@ loadpack <- function (package_name = NULL){
 #' @export
 #'
 loadpacks <- function (){
-    debrowser:::installpack("googleID", "UMMS-Biocore/googleAuthR")   
-    debrowser:::installpack("googleID", "UMMS-Biocore/googleID")
-    debrowser:::installpack("shinyStore", "trestletech/shinyStore")
-    
+    installpack("googleAuthR", "UMMS-Biocore/googleAuthR")   
+    installpack("googleID", "UMMS-Biocore/googleID")
+    installpack("shinyStore", "trestletech/shinyStore")
     return(TRUE)
 }

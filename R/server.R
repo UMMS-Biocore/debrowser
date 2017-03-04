@@ -81,7 +81,7 @@ deServer <- function(input, output, session) {
     enableBookmarking("server")
     tryCatch(
     {
-        debrowser:::loadpacks()
+        debrowser::loadpacks()
         if (!interactive()) {
             options( shiny.maxRequestSize = 30 * 1024 ^ 2,
                     shiny.fullstacktrace = FALSE, shiny.trace=FALSE, 
