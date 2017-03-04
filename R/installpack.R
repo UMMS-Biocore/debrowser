@@ -50,3 +50,22 @@ loadpack <- function (package_name = NULL){
     }
     return(FALSE)
 }
+
+#' loadpacks
+#'
+#' load initial packages 
+#'
+#' @note \code{loadpack}
+#'
+#' @examples
+#'     x <- loadpacks()
+#'
+#' @export
+#'
+loadpacks <- function (){
+    debrowser:::installpack("googleID", "UMMS-Biocore/googleAuthR")   
+    debrowser:::installpack("googleID", "UMMS-Biocore/googleID")
+    debrowser:::installpack("shinyStore", "trestletech/shinyStore")
+    
+    return(TRUE)
+}

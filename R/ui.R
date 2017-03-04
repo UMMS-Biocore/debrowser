@@ -12,7 +12,7 @@
 #'
 
 deUI <- function() {
-    
+    debrowser:::loadpacks()
     getUrlJSCode <- '
         shinyjs.setButtonHref = function(params) {
             var current_url = window.location.href.split(\"?\")[0];

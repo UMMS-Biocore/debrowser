@@ -75,22 +75,18 @@
 #' @import org.Mm.eg.db
 #' @import V8
 #' @import shinydashboard
-#' @import googleAuthR
 #' @import devtools
-
-
 
 deServer <- function(input, output, session) {
     enableBookmarking("server")
-    # library(debrowser)
     tryCatch(
     {
+        debrowser:::loadpacks()
         if (!interactive()) {
             options( shiny.maxRequestSize = 30 * 1024 ^ 2,
                     shiny.fullstacktrace = FALSE, shiny.trace=FALSE, 
                      shiny.autoreload=TRUE)
-            library(debrowser)
-            
+            debrowser::loadpack(debrowser)
         }
     shinyjs::hide("dropdown-toggle")
     shinyjs::js$setButtonHref()
@@ -98,10 +94,7 @@ deServer <- function(input, output, session) {
     if(exists(".startdebrowser.called")){
         shinyjs::hide("logout")
     }
-        
-    library("googleID")
-    library("shinyStore")
-    # devtools::install_github("trestletech/shinyStore")
+    
     options("googleAuthR.webapp.client_id" = "186441708690-n65idoo8t19ghi7ieopat6mlqkht9jts.apps.googleusercontent.com")
     options("googleAuthR.webapp.client_secret" = "ulK-sj8bhvduC9kLU4VQl5ih")
     options(googleAuthR.scopes.selected = c("https://www.googleapis.com/auth/userinfo.email",

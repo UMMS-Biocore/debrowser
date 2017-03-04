@@ -56,7 +56,6 @@ Imports:
     methods,
     sva,
     shinydashboard,
-    googleAuthR,
     devtools
 RoxygenNote: 6.0.1
 Suggests: testthat,
