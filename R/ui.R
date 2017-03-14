@@ -109,9 +109,9 @@ enableBookmarking("server")
         dbHeader,
         shinydashboard::dashboardSidebar(
             width = 350,
-            shinyStore::initStore("store", "shinyStore-debrowser"),
+            initStore("store", "shinyStore-debrowser"),
             conditionalPanel(condition = "!output.user_name",
-                googleAuthR::googleAuthUI("initial_google_button")),
+                googleAuthUI("initial_google_button")),
             conditionalPanel(condition = "output.user_name",
                 uiOutput("loading"),
                 uiOutput("initialmenu"),

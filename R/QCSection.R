@@ -190,6 +190,7 @@ getQCReplot <- function(cols = NULL, conds = NULL,
                     inputQCPlot = inputQCPlot,
                     drawPCAExplained = drawPCAExplained)
 }
+
 #' saveQCPlot
 #'
 #' Saves the current QC plot selection to the users local disk.
@@ -227,7 +228,6 @@ saveQCPlot <- function(filename = NULL, input = NULL, datasetInput = NULL,
     }
     dev.off()
 }
-
 
 #' getIQRPlot
 #'
