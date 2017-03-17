@@ -17,7 +17,6 @@ load_data <- function (input = NULL, session = NULL) {
         m$demo <- TRUE
         load(system.file("extdata", "demo", "demodata.Rda",
             package = "debrowser"))
-        #load(paste0("./demo/demodata.Rda"))
         m$demodata <- demodata
         m
     })

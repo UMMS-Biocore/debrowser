@@ -144,18 +144,18 @@ setFilterParams <- function(session = NULL, input = NULL) {
             value = valpadj ) 
     }
     if (!is.null(input$gopvalue)){
-      if (input$gopvalue%%2)
-        gopval = (10 ^ (-1*as.integer(
-          (10-input$gopvalue)/2 )) ) /2
+        if (input$gopvalue%%2)
+            gopval = (10 ^ (-1*as.integer(
+            (10-input$gopvalue)/2 )) ) /2
       else
-        gopval = (10 ^ (-1*(10-input$gopvalue)/2))
+            gopval = (10 ^ (-1*(10-input$gopvalue)/2))
       if(input$gopvalue==0) gopval = 0
       updateTextInput(session, "pvaluetxt",
-                      value = gopval ) 
+          value = gopval ) 
     }
     if (!is.null(input$foldChange)){
-      valpadjfoldChange = input$foldChange
-      updateTextInput(session, "foldChangetxt",
+        valpadjfoldChange = input$foldChange
+        updateTextInput(session, "foldChangetxt",
                       value = valpadjfoldChange)
     }
 }
@@ -529,7 +529,7 @@ getDataForTables <- function(input = NULL, init_data = NULL,
             dat <- getSearchData(getDown(filt_data), input)
     }
     else if (input$dataset == "selected"){
-        dat <- getSearchData(isolate(selected$data$getSelected()), input)
+        dat <- getSearchData(selected$data$getSelected(), input)
     }
     else if (input$dataset == "pcaset"){
         dat <- getSearchData( explainedData, input )

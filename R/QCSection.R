@@ -345,9 +345,9 @@ prepAddQCPlots <- function(data=NULL, input=NULL){
 #'
 #'
 getSelectedCols <- function(data = NULL, datasetInput = NULL, input=NULL){
-    if(is.null(data)) return(NULL)
+    if(is.null(data) && is.null(datasetInput)) return(NULL)
     m <- NULL
-    if (!is.null(input$dataset) && input$dataset != "selected"){
+    if (!is.null(input$dataset)){
         all <- input$samples
         selection <- input$col_list
         if("All" %in% input$col_list || length(input$col_list) == 0){

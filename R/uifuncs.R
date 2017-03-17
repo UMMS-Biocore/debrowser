@@ -511,7 +511,7 @@ getCondMsg <- function(dc = NULL, num = NULL, cols = NULL, conds = NULL) {
     if (is.null(cols) || is.null(conds)) return (NULL)
     if (is.null(num)) num <- 1
     cnd <- data.frame(cbind(conds, cols))
-    params_str <- paste(dc[[num]]$demethod_params, collapse = ',')
+    params_str <- paste(dc[[as.numeric(num)]]$demethod_params, collapse = ',')
     a <-list( conditionalPanel(condition <- "input.startPlots",
         column( 12, wellPanel(
             style = "overflow-x:scroll",

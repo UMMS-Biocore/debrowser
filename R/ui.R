@@ -59,9 +59,6 @@ enableBookmarking("server")
             ))
     dbHeader$children[[2]]$children <- tags$a(style='color: white;',
                                               id="top_logo" , "DEBrowser")
-    # dbHeader$children[[2]]$children <- "DEBrowser"
-
-    
     addResourcePath(prefix = "www", directoryPath = system.file("extdata",
         "www", package = "debrowser"))
     if(!file.exists("shiny_saves/startup.rds")){
@@ -84,6 +81,7 @@ enableBookmarking("server")
 
     else{
     a <- (fluidPage(
+    initStore("store", "shinyStore-debrowser"),
     shinyjs::useShinyjs(),
     shinyjs::extendShinyjs(text = heatmapJScode, functions = c("getNames")),
     shinyjs::inlineCSS("
@@ -109,7 +107,6 @@ enableBookmarking("server")
         dbHeader,
         shinydashboard::dashboardSidebar(
             width = 350,
-            initStore("store", "shinyStore-debrowser"),
             conditionalPanel(condition = "!output.user_name",
                 googleAuthUI("initial_google_button")),
             conditionalPanel(condition = "output.user_name",
@@ -121,25 +118,7 @@ enableBookmarking("server")
                     uiOutput("downloadSection")),
                 conditionalPanel(condition = "(output.dataready)",
                     uiOutput('cutoffSelection')),
-                conditionalPanel(condition = paste0("((input.goDE) || ",
-                    "(output.restore_DE > 0)) && (!input.startDE)"),
-                    style = "padding: 27px;",
-                    actionButton("save_state", "Save Selection!"),
-                    #textOutput("message_for_loading"),
-                    conditionalPanel(condition = "input.save_state",
-                        textInput("bookmark_special_name", "Name your save:",
-                        value = "", placeholder = "At Least 5 Characters"),
-                        actionButton("name_bookmark", "Submit!"),
-                        textOutput("bookmark_length_error"),
-                        br()
-                )),
-                conditionalPanel(condition <- paste0("input.methodtabs=='panel0'"),
-                    htmlOutput("new_bookmark"),
-                    uiOutput("past_named_bookmarks"),
-                    lapply(20:1, function(i) {
-                        uiOutput(paste0('bookmark', i))
-                    })
-                )
+                    bookmarkUI("bm")
             )
         ),
     shinydashboard::dashboardBody(
@@ -164,12 +143,8 @@ enableBookmarking("server")
                     tabPanel(title = "Tables", value = "panel4", id="panel4",
                             DT::dataTableOutput("tables")))
         ),
-        
-        
-        shinyjs::extendShinyjs(text = getUrlJSCode),
-        
-        p("Logged in as: ", textOutput("user_name"))
-        
+        p("Logged in as: ", textOutput("user_name")),
+        shinyjs::extendShinyjs(text = getUrlJSCode)
         )))
     )
     )

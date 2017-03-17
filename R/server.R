@@ -99,198 +99,64 @@ deServer <- function(input, output, session) {
         if(exists(".startdebrowser.called")){
             shinyjs::hide("logout")
         }
+        options("googleAuthR.webapp.client_id" = 
+        "186441708690-n65idoo8t19ghi7ieopat6mlqkht9jts.apps.googleusercontent.com")
+        options("googleAuthR.webapp.client_secret" = "ulK-sj8bhvduC9kLU4VQl5ih")
+        options(googleAuthR.scopes.selected = 
+            c("https://www.googleapis.com/auth/userinfo.email",
+            "https://www.googleapis.com/auth/userinfo.profile"))
     
-    options("googleAuthR.webapp.client_id" = "186441708690-n65idoo8t19ghi7ieopat6mlqkht9jts.apps.googleusercontent.com")
-    options("googleAuthR.webapp.client_secret" = "ulK-sj8bhvduC9kLU4VQl5ih")
-    options(googleAuthR.scopes.selected = c("https://www.googleapis.com/auth/userinfo.email",
-                                            "https://www.googleapis.com/auth/userinfo.profile"))
+        access_token <- callModule(googleAuth, "initial_google_button")
+        # To hide the panels from 1 to 4 and only show Data Prep
+        togglePanels(0, c(0), session)
+        loadingJSON <- reactive({
+            getJsonObj(isolate(session), isolate(input), access_token())
+        })
+        output$user_name <- renderText({
+            if(exists(".startdebrowser.called")){
+                return("local")
+            }
+            loadingJSON()$username
+        })
     
-    access_token <- callModule(googleAuth, "initial_google_button")
-    ## to use in a shiny app:
-    user_details <- reactive({
-        if(!is.null(access_token())){
-            with_shiny(get_user_info, shiny_access_token = access_token())
-        }
-    })
-    
-    output$user_name <- renderText({
-        if(exists(".startdebrowser.called")){
-            return("local")
-        }
-        loadingJSON$username
-    })
-        uiState <- reactiveValues()
-        uiState$readyFlag <- 0
-        uiState$readyCheck <- 0
+        choicecounter <- reactiveValues(nc = 0, qc = 0, 
+            lastselecteddataset = "")
+        
+        callModule(bookmarkServer, "bm", loadingJSON = loadingJSON())
+        
         lapply(1:20, function(i) {
-            shinyjs::onclick(paste0("remove_bm", i),
+            shinyjs::onclick(paste0("bm-remove_bm", i),
                  list(
-                 removeBookmark(i, loadingJSON$username),
-                 shinyjs::hide(paste0("remove_bm", i)),
-                 shinyjs::hide(paste0("bookmark", i))
+                     removeBookmark(i, loadingJSON()$username),
+                     shinyjs::hide(paste0("bm-remove_bm", i)),
+                     shinyjs::hide(paste0("bm-bookmark", i))
                  )
             )
         })
-        
-        bookmark_list <- reactive({
-            username <- loadingJSON$username
-            past_saves_path <- "shiny_saves/past_saves.txt"
-            if(!is.null(username) && username != ""){
-                past_saves_path <- paste0("shiny_saves/", username, "/past_saves.txt")
-            }
-            if (file.exists(past_saves_path)){
-                if (file.size(past_saves_path) > 0){
-                    query <- parseQueryString(session$clientData$url_search)
-                    json_addition <- ""
-                    if(!is.null(query$jsonobject)){
-                        json_addition <- "&jsonobject=saved"
-                    }
-                    conn <- file(past_saves_path,open="r")
-                    lines <- readLines(conn)
-                    bookmark_count <- length(lines)
-                    output$past_named_bookmarks <- renderText({"History:"})
-                    lapply(1:bookmark_count, function(i) {
-                        a <- strsplit(lines[i], "0u0")
-                        if(length(a[[1]]) == 2){
-                            to_show <- a[[1]][2]
-                            user_addition <- paste0("&username=", a[[1]][1])
-                        } else{
-                            to_show <- lines[i]
-                            user_addition <- ""
-                        }
-                        
-                        output[[paste0('bookmark', i)]] <- renderUI({
-                            list(
-                                a(paste0(to_show), class="bm_id",
-                                    href= paste0("?_state_id_=", lines[i],
-                                        user_addition, json_addition)),
-                                a(href="#", id=paste0("remove_bm", i), 
-                                    class="removebm",
-                                    img(src="www/images/delete_button.png"),
-                                    onclick=paste0('removeBookmark("',  
-                                        lines[i], '", "',loadingJSON$username,'")'))
-                            )
-                        })
-                    })
-                    close(conn)
-                }
-            } else {
-                output$past_named_bookmarks <- renderUI({list()})
-            }
-        })
-        
-        # To hide the panels from 1 to 4 and only show Data Prep
-        togglePanels(0, c(0), session)
-        
-        ###############################################################
-        #           Bookmark on every single user input               #
-        ###############################################################
-        observe({
-            startup_path <- "shiny_saves/startup.rds"
-            if (!is.null(loadingJSON$username) && loadingJSON$username != ""){
-                startup_path <- paste0("shiny_saves/", 
-                    loadingJSON$username ,"/startup.rds")
-            }
-            startup <- list()
-            if(file.exists(startup_path)){
-                startup <- readRDS(startup_path)
-            }
-            if(is.null(startup[['bookmark_counter']])){
-                startup[['bookmark_counter']] <- 3
-            }
-            if(startup[['bookmark_counter']] == 0){
-                startup[['bookmark_counter']] <- 1
-                saveRDS(startup, startup_path)
-                session$sendCustomMessage(type = 'testmessage',
-                    message = list(new_url = paste0("?_state_id_=",
-                    startup[['startup_bookmark']]), controller = input$controller))
-            }
-            bookmark_list()
-        })
-        
-        ###############################################################
-        #         To save user chosen name as bookmark id             #
-        ###############################################################
-        observeEvent(input$name_bookmark, {
-            session$doBookmark()
-            username <- loadingJSON$username
-            chosen_name <- input$bookmark_special_name
-            if(nchar(chosen_name) < 5){
-                to_display <- "You must type in at least 5 characters."
-            } else if(!grepl('^[A-Za-z0-9_]+$', chosen_name)){
-                to_display <- "You can only use numbers and English letters."
-            } else if(grepl("0u0", chosen_name)){
-                to_display <- "You cannot use '0u0' in the name."
-            } else{
-                output$bookmark_length_error <- renderText({""})
-                result <- copy2newDirectory(chosen_name, loadingJSON$username, session)
-                if(result == 35){
-                    to_display <- paste0(chosen_name, " is already saved.")
-                } else {
-                    if (result == 42) {
-                        shinyjs::hide("bookmark_special_name")
-                        shinyjs::hide("name_bookmark")
-                        #shinyjs::hide("message_for_loading")
-                        user_addition <- ""
-                        if(!is.null(username) && (username != "")){
-                            user_addition <- paste0("&username=", username)
-                        }
-                        query_list <- parseQueryString(session$clientData$url_search)
-                        chosen_link <- chosen_name
-                        if(!is.null(loadingJSON$username) && (loadingJSON$username != "")){
-                            chosen_link <- paste0(loadingJSON$username, "0u0",
-                                chosen_name)
-                        }
-                        
-                        old_bookmark_id <- parseQueryString(session$clientData$url_search)[["_state_id_"]]
-                        old_json_path <- paste0("shiny_bookmarks/", old_bookmark_id, "/file1.JSON")
-                        if(file.exists(old_json_path)){
-                            file.copy(old_json_path, paste0("shiny_bookmarks/", chosen_link, "/file1.JSON"))
-                        }
-                        old_tsv_path <- paste0("shiny_bookmarks/",
-                                               old_bookmark_id, "/file1.tsv")
-                        if(file.exists(old_tsv_path)){
-                            file.copy(old_tsv_path, paste0("shiny_bookmarks/", 
-                                chosen_link, "/file1.tsv"), overwrite = TRUE)
-                        }
-                        query <- parseQueryString(session$clientData$url_search)
-                        json_addition <- ""
-                        if(!is.null(query$jsonobject)){
-                            json_addition <- "&jsonobject=saved"
-                        }
-                        
-                        bm_link <- paste0('<p style="margin-left: 27px;">New Save:</p><a style="margin: 27px;" ',
-                                          ' href="?_state_id_=',
-                            chosen_link, user_addition, 
-                            json_addition, '">', chosen_name, '</a>')
-
-                        output$new_bookmark <- renderText({bm_link})
-                        shinyjs::show("save_state")
-                        to_display <- paste0("Successfully saved. ",
-                            "URL updated with your choice to access later.")
-                    } else {
-                        to_display <- "Something went wrong with the save."
-                    }
-                }
-            }
-            output$bookmark_length_error <- renderText({ to_display })
-        })
-        
         # Save extra values in state$values when we bookmark...
         onBookmark(function(state) {
             # state$values can store data onBookmark to be restored later
             state$values$input_save <- input
-            storeDataset <- function(){
-                state$values$data <- Dataset()
-            }
-            try(storeDataset())
+            state$values$data <- Dataset
             state$values$nc <- choicecounter$nc
             state$values$samples <- input$samples
-
         })
-        
+        onRestored(function(state) {
+            #Write the functions after restored
+            shinyjs::js$showDropdown()
+            if(!is.null(state$values$data)){
+                #The file is uploaded, go to the next tab.
+                buttonValues$gotoanalysis <- TRUE
+            }
+            if(!is.null(state$values$nc)){
+                choicecounter$nc <- state$values$nc
+            }
+            if(choicecounter$nc > 0){
+                shinyjs::enable("startDE")
+            }
+        })
         onBookmarked(function(url) {
-            username <- loadingJSON$username
+            username <- loadingJSON()$username
             user_addition <- ""
             startup_path <- "shiny_saves/startup.rds"
             if(!is.null(username) && (username != "") ){
@@ -306,7 +172,7 @@ deServer <- function(input, output, session) {
             if(!file.exists("shiny_saves")){
                 dir.create("shiny_saves")
             }
-            shiny_saves_dir <- paste0("shiny_saves/", loadingJSON$username)
+            shiny_saves_dir <- paste0("shiny_saves/", username)
             if(!file.exists(shiny_saves_dir)){
                 dir.create(shiny_saves_dir)
             }
@@ -316,566 +182,472 @@ deServer <- function(input, output, session) {
             file.copy(isolate(input$file1$datapath), 
                       paste0("shiny_bookmarks/", bookmark_dir_id, "/file1.tsv"))
         })
-        
-        
-        # Read values from state$values when we restore
-        onRestore(function(state) {
-            log_out <- parseQueryString(session$clientData$url_search)[['logout']]
-            if(!is.null(log_out) && (log_out != "")){
-                updateStore(session, "text",
-                                        isolate(""))
-            } else {
-            
-            shinyjs::js$showDropdown()
-            json_obj <- parseQueryString(session$clientData$url_search)[['jsonobject']]
-            # coming from json
-            if(!is.null(json_obj) && (json_obj != "")){
-                loadingJSON$username <- parseQueryString(session$clientData$url_search)[['username']]
-                updateStore(session, "text",
-                    isolate(loadingJSON$username))
-            } else{
-                user_email <- user_details()$emails$value
-                username_from_email <- gsub("[[:punct:]]", "", user_email)
-                # just logged in via google
-                if(!is.null(user_email) && (username_from_email != "")){
-                    loadingJSON$username <- username_from_email
-                    updateStore(session, "text",
-                        isolate(loadingJSON$username))
-                } else{
-                    # Check local storage
-                    if(!is.null(input$store$text) && (input$store$text != "")){
-                        start_state <- parseQueryString(session$clientData$url_search)[['start']]
-                        if(!is.null(start_state) && (start_state != "") &&
-                           start_state == "true"){
-                            loadingJSON$username <- input$store$text
-                        }
-                        else{
-                            state_id_current <- parseQueryString(session$clientData$url_search)[['_state_id_']]
-                            if(!is.null(state_id_current) && (state_id_current != "") &
-                               !grepl(input$store$text, state_id_current)){
-                                # Someone is trying to restore someone else's bookmark
-                            } else{
-                                # Own bookmark
-                                loadingJSON$username <- input$store$text
-                            }
-                        }
-                    }
-                }
-            }
-            query_list <- parseQueryString(session$clientData$url_search)
-            dir_to_create <- paste0("shiny_saves/", loadingJSON$username)
-            if(!file.exists(dir_to_create)){
-                dir.create(dir_to_create)
-            }
-            startup_path <- "shiny_saves/startup.rds"
-            if(!is.null(loadingJSON$username) && loadingJSON$username != ""){
-                    startup_path <- paste0("shiny_saves/", 
-                        loadingJSON$username ,"/startup.rds")
-            }
-            startup <- list()
-            startup[['bookmark_counter']] <- 2
-            startup[['startup_bookmark']] <- query_list[["_state_id_"]]
-            
-            if(!is.null(query_list[["_state_id_"]])){
-                saveRDS(startup, startup_path)
-                saveRDS(state$values$input_save, paste0("shiny_bookmarks/", 
-                    query_list[["_state_id_"]] , "/input_save.rds"))
-                
-                if(!is.null(state$values$data)){
-                    #The file is uploaded, go to the next tab.
-                    buttonValues$gotoanalysis <- TRUE
-                }
-                if(!is.null(state$values$nc)){
-                    choicecounter$nc <- state$values$nc
-                }
-                
-                if(choicecounter$nc > 0){
-                    shinyjs::enable("startDE")
-                }
-            }}
-            #Restoring 
+        observeEvent(input$stopApp, {
+            stopApp(returnValue = invisible())
         })
-        
-        onRestored(function(state) {
-            #Write the functions here after restored
+        output$programtitle <- renderUI({
+            togglePanels(0, c(0), session)
+            getProgramTitle(session)
         })
-        loadingJSON <- reactiveValues(username = "")
-        output$isRestoring <- reactive({
-            startup_path <- "shiny_saves/startup.rds"
-            if(!is.null(loadingJSON$username) && loadingJSON$username != ""){
-                    startup_path <- paste0("shiny_saves/", 
-                        loadingJSON$username ,"/startup.rds")
-            }
-            startup <- readRDS(startup_path)
-            return(startup[['bookmark_counter']] == 2)
+        output$mainpanel <- renderUI({
+            a <- NULL
+            if (!is.null(randstr()))
+                a <- getMainPanel(randstr())
+            a
         })
-        
-            observeEvent(input$stopApp, {
-                stopApp(returnValue = invisible())
-            })
-
-            output$programtitle <- renderUI({
-                togglePanels(0, c(0), session)
-                getProgramTitle(session)
-            })
-            output$mainpanel <- renderUI({
-                a <- NULL
-                if (!is.null(randstr()))
-                    a <- getMainPanel(randstr())
+        output$qcpanel <- renderUI({
+            getQCPanel(input)
+        })
+        output$gopanel <- renderUI({
+            getGoPanel(!is.null(init_data()))
+        })
+        output$cutoffSelection <- renderUI({
+            nc <- 1
+            if (!is.null(choicecounter$nc)) nc <- choicecounter$nc
+            getCutOffSelection(nc)
+        })
+        output$downloadSection <- renderUI({
+            choices <- c("most-varied", "alldetected", "pcaset")
+            if (buttonValues$startDE)
+                choices <- c("up+down", "up", "down",
+                             "comparisons", "alldetected",
+                             "most-varied", "pcaset")
+            #if (!is.null(selected$data))
+            #    if (!is.null(selected$data$getSelected())
+            #        && nrow(selected$data$getSelected())>1)
+            choices <- c(choices, "selected")
+                a <- getDownloadSection(TRUE, choices)
                 a
-            })
-            output$qcpanel <- renderUI({
-                getQCPanel(input)
-            })
-            output$gopanel <- renderUI({
-                getGoPanel(!is.null(init_data()))
-            })
-            output$cutoffSelection <- renderUI({
-                nc <- 1
-                if (!is.null(choicecounter$nc)) nc <- choicecounter$nc
-                getCutOffSelection(nc)
-            })
-            output$downloadSection <- renderUI({
-                choices <- c("most-varied", "alldetected", "pcaset")
-                if (buttonValues$startDE)
-                    choices <- c("up+down", "up", "down",
-                                 "comparisons", "alldetected",
-                                 "most-varied", "pcaset")
-                if (!is.null(selected$data))
-                    if (!is.null(selected$data$getSelected())
-                        && nrow(selected$data$getSelected())>1)
-                        choices <- c(choices, "selected")
-                        a <- getDownloadSection(TRUE, choices)
-                    a
-            })
-            output$preppanel <- renderUI({
-                getDataPrepPanel(!is.null(init_data))
-            })
-            output$leftMenu  <- renderUI({
-                getLeftMenu(input)
-            })
-            output$initialmenu <-renderUI({
-                getInitialMenu(input, output, session)
-            })
-            output$loading <- renderUI({
-                getLoadingMsg()
-            })
-            output$logo <- renderUI({
-                getLogo()
-            })
-            output$startup <- renderUI({
-                getStartupMsg()
-            })
-            output$afterload <- renderUI({
-                getAfterLoadMsg()
-            })
-            output$mainmsgs <- renderUI({
-                if (is.null(condmsg$text))
-                    getStartPlotsMsg()
-                else
-                    condmsg$text 
-            })
-            buttonValues <- reactiveValues(goQCplots = FALSE, goDE = FALSE,
-                startDE = FALSE, gotoanalysis = FALSE)
-            output$dataready <- reactive({
-                query <- parseQueryString(session$clientData$url_search)
-                jsonobj<-query$jsonobject
-                if (is.null(jsonobj))
-                    hide(id = "loading-debrowser", anim = TRUE, animType = "fade")  
-                return(!is.null(Dataset()))
-            })
-            
-            outputOptions(output, "dataready", 
-                          suspendWhenHidden = FALSE)
-            output$definished <- reactive({
-                return(!is.null(filt_data()))
-            })
-            outputOptions(output, "definished", 
-                          suspendWhenHidden = FALSE)
-            
-            observeEvent(input$gotoanalysis, {
-                buttonValues$gotoanalysis <- TRUE
-            })
-            Dataset <- reactive({
-                a <- NULL
-                query <- parseQueryString(session$clientData$url_search)
-                jsonobj<-query$jsonobject
-                if ( buttonValues$gotoanalysis == TRUE || (!is.null(input$demo) && 
-                                                           input$demo == TRUE) || !is.null(jsonobj) ){
-                    a <- load_data(input, session)
-                    if (!is.null(input$batchselect) && input$batchselect!="None")
-                    {
-                        a<-correctBatchEffect(a, input)
-                    }
+        })
+        output$preppanel <- renderUI({
+            getDataPrepPanel(!is.null(init_data))
+        })
+        output$leftMenu  <- renderUI({
+            getLeftMenu(input)
+        })
+        output$initialmenu <-renderUI({
+            getInitialMenu(input, output, session)
+        })
+        output$loading <- renderUI({
+            getLoadingMsg()
+        })
+        output$logo <- renderUI({
+            getLogo()
+        })
+        output$startup <- renderUI({
+            getStartupMsg()
+        })
+        output$afterload <- renderUI({
+            getAfterLoadMsg()
+        })
+        output$mainmsgs <- renderUI({
+            if (is.null(condmsg$text))
+                getStartPlotsMsg()
+            else
+                condmsg$text 
+        })
+        buttonValues <- reactiveValues(goQCplots = FALSE, goDE = FALSE,
+            startDE = FALSE, gotoanalysis = FALSE)
+        output$dataready <- reactive({
+            query <- parseQueryString(session$clientData$url_search)
+            jsonobj<-query$jsonobject
+            if (is.null(jsonobj))
+                hide(id = "loading-debrowser", anim = TRUE, animType = "fade")  
+            return(!is.null(Dataset()))
+        })
+        
+        outputOptions(output, "dataready", 
+                      suspendWhenHidden = FALSE)
+        output$definished <- reactive({
+            return(!is.null(filt_data()))
+        })
+        outputOptions(output, "definished", 
+                      suspendWhenHidden = FALSE)
+        
+        observeEvent(input$gotoanalysis, {
+            buttonValues$gotoanalysis <- TRUE
+        })
+        Dataset <- reactive({
+            a <- NULL
+            query <- parseQueryString(session$clientData$url_search)
+            jsonobj<-query$jsonobject
+            if (buttonValues$gotoanalysis == TRUE || (!is.null(input$demo) && 
+                input$demo == TRUE) || !is.null(jsonobj) ){
+                a <- load_data(input, session)
+                if (!is.null(input$batchselect) && input$batchselect!="None")
+                {
+                    a<-correctBatchEffect(a, input)
                 }
-                if (!is.null(jsonobj))
-                    hide(id = "loading-debrowser", anim = TRUE, animType = "fade")  
-                a
-            })
-            choicecounter <- reactiveValues(nc = 0, qc = 0, 
-                lastselecteddataset = "")
-            observeEvent(input$add_btn, {
-                shinyjs::enable("startDE")
-                buttonValues$startDE <- FALSE
-                choicecounter$nc <- choicecounter$nc + 1}
-            )
-            observeEvent(input$rm_btn, {
-                buttonValues$startDE <- FALSE
-                if (choicecounter$nc > 0) 
-                    choicecounter$nc <- choicecounter$nc - 1
-                if (choicecounter$nc == 0) 
-                    shinyjs::disable("startDE")
-            })
-            observeEvent(input$goDE, {
+            }
+            if (!is.null(jsonobj))
+                hide(id = "loading-debrowser", anim = TRUE, animType = "fade")
+            a
+        })
+        observeEvent(input$add_btn, {
+            shinyjs::enable("startDE")
+            buttonValues$startDE <- FALSE
+            choicecounter$nc <- choicecounter$nc + 1}
+        )
+        observeEvent(input$rm_btn, {
+            buttonValues$startDE <- FALSE
+            if (choicecounter$nc > 0) 
+                choicecounter$nc <- choicecounter$nc - 1
+            if (choicecounter$nc == 0) 
                 shinyjs::disable("startDE")
-                hideObj(c("goQCplots", "goDE"))
-                showObj(c("add_btn","rm_btn","startDE", "fittype"))
-                query <- parseQueryString(session$clientData$url_search)
-                # if(!is.null(query$jsonobject)){
-                #     session$doBookmark()
-                # }
-            })
-            observeEvent(input$resetsamples, {
-                buttonValues$startDE <- FALSE
-                showObj(c("goQCplots", "goDE"))
-                hideObj(c("add_btn","rm_btn","startDE"))
-                choicecounter$nc <- 0
-            })
-            samples <- reactive({
-                if (is.null(Dataset())) return(NULL)
-                getSamples(colnames(Dataset()), index = 2)
-            })
-            output$restore_DE <- reactive({
-                choicecounter$nc
-            })
-            outputOptions(output, 'restore_DE', suspendWhenHidden = FALSE)
-            
-            
-            output$sampleSelector <- renderUI({
-                if (is.null(samples())) return(NULL)
-                if (is.null(input$samples))
-                    samp <- samples()
+        })
+        observeEvent(input$goDE, {
+            shinyjs::disable("startDE")
+            hideObj(c("goQCplots", "goDE"))
+            showObj(c("add_btn","rm_btn","startDE", "fittype"))
+            query <- parseQueryString(session$clientData$url_search)
+        })
+        observeEvent(input$resetsamples, {
+            buttonValues$startDE <- FALSE
+            showObj(c("goQCplots", "goDE"))
+            hideObj(c("add_btn","rm_btn","startDE"))
+            choicecounter$nc <- 0
+        })
+        samples <- reactive({
+            if (is.null(Dataset())) return(NULL)
+            getSamples(colnames(Dataset()), index = 2)
+        })
+        output$restore_DE <- reactive({
+            choicecounter$nc
+        })
+        outputOptions(output, 'restore_DE', suspendWhenHidden = FALSE)
+
+        output$sampleSelector <- renderUI({
+            if (is.null(samples())) return(NULL)
+            if (is.null(input$samples))
+                samp <- samples()
+            else
+                samp <- input$samples
+            a <- list(
+                selectInput("samples",
+                            label = "Samples",
+                            choices = samp, multiple = TRUE,
+                            selected = samp)
+            )
+        })
+        output$batchEffect <- renderUI({
+            if(!is.null(input$file2)){
+                selectBatchEffect(input)
+            }
+        })
+        output$conditionSelector <- renderUI({
+            selectConditions(Dataset(), choicecounter, input, loadingJSON())
+        })
+        dc <- reactive({
+            dc <- NULL
+            if (buttonValues$startDE == TRUE){
+                dc <- prepDataContainer(Dataset(), choicecounter$nc, 
+                     isolate(input))
+            }
+            dc
+        })
+        observeEvent(input$save_state, {
+            shinyjs::hide("save_state")
+            shinyjs::show("bookmark_special_name")
+            shinyjs::show("name_bookmark")
+        })
+        observeEvent(input$startDE, {
+            buttonValues$startDE <- TRUE
+            buttonValues$goQCplots <- FALSE
+            init_data <- NULL 
+            togglePanels(1, c( 0, 1, 2, 3, 4), session)
+            choicecounter$qc <- 0
+            selected$data$randstr <- NULL
+        })
+        observeEvent(input$goQCplots, {
+            choicecounter$qc <- 1
+            buttonValues$startDE <- FALSE
+            buttonValues$goQCplots <- TRUE
+            togglePanels(2, c( 0, 2, 4), session)
+        })
+        comparison <- reactive({
+            compselect <- 1
+            if (!is.null(input$compselect))
+                compselect <- as.integer(input$compselect)
+            if (!is.null(dc())){
+                if (is.list(dc())){
+                    if(length(dc())<compselect)
+                        compselect <- 1
+                    dc()[[compselect]]
+                }
                 else
-                    samp <- input$samples
-                a <- list(
-                    selectInput("samples",
-                                label = "Samples",
-                                choices = samp, multiple = TRUE,
-                                selected = samp)
-                )
-            })
-            output$batchEffect <- renderUI({
-                if(!is.null(input$file2)){
-                    selectBatchEffect(input)
+                    dc()
+            }
+        })
+        conds <- reactive({ comparison()$conds })
+        cols <- reactive({ comparison()$cols })
+        init_data <- reactive({ 
+            if (!is.null(comparison()$init_data))
+                comparison()$init_data 
+            else
+                qcdata()
+        })
+        filt_data <- reactive({
+            if (!is.null(comparison()$init_data) &&
+                !is.null(input$padjtxt) &&
+                !is.null(input$foldChangetxt)){
+                applyFilters(init_data(), isolate(cols()), isolate(conds()),
+                    input)
+            }
+        })
+        randstr <- reactive({ 
+            a<-NULL
+            if (!is.null(selected$data$randstr))
+                a<-selected$data$randstr() 
+            a
+        })
+        selected <- reactiveValues(data = NULL)
+        observe({
+            setFilterParams(session, input)
+            if ((!is.null(input$genenames) && input$interactive == TRUE) || 
+                (!is.null(input$genesetarea) && input$genesetarea != "")){
+                m <- init_data()
+                if (!is.null(filt_data()))
+                    m <- filt_data()
+                genenames <- ""
+                if (!is.null(input$genenames)){
+                    genenames <- input$genenames
+                } else {
+                   m <- getSearchData(m, input)
+                   genenames <- paste(rownames(m), collapse = ",")
                 }
-            })
-            output$conditionSelector <- renderUI({
-                selectConditions(Dataset(), choicecounter, input, loadingJSON)
-            })
-            dc <- reactive({
-                dc <- NULL
-                if (buttonValues$startDE == TRUE){
-                    dc <- prepDataContainer(Dataset(), choicecounter$nc, 
-                         isolate(input))
-                }
-                dc
-            })
-            # observeEvent(input$bookmark_before_startDE, {
-            #     session$doBookmark()
-            # })
-            
-            observeEvent(input$save_state, {
-                shinyjs::hide("save_state")
-                shinyjs::show("bookmark_special_name")
-                shinyjs::show("name_bookmark")
-            })
-            observeEvent(input$startDE, {
-                buttonValues$startDE <- TRUE
-                buttonValues$goQCplots <- FALSE
-                init_data <- NULL 
-                togglePanels(1, c( 0, 1, 2, 3, 4), session)
-                choicecounter$qc <- 0
-            })
-            observeEvent(input$goQCplots, {
-                choicecounter$qc <- 1
-                buttonValues$startDE <- FALSE
-                buttonValues$goQCplots <- TRUE
-                togglePanels(2, c( 0, 2, 4), session)
-            })
-            comparison <- reactive({
-                compselect <- 1
-                if (!is.null(input$compselect))
-                    compselect <- as.integer(input$compselect)
-                dc()[[compselect]]
-            })
-            conds <- reactive({ comparison()$conds })
-            cols <- reactive({ comparison()$cols })
-            init_data <- reactive({ 
-                if (!is.null(comparison()$init_data))
-                    comparison()$init_data 
-                else
-                    qcdata()
-            })
-            filt_data <- reactive({
-                if (!is.null(comparison()$init_data) &&
-                    !is.null(input$padjtxt) &&
-                    !is.null(input$foldChangetxt))
-                    applyFilters(init_data(), isolate(cols()), isolate(conds()),
-                                 input)
-            })
-            randstr <- reactive({ 
-                a<-NULL
-                if (!is.null(selected$data$randstr))
-                    a<-selected$data$randstr() 
-                a
-            })
-            selected <- reactiveValues(data = NULL)
-            observe({
-                setFilterParams(session, input)
-                if (!is.null(input$genenames) && input$interactive == TRUE){
-                    if (!is.null(isolate(filt_data())))
-                        selected$data <- getSelHeat(isolate(filt_data()), input$genenames)
-                    else
-                        selected$data <- getSelHeat(isolate(init_data()), input$genenames)
-                }
-            })
-            condmsg <- reactiveValues(text = NULL)
-            observeEvent(input$startPlots, {
-                compselect <- 1
-                if (!is.null(input$compselect) ) 
-                    compselect <- as.integer(input$compselect)
-                if (!is.null(isolate(filt_data())) && !is.null(input$padjtxt) && 
-                    !is.null(input$foldChangetxt)) {
-                    condmsg$text <- getCondMsg(isolate(dc()), input$compselect,
-                                               isolate(cols()), isolate(conds()))
-                    selected$data <- getMainPanelPlots(isolate(filt_data()), 
-                                                       isolate(cols()), isolate(conds()), input, compselect)
-                }
-            })
-            qcdata <- reactive({
-                prepDataForQC(Dataset()[,input$samples])
-            })
-            edat <- reactiveValues(val = NULL)
-            output$qcplotout <- renderPlot({
-                if (!is.null(input$col_list) || !is.null(isolate(df_select()))){
-                    updateTextInput(session, "dataset", 
-                                    value =  choicecounter$lastselecteddataset)
-                    edat$val <- explainedData()
-                    getQCReplot(isolate(cols()), isolate(conds()), 
-                                df_select(), isolate(input), inputQCPlot(),
-                                drawPCAExplained(edat$val$plotdata) )
-                }
-            })
-            df_select <- reactive({
-                if (!is.null(isolate(Dataset())))
-                    getSelectedCols(Dataset(), datasetInput(), input)
-            })
-            
-            v <- c()
-            output$intheatmap <- d3heatmap::renderD3heatmap({
-                shinyjs::onclick("intheatmap", js$getNames(v))
-                getIntHeatmap(isolate(df_select()), input, inputQCPlot())
-            })
-            
-            output$columnSelForHeatmap <- renderUI({
+                selected$data <- getSelHeat(m, genenames)
+            }
+        })
+        condmsg <- reactiveValues(text = NULL)
+        startPlots <- reactive({
+            compselect <- 1
+            if (!is.null(input$compselect) ) 
+                compselect <- as.integer(input$compselect)
+            if (!is.null(isolate(filt_data())) && !is.null(input$padjtxt) && 
+                !is.null(input$foldChangetxt)) {
+                condmsg$text <- getCondMsg(dc(), input$compselect,
+                    cols(), conds())
+                selected$data <- getMainPanelPlots(filt_data(), 
+                    cols(), conds(), input, compselect)
+            }
+        })
+        observeEvent(input$startPlots, {
+            startPlots()
+        })
+        qcdata <- reactive({
+            prepDataForQC(Dataset()[,input$samples])
+        })
+        edat <- reactiveValues(val = NULL)
+        output$qcplotout <- renderPlot({
+            if (!is.null(input$col_list) || !is.null(isolate(df_select()))){
+                updateTextInput(session, "dataset", 
+                    value =  choicecounter$lastselecteddataset)
+                edat$val <- explainedData()
+                getQCReplot(isolate(cols()), isolate(conds()), 
+                    df_select(), isolate(input), inputQCPlot(),
+                    drawPCAExplained(edat$val$plotdata) )
+            }
+        })
+        df_select <- reactive({
+                getSelectedCols(Dataset(), datasetInput(), input)
+        })
+        
+        v <- c()
+        output$intheatmap <- d3heatmap::renderD3heatmap({
+            shinyjs::onclick("intheatmap", js$getNames(v))
+            getIntHeatmap(isolate(df_select()), input, inputQCPlot())
+        })
+        
+        output$columnSelForHeatmap <- renderUI({
+            wellPanel(id = "tPanel",
+                      style = "overflow-y:scroll; max-height: 200px",
+                      checkboxGroupInput("col_list", "Select col to include:",
+                                         isolate(input$samples), 
+                                         selected=isolate(input$samples))
+            )
+        })
+        
+        explainedData <- reactive({
+            getPCAexplained( datasetInput(), input )
+        })
+        
+        inputQCPlot <- reactiveValues(clustering_method = "ward.D2",
+            distance_method = "cor", interactive = FALSE, width = 700, height = 500)
+        inputQCPlot <- eventReactive(input$startQCPlot, {
+            m <- c()
+            m$clustering_method <- input$clustering_method
+            m$distance_method <- input$distance_method
+            m$interactive <- input$interactive
+            m$width <- input$width
+            m$height <- input$height
+            return(m)
+        })
+        
+        goplots <- reactive({
+            dat <- getDataForTables(input, init_data(),
+                                    filt_data(), selected,
+                                    getMostVaried(),  isolate(mergedComp()),
+                                    isolate(edat$val$pcaset))
+            getGOPlots(dat[[1]][, isolate(cols())], input)
+        })
+        
+        inputGOstart <- eventReactive(input$startGO, {
+            goplots()
+        })
+        output$GOPlots1 <- renderPlot({
+            if (!is.null(inputGOstart()$p) && input$startGO){
+                return(inputGOstart()$p)
+            }
+        })
+        
+        output$getColumnsForTables <-  renderUI({
+            if (is.null(table_col_names())) return (NULL)
+            selected_list <- table_col_names()
+            if (!is.null(input$table_col_list))
+                selected_list <- input$table_col_list
+            a <- list(
                 wellPanel(id = "tPanel",
                           style = "overflow-y:scroll; max-height: 200px",
-                          checkboxGroupInput("col_list", "Select col to include:",
-                                             isolate(input$samples), 
-                                             selected=isolate(input$samples))
+                          checkboxGroupInput("table_col_list", "Select col to include:",
+                                             table_col_names(), 
+                                             selected=selected_list)
                 )
-            })
-            
-            explainedData <- reactive({
-                getPCAexplained( datasetInput(), input )
-            })
-            
-            inputQCPlot <- reactiveValues(clustering_method = "ward.D2",
-                                          distance_method = "cor", interactive = FALSE, width = 700, height = 500)
-            inputQCPlot <- eventReactive(input$startQCPlot, {
-                m <- c()
-                m$clustering_method <- input$clustering_method
-                m$distance_method <- input$distance_method
-                m$interactive <- input$interactive
-                m$width <- input$width
-                m$height <- input$height
-                return(m)
-            })
-            
-            goplots <- reactive({
-                dat <- getDataForTables(input, init_data(),
-                                        filt_data(), selected,
-                                        getMostVaried(),  isolate(mergedComp()),
-                                        isolate(edat$val$pcaset))
-                getGOPlots(dat[[1]][, isolate(cols())], input)
-            })
-            
-            inputGOstart <- eventReactive(input$startGO, {
-                goplots()
-            })
-            output$GOPlots1 <- renderPlot({
-                if (!is.null(inputGOstart()$p) && input$startGO){
-                    return(inputGOstart()$p)
-                }
-            })
-            
-            output$getColumnsForTables <-  renderUI({
-                if (is.null(table_col_names())) return (NULL)
-                selected_list <- table_col_names()
-                if (!is.null(input$table_col_list))
-                    selected_list <- input$table_col_list
-                a <- list(
-                    wellPanel(id = "tPanel",
-                              style = "overflow-y:scroll; max-height: 200px",
-                              checkboxGroupInput("table_col_list", "Select col to include:",
-                                                 table_col_names(), 
-                                                 selected=selected_list)
-                    )
-                )
-            })
-            table_col_names <- reactive({
-                if (is.null(tabledat())) return (NULL)
-                colnames(tabledat()[[1]])
-            })
-            tabledat <- reactive({
-                dat <- getDataForTables(input, init_data(),
-                                        filt_data(), selected,
-                                        getMostVaried(),  isolate(mergedComp()),
-                                        isolate(edat$val$pcaset))
-                if (is.null(dat)) return (NULL)
-                dat2 <- removeCols(c("ID", "x", "y","Legend", "Size"), dat[[1]])
-                
-                pcols <- c(names(dat2)[grep("^padj", names(dat2))], 
-                           names(dat2)[grep("pvalue", names(dat2))])
-                if (!is.null(pcols) & length(pcols) > 1)
-                    dat2[,  pcols] <- apply(dat2[,  pcols], 2,
-                                            function(x) format( as.numeric(x), scientific = TRUE, digits = 3 ))
-                else
-                    dat2[,  pcols] <- format( as.numeric( dat2[,  pcols] ), 
-                                              scientific = TRUE, digits = 3 )
-                rcols <- names(dat2)[!(names(dat2) %in% pcols)]
-                dat2[,  rcols] <- apply(dat2[,  rcols], 2,
-                                        function(x) round( as.numeric(x), digits = 2))  
-                dat[[1]] <- dat2
-                dat
-            })
-            
-            output$tables <- DT::renderDataTable({
-                dat <- tabledat()
-                if (is.null(dat) || is.null(table_col_names())
-                    || is.null(input$table_col_list) || length(input$table_col_list)<1) 
-                    return (NULL)
-                if (!dat[[2]] %in% input$table_col_list)
-                    dat[[2]]= ""
-                if (!dat[[3]] %in% input$table_col_list)
-                    dat[[3]]= ""
-                
-                m <- DT::datatable(dat[[1]][, input$table_col_list],
-                                   options = list(lengthMenu = list(c(10, 25, 50, 100),
-                                                                    c("10", "25", "50", "100")),
-                                                  pageLength = 25, paging = TRUE, searching = TRUE)) %>%
-                    getTableStyle(input, dat[[2]], dat[[3]], buttonValues$startDE)
-                
-                m
-            })
-            getMostVaried <- reactive({
-                a <- NULL
-                if (choicecounter$qc == 0)
-                    a <- filt_data()[filt_data()$Legend=="MV" | 
-                                         filt_data()$Legend=="GS", ]
-                else
-                    a <- getMostVariedList(data.frame(init_data()), 
-                                           c(input$samples), input$topn, input$mincount)
-                a
-            })
-            
-            output$gotable <- DT::renderDataTable({
-                if (!is.null(inputGOstart()$table)){
-                    DT::datatable(inputGOstart()$table,
-                                  list(lengthMenu = list(c(10, 25, 50, 100),
-                                                         c("10", "25", "50", "100")),
-                                       pageLength = 25, paging = TRUE, searching = TRUE))
-                }
-            })
-            
-            mergedComp <- reactive({
-                dat <- applyFiltersToMergedComparison(
-                    isolate(mergedCompInit()), choicecounter$nc, input)
-                ret <- dat[dat$Legend == "Sig", ]
-                #ret[ret$Legend == "Sig", ] <- NULL
-                ret
-            })
-            
-            mergedCompInit <- reactive({
-                merged <- getMergedComparison(
-                    isolate(Dataset()), isolate(dc()), choicecounter$nc, input)
-                merged
-            })
-            datasetInput <- function(addIdFlag = FALSE){
-                m <- NULL
-                if (choicecounter$qc == 0 ) {
-                    mergedCompDat <- NULL
-                    if (input$dataset == "comparisons")
-                        mergedCompDat <- mergedComp()
-                    m <- getSelectedDatasetInput(filt_data(), 
-                                                 selected$data$getSelected(), getMostVaried(),
-                                                 mergedCompDat, isolate(edat$val$pcaset), input)
-                }
-                else
-                    m <- getSelectedDatasetInput(init_data(), 
-                                                 getMostVaried = getMostVaried(),
-                                                 explainedData = isolate(edat$val$pcaset),
-                                                 input = input)
-                if(addIdFlag)
-                    m <- addID(m)
-                if (input$dataset != "pcaset"){
-                    choicecounter$lastselecteddataset = input$dataset
-                }
-                m
-            }
-            output$downloadData <- downloadHandler(filename = function() {
-                paste(input$dataset, "csv", sep = ".")
-            }, content = function(file) {
-                dat <- getDataForTables(input, init_data(),
-                                        filt_data(), selected,
-                                        getMostVaried(),  isolate(mergedComp()),
-                                        isolate(edat$val$pcaset))
-                dat2 <- removeCols(c("x", "y","Legend", "Size"), dat[[1]])
-                if(!("ID" %in% names(dat2)))
-                    dat2 <- addID(dat2)
-                write.table(dat2, file, sep = ",", row.names = FALSE)
-            })
-            
-            # output$startup_object <- reactive({
-            #     readRDS("shiny_saves/startup.rds")
-            #     return(startup[['bookmark_counter']] == 0)
-            # })
-            
-            output$downloadPlot <- downloadHandler(filename = function() {
-                paste(input$qcplot, ".pdf", sep = "")
-            }, content = function(file) {
-                if (choicecounter$qc == 0)
-                    saveQCPlot(file, input, datasetInput(), 
-                               cols(), conds(), inputQCPlot())
-                else
-                    saveQCPlot(file, input, datasetInput(),
-                               inputQCPlot = inputQCPlot())
-            })
-            
-            output$downloadGOPlot <- downloadHandler(filename = function() {
-                paste(input$goplot, ".pdf", sep = "")
-            }, content = function(file) {
-                pdf(file)
-                print( inputGOstart()$p )
-                dev.off()
-            })
-        },
-        err=function(errorCondition) {
-            cat("in err handler")
-            message(errorCondition)
-        },
-        warn=function(warningCondition) {
-            cat("in warn handler")
-            message(warningCondition)
+            )
         })
+        table_col_names <- reactive({
+            if (is.null(tabledat())) return (NULL)
+            colnames(tabledat()[[1]])
+        })
+        tabledat <- reactive({
+            dat <- getDataForTables(input, init_data(),
+                filt_data(), selected,
+                getMostVaried(),  isolate(mergedComp()),
+                isolate(edat$val$pcaset))
+            if (is.null(dat)) return (NULL)
+            dat2 <- removeCols(c("ID", "x", "y","Legend", "Size"), dat[[1]])
+            
+            pcols <- c(names(dat2)[grep("^padj", names(dat2))], 
+                       names(dat2)[grep("pvalue", names(dat2))])
+            if (!is.null(pcols) && length(pcols) > 1)
+                dat2[,  pcols] <- apply(dat2[,  pcols], 2,
+                     function(x) format( as.numeric(x), scientific = TRUE, digits = 3 ))
+            else
+                dat2[,  pcols] <- format( as.numeric( dat2[,  pcols] ), 
+                                          scientific = TRUE, digits = 3 )
+            rcols <- names(dat2)[!(names(dat2) %in% pcols)]
+            dat2[,  rcols] <- apply(dat2[,  rcols], 2,
+                                    function(x) round( as.numeric(x), digits = 2))  
+            dat[[1]] <- dat2
+            dat
+        })
+        output$tables <- DT::renderDataTable({
+            dat <- tabledat()
+            if (is.null(dat) || is.null(table_col_names())
+                || is.null(input$table_col_list) || length(input$table_col_list)<1) 
+                return (NULL)
+            if (!dat[[2]] %in% input$table_col_list)
+                dat[[2]]= ""
+            if (!dat[[3]] %in% input$table_col_list)
+                dat[[3]]= ""
+            
+            m <- DT::datatable(dat[[1]][, input$table_col_list],
+                options = list(lengthMenu = list(c(10, 25, 50, 100),
+                c("10", "25", "50", "100")),
+                pageLength = 25, paging = TRUE, searching = TRUE)) %>%
+                getTableStyle(input, dat[[2]], dat[[3]], buttonValues$startDE)
+            m
+        })
+        getMostVaried <- reactive({
+            a <- NULL
+            if (choicecounter$qc == 0)
+                a <- filt_data()[filt_data()$Legend=="MV" | 
+                    filt_data()$Legend=="GS", ]
+            else
+                a <- getMostVariedList(data.frame(init_data()), 
+                    c(input$samples), input$topn, input$mincount)
+            a
+        })
+        output$gotable <- DT::renderDataTable({
+            if (!is.null(inputGOstart()$table)){
+                DT::datatable(inputGOstart()$table,
+                    list(lengthMenu = list(c(10, 25, 50, 100),
+                    c("10", "25", "50", "100")),
+                    pageLength = 25, paging = TRUE, searching = TRUE))
+            }
+        })
+        mergedComp <- reactive({
+            dat <- applyFiltersToMergedComparison(
+                isolate(mergedCompInit()), choicecounter$nc, input)
+            ret <- dat[dat$Legend == "Sig", ]
+            #ret[ret$Legend == "Sig", ] <- NULL
+            ret
+        })
+        
+        mergedCompInit <- reactive({
+            merged <- getMergedComparison(
+                isolate(Dataset()), isolate(dc()), choicecounter$nc, input)
+            merged
+        })
+        datasetInput <- function(addIdFlag = FALSE){
+            m <- NULL
+            if (choicecounter$qc == 0 ) {
+                mergedCompDat <- NULL
+                if (input$dataset == "comparisons")
+                    mergedCompDat <- mergedComp()
+                m <- getSelectedDatasetInput(filt_data(), 
+                     selected$data$getSelected(), getMostVaried(),
+                     mergedCompDat, isolate(edat$val$pcaset), input)
+            }
+            else
+                m <- getSelectedDatasetInput(init_data(), 
+                     getMostVaried = getMostVaried(),
+                     explainedData = isolate(edat$val$pcaset),
+                     input = input)
+            if(addIdFlag)
+                m <- addID(m)
+            if (input$dataset != "pcaset"){
+                choicecounter$lastselecteddataset = input$dataset
+            }
+            m
+        }
+        output$downloadData <- downloadHandler(filename = function() {
+            paste(input$dataset, "csv", sep = ".")
+        }, content = function(file) {
+            dat <- getDataForTables(input, init_data(),
+                                    filt_data(), selected,
+                                    getMostVaried(),  isolate(mergedComp()),
+                                    isolate(edat$val$pcaset))
+            dat2 <- removeCols(c("x", "y","Legend", "Size"), dat[[1]])
+            if(!("ID" %in% names(dat2)))
+                dat2 <- addID(dat2)
+            write.table(dat2, file, sep = ",", row.names = FALSE)
+        })
+
+        output$downloadPlot <- downloadHandler(filename = function() {
+            paste(input$qcplot, ".pdf", sep = "")
+        }, content = function(file) {
+            if (choicecounter$qc == 0)
+                saveQCPlot(file, input, datasetInput(), 
+                           cols(), conds(), inputQCPlot())
+            else
+                saveQCPlot(file, input, datasetInput(),
+                           inputQCPlot = inputQCPlot())
+        })
+        
+        output$downloadGOPlot <- downloadHandler(filename = function() {
+            paste(input$goplot, ".pdf", sep = "")
+        }, content = function(file) {
+            pdf(file)
+            print( inputGOstart()$p )
+            dev.off()
+        })
+    },
+    err=function(errorCondition) {
+        cat("in err handler")
+        message(errorCondition)
+    },
+    warn=function(warningCondition) {
+        cat("in warn handler")
+        message(warningCondition)
+    })
 }

@@ -61,6 +61,6 @@ startDEBrowser <- function(){
         app <- shinyApp( ui = shinyUI(deUI),
                     server = shinyServer(deServer), 
                     enableBookmarking = "server")
-        runApp(app, port = 7575)
+        runApp(app)
     }
 }
