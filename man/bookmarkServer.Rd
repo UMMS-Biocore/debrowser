@@ -5,7 +5,7 @@
 \title{bookmarkServer}
 \usage{
 bookmarkServer(input = NULL, output = NULL, session = NULL,
-  loadingJSON = NULL, nc = NULL, Dataset = NULL)
+  loadingJSON = NUL)
 }
 \arguments{
 \item{input, }{input}

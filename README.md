@@ -59,7 +59,7 @@ biocLite("debrowser")
 
 # 2. Load the library
 
-library(DEBrowser)
+library(debrowser)
 
 # 3. Start DEBrowser
 

@@ -4,7 +4,7 @@
 \alias{getSelHeat}
 \title{getSelHeat}
 \usage{
-getSelHeat(data = NULL, input)
+getSelHeat(data = NULL, input = NULL)
 }
 \arguments{
 \item{data, }{selected genes}
