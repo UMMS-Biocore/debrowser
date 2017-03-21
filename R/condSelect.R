@@ -18,7 +18,7 @@ getMethodDetails <- function(num = 0, input = NULL) {
                 getSelectInputBox("fitType", "Fit Type", num, 
                                 c("parametric", "local", "mean"), 
                                 selectedInput("testType", num, "parametric",
-                                                input)),
+                                                input), 3),
                 column(2, textInput(paste0("betaPrior", num), "Beta Prior", 
                                         value = isolate(selectedInput(
                                         "betaPrior", num, "0", input)) )),
@@ -29,7 +29,7 @@ getMethodDetails <- function(num = 0, input = NULL) {
                 (condition <- paste0("input.demethod",num," == 'EdgeR'")),
                 getSelectInputBox("edgeR_normfact", "Normalization", num, 
                         c("TMM","RLE","upperquartile","none"), 
-                        selectedInput("edgeR_normfact", num, "TMM", input)),
+                        selectedInput("edgeR_normfact", num, "TMM", input), 3),
                 column(2,textInput(paste0("dispersion", num), "Dispersion", 
                                 value = isolate(selectedInput("dispersion", 
                                 num, "0", input) ))),
@@ -41,7 +41,7 @@ getMethodDetails <- function(num = 0, input = NULL) {
                 (condition <- paste0("input.demethod",num," ==  'Limma'")),
                 getSelectInputBox("limma_normfact", "Normalization", num, 
                         c("TMM","RLE","upperquartile","none"), 
-                        selectedInput("limma_normfact", num, "TMM", input)),
+                        selectedInput("limma_normfact", num, "TMM", input), 3),
                 getSelectInputBox("limma_fitType", "Fit Type", num,
                         c("ls", "robust"), 
                         selectedInput("limma_fitType", num, "ls", input)),
@@ -212,19 +212,21 @@ selectedInput <- function(id = NULL, num = 0, default = NULL,
 #' @param num, panel that is going to be shown
 #' @param choices, sample list
 #' @param selected, selected smaple list
+#' @param cw, column width
 #' @examples
 #'     x <- getSelectInputBox()
 #'
 #' @export
 #'
 getSelectInputBox <- function(id = NULL, name = NULL, 
-                              num = 0, choices = NULL, selected = NULL) {
+                              num = 0, choices = NULL, selected = NULL,
+                              cw = 2) {
     if (is.null(id)) return(NULL)
     if (!is.null(choices))
-        a <- list(column(2, selectInput(paste0(id, num),
-                                        label = name,
-                                        choices = choices, multiple = FALSE,
-                                        selected = selected)))
+        a <- list(column(cw, selectInput(paste0(id, num),
+            label = name,
+            choices = choices, multiple = FALSE,
+            selected = selected)))
 }
 
 

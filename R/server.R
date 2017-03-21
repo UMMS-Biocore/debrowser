@@ -212,9 +212,6 @@ deServer <- function(input, output, session) {
                 choices <- c("up+down", "up", "down",
                              "comparisons", "alldetected",
                              "most-varied", "pcaset")
-            #if (!is.null(selected$data))
-            #    if (!is.null(selected$data$getSelected())
-            #        && nrow(selected$data$getSelected())>1)
             choices <- c(choices, "selected")
                 a <- getDownloadSection(TRUE, choices)
                 a
@@ -460,10 +457,10 @@ deServer <- function(input, output, session) {
         
         output$columnSelForHeatmap <- renderUI({
             wellPanel(id = "tPanel",
-                      style = "overflow-y:scroll; max-height: 200px",
-                      checkboxGroupInput("col_list", "Select col to include:",
-                                         isolate(input$samples), 
-                                         selected=isolate(input$samples))
+                style = "overflow-y:scroll; max-height: 200px",
+                checkboxGroupInput("col_list", "Select col to include:",
+                isolate(input$samples), 
+                selected=isolate(input$samples))
             )
         })
         
@@ -485,9 +482,9 @@ deServer <- function(input, output, session) {
         
         goplots <- reactive({
             dat <- getDataForTables(input, init_data(),
-                                    filt_data(), selected,
-                                    getMostVaried(),  isolate(mergedComp()),
-                                    isolate(edat$val$pcaset))
+                filt_data(), selected,
+                getMostVaried(),  isolate(mergedComp()),
+                isolate(edat$val$pcaset))
             getGOPlots(dat[[1]][, isolate(cols())], input)
         })
         
@@ -503,14 +500,15 @@ deServer <- function(input, output, session) {
         output$getColumnsForTables <-  renderUI({
             if (is.null(table_col_names())) return (NULL)
             selected_list <- table_col_names()
-            if (!is.null(input$table_col_list))
+            if (!is.null(input$table_col_list) 
+                && all(input$table_col_list %in% colnames(tabledat()[[1]])))
                 selected_list <- input$table_col_list
             a <- list(
                 wellPanel(id = "tPanel",
-                          style = "overflow-y:scroll; max-height: 200px",
-                          checkboxGroupInput("table_col_list", "Select col to include:",
-                                             table_col_names(), 
-                                             selected=selected_list)
+                    style = "overflow-y:scroll; max-height: 200px",
+                    checkboxGroupInput("table_col_list", "Select col to include:",
+                    table_col_names(), 
+                    selected=selected_list)
                 )
             )
         })
@@ -530,10 +528,10 @@ deServer <- function(input, output, session) {
                        names(dat2)[grep("pvalue", names(dat2))])
             if (!is.null(pcols) && length(pcols) > 1)
                 dat2[,  pcols] <- apply(dat2[,  pcols], 2,
-                     function(x) format( as.numeric(x), scientific = TRUE, digits = 3 ))
+                    function(x) format( as.numeric(x), scientific = TRUE, digits = 3 ))
             else
                 dat2[,  pcols] <- format( as.numeric( dat2[,  pcols] ), 
-                                          scientific = TRUE, digits = 3 )
+                    scientific = TRUE, digits = 3 )
             rcols <- names(dat2)[!(names(dat2) %in% pcols)]
             dat2[,  rcols] <- apply(dat2[,  rcols], 2,
                                     function(x) round( as.numeric(x), digits = 2))  
@@ -545,6 +543,8 @@ deServer <- function(input, output, session) {
             if (is.null(dat) || is.null(table_col_names())
                 || is.null(input$table_col_list) || length(input$table_col_list)<1) 
                 return (NULL)
+            if (!all(input$table_col_list %in% colnames(dat[[1]]), na.rm = FALSE)) 
+                return(NULL)
             if (!dat[[2]] %in% input$table_col_list)
                 dat[[2]]= ""
             if (!dat[[3]] %in% input$table_col_list)
@@ -592,8 +592,9 @@ deServer <- function(input, output, session) {
             m <- NULL
             if (choicecounter$qc == 0 ) {
                 mergedCompDat <- NULL
-                if (input$dataset == "comparisons")
+                if (input$dataset == "comparisons"){
                     mergedCompDat <- mergedComp()
+                }
                 m <- getSelectedDatasetInput(filt_data(), 
                      selected$data$getSelected(), getMostVaried(),
                      mergedCompDat, isolate(edat$val$pcaset), input)

@@ -89,7 +89,7 @@ getIntHeatmapVis <- function(randstr = NULL) {
 #'
 getQCPlots <- function(dataset = NULL, input = NULL,
     metadata = NULL, inputQCPlot = NULL, drawPCAExplained = NULL) {
-    if (is.null(dataset)) return(NULL)
+    if (is.null(dataset) || is.null(drawPCAExplained)) return(NULL)
     a <- NULL
     if (nrow(dataset) > 0) {
         dat <- getNormalizedMatrix(dataset, input$norm_method)

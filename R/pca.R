@@ -137,6 +137,7 @@ getPCAexplained <- function(datasetInput = NULL,
     datexp <- NULL
     pcaset <- NULL
     if (input$qcplot == "pca"){
+        if (!all(input$col_list %in% colnames(datasetInput), na.rm = FALSE)) return (NULL)
         dataset <- datasetInput[,input$col_list[c(input$col_list)
             %in% colnames(datasetInput)]]
         if (dim(dataset)[2] == 0) return(NULL)

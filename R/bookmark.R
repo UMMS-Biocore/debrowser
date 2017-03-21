@@ -208,8 +208,6 @@ bookmarkUI <- function(id = NULL) {
 #' @param output, output
 #' @param session, session
 #' @param loadingJSON, loadingJSON
-#' @param nc, choicecounter
-#' @param Dataset, Dataset
 #' @examples
 #'     x <- bookmarkServer()
 #'
