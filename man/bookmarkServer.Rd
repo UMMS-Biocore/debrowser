@@ -15,10 +15,6 @@ bookmarkServer(input = NULL, output = NULL, session = NULL,
 \item{session, }{session}
 
 \item{loadingJSON, }{loadingJSON}
-
-\item{nc, }{choicecounter}
-
-\item{Dataset, }{Dataset}
 }
 \description{
 bookmark Server functions
