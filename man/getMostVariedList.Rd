@@ -4,17 +4,14 @@
 \alias{getMostVariedList}
 \title{getMostVariedList}
 \usage{
-getMostVariedList(datavar = NULL, cols = NULL, topn = 500,
-  mincount = 10)
+getMostVariedList(datavar = NULL, cols = NULL, input = NULL)
 }
 \arguments{
 \item{datavar, }{loaded dataset}
 
 \item{cols, }{selected columns}
 
-\item{topn, }{most varied records}
-
-\item{mincount, }{total min read count for selected samples}
+\item{input, }{input}
 }
 \value{
 data

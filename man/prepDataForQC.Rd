@@ -4,10 +4,12 @@
 \alias{prepDataForQC}
 \title{prepDataForQC}
 \usage{
-prepDataForQC(dataset = NULL)
+prepDataForQC(dataset = NULL, input = NULL)
 }
 \arguments{
 \item{dataset, }{loaded dataset}
+
+\item{input, }{input}
 }
 \value{
 data

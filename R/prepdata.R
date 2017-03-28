@@ -328,6 +328,7 @@ getSelectedDatasetInput<-function(rdata = NULL, getSelected = NULL,
 #' Prepares selected data for QC plots.
 #'
 #' @param dataset, loaded dataset
+#' @param input, input
 #' @return data
 #' @export
 #'
