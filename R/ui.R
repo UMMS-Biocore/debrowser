@@ -28,6 +28,12 @@ deUI <- function() {
         shinyjs.showDropdown = function(params) {
             document.getElementsByClassName("dropdown-toggle")[0].style.display = "block";
         }
+        shinyjs.hideQCPlot = function(params) {
+            document.getElementsByClassName("shiny-plot-output")[0].style.display = "none";
+        }
+        shinyjs.showQCPlot = function(params) {
+            document.getElementsByClassName("shiny-plot-output")[0].style.display = "block";
+        }
     '
     
 enableBookmarking("server")

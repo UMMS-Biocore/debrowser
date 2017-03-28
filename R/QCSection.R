@@ -32,9 +32,6 @@ getQCPanel <- function(input = NULL) {
         conditionalPanel(condition = 
             "(!(input.interactive && input.qcplot == 'heatmap'))",
             column(12, plotOutput("qcplotout",
-            height = height, width = width))),
-        conditionalPanel(condition = "input.qcplot == 'pca'",
-            column(12, plotOutput("pcaexplained",
             height = height, width = width))),    
         conditionalPanel(condition = "(input.interactive && input.qcplot == 'heatmap')",
             d3heatmap::d3heatmapOutput("intheatmap", width = width, height=height),

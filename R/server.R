@@ -252,7 +252,6 @@ deServer <- function(input, output, session) {
                 hide(id = "loading-debrowser", anim = TRUE, animType = "fade")  
             return(!is.null(Dataset()))
         })
-        
         outputOptions(output, "dataready", 
                       suspendWhenHidden = FALSE)
         output$definished <- reactive({
@@ -321,9 +320,9 @@ deServer <- function(input, output, session) {
                 samp <- input$samples
             a <- list(
                 selectInput("samples",
-                            label = "Samples",
-                            choices = samp, multiple = TRUE,
-                            selected = samp)
+                    label = "Samples",
+                    choices = samp, multiple = TRUE,
+                    selected = samp)
             )
         })
         output$batchEffect <- renderUI({
@@ -432,21 +431,25 @@ deServer <- function(input, output, session) {
             startPlots()
         })
         qcdata <- reactive({
-            prepDataForQC(Dataset()[,input$samples])
+            prepDataForQC(Dataset()[,input$samples], input)
         })
         edat <- reactiveValues(val = NULL)
+        observeEvent(input$qcplot, {
+            shinyjs::js$showQCPlot()
+        })
         output$qcplotout <- renderPlot({
-            if (!is.null(input$col_list) || !is.null(isolate(df_select()))){
-                updateTextInput(session, "dataset", 
-                    value =  choicecounter$lastselecteddataset)
-                edat$val <- explainedData()
-                getQCReplot(isolate(cols()), isolate(conds()), 
-                    df_select(), input, inputQCPlot(),
-                    drawPCAExplained(edat$val$plotdata) )
-            }
+            if (is.null(input$col_list) && is.null(df_select())) return(NULL)
+            updateTextInput(session, "dataset", 
+                value =  choicecounter$lastselecteddataset)
+            edat$val <- explainedData()
+            if(input$qcplot=="pca" || input$qcplot=="IQR" || input$qcplot=="Density")
+                shinyjs::js$hideQCPlot()
+            getQCReplot(isolate(cols()), isolate(conds()), 
+                df_select(), input, inputQCPlot(),
+                drawPCAExplained(edat$val$plotdata) )
         })
         df_select <- reactive({
-                getSelectedCols(Dataset(), datasetInput(), input)
+            getSelectedCols(Dataset(), datasetInput(), input)
         })
         
         v <- c()
@@ -565,7 +568,7 @@ deServer <- function(input, output, session) {
                     filt_data()$Legend=="GS", ]
             else
                 a <- getMostVariedList(data.frame(init_data()), 
-                    c(input$samples), input$topn, input$mincount)
+                    c(input$samples), input)
             a
         })
         output$gotable <- DT::renderDataTable({

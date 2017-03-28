@@ -86,8 +86,8 @@ prepDataContainer <- function(data = NULL, counter=NULL,
         rep(paste0("Cond", 2*i), length(inputconds()$conds[[2*i]])))
         cols <- c(paste(inputconds()$conds[[2*i-1]]), 
         paste(inputconds()$conds[[2*i]]))
-        m<-prepDEOutput(data, cols, conds, inputconds(), i)
-        m<-list(conds = conds, cols = cols, init_data=m, 
+        m <- prepDEOutput(data, cols, conds, inputconds(), i, input)
+        m <- list(conds = conds, cols = cols, init_data=m, 
             demethod_params = inputconds()$demethod_params[i])
         dclist[[i]] <- m
     }
@@ -170,6 +170,7 @@ setFilterParams <- function(session = NULL, input = NULL) {
 #' @param conds, conds
 #' @param inputconds, inputconds
 #' @param i, selected comparison number
+#' @param input, input
 #' @return data
 #' @export
 #'
@@ -177,13 +178,13 @@ setFilterParams <- function(session = NULL, input = NULL) {
 #'     x <- prepDEOutput()
 #'
 prepDEOutput <- function(data = NULL, cols = NULL, 
-    conds = NULL, inputconds=NULL, i=NULL) {
+    conds = NULL, inputconds=NULL, i=NULL, input = NULL) {
     if (is.null(data)) return (NULL)
     if (length(cols) != length(conds)) return(NULL)
     params <- inputconds$demethod_params[i]
     de_res <- runDE(data, cols, conds, params)
     de_res <- data.frame(de_res)
-    norm_data <- getNormalizedMatrix(data[, cols])
+    norm_data <- getNormalizedMatrix(data[, cols], input$norm_method)
     mean_cond <- c()
     mean_cond_first <- getMean(norm_data, de_res, 
         inputconds, 2*i-1)
@@ -262,7 +263,7 @@ applyFilters <- function(filt_data = NULL, cols = NULL, conds=NULL,
         m$Legend[m$foldChange <= (1 / foldChange_cutoff) &
                m$padj <= padj_cutoff] <- "Down"
     if (input$dataset == "most-varied" && !is.null(cols)) {
-        most_varied <- getMostVariedList(m, cols, input$topn, input$mincount)
+        most_varied <- getMostVariedList(m, cols, input)
         m[rownames(most_varied), c("Legend")] <- "MV"
     }
     #if (input$dataset == "selected" && !is.null(cols) &&
@@ -333,7 +334,7 @@ getSelectedDatasetInput<-function(rdata = NULL, getSelected = NULL,
 #' @examples
 #'     x <- prepDataForQC()
 #'
-prepDataForQC<-function(dataset = NULL){
+prepDataForQC<-function(dataset = NULL, input = NULL){
     if (is.null(dataset)) return (NULL)
     columns <-colnames(dataset)
     dataset <- data.frame(dataset[,columns])
@@ -342,7 +343,8 @@ prepDataForQC<-function(dataset = NULL){
     dataset1 <- rowSums(dataset[,1:ncol(dataset)])
     filtd <- data.frame(subset(dataset, 
         rowSums(dataset[,1:ncol(dataset)]) > 10))
-    norm_data <- getNormalizedMatrix(filtd)
+    norm_data <- getNormalizedMatrix(filtd, 
+        input$norm_method)
     return(norm_data)
 }
 
@@ -353,22 +355,20 @@ prepDataForQC<-function(dataset = NULL){
 #'
 #' @param datavar, loaded dataset
 #' @param cols, selected columns
-#' @param topn, most varied records
-#' @param mincount, total min read count for selected samples
+#' @param input, input 
 #' @return data
 #' @export
 #'
 #' @examples
 #'     x <- getMostVariedList()
 #'
-getMostVariedList <- function(datavar = NULL, cols = NULL,
-    topn = 500, mincount = 10){
+getMostVariedList <- function(datavar = NULL, cols = NULL, input = NULL){
     if (is.null(datavar)) return (NULL)
-    topn <- as.integer(as.numeric(topn))
-    mincount <- as.integer(as.numeric(mincount))
-    norm_data_var <- getNormalizedMatrix(
-        datavar[rowSums(datavar[,cols])>mincount,cols])  
-    cv<-cbind(apply(norm_data_var, 1, function(x) 
+    topn <- as.integer(as.numeric(input$topn))
+    mincount <- as.integer(as.numeric(input$mincount))
+    norm_data <- getNormalizedMatrix(datavar[rowSums(datavar[,cols])
+        > mincount,cols], input$norm_method)
+    cv<-cbind(apply(norm_data, 1, function(x) 
         (sd(x,na.rm=TRUE)/mean(x,na.rm=TRUE))), 1)
     colnames(cv)<-c("coeff", "a")
     cvsort<-cv[order(cv[,1],decreasing=TRUE),]
@@ -513,8 +513,9 @@ getDataForTables <- function(input = NULL, init_data = NULL,
     fcstr <- "foldChange"
     dat <- NULL
     if (input$dataset == "alldetected"){
-        if (!is.null(init_data))
+        if (!is.null(init_data)){
             dat <- getSearchData(init_data, input)
+        }
     }
     else if (input$dataset == "up+down"){
         if (!is.null(filt_data))
