@@ -19,7 +19,7 @@ You can download the source code or the tar file for DEBrowser `here. <https://g
 
 1. Install the required dependencies by running the following commands in R or RStudio. 
 
-		source("http://www.bioconductor.org/biocLite.R")
+		source("https://www.bioconductor.org/biocLite.R")
 
 		biocLite("debrowser")
 

@@ -1,19 +1,17 @@
 Package: debrowser
 Type: Package
 Title: debrowser: Interactive Differential Expresion Analysis Browser
-Version: 1.3.8
+Version: 1.3.9
 Date: 2016-07-05
 Author: Alper Kucukural <alper.kucukural@umassmed.edu>,
-        Berk Sarioz <berk.sarioz@umassmed.edu>,
-        Nicholas Merowsky <nicholas.merowsky@umassmed.edu>,
         Manuel Garber <manuel.garber@umassmed.edu>
 Maintainer: Alper Kucukural <alper.kucukural@umassmed.edu>
 Description: Bioinformatics platform containing interactive plots and tables
     for differential gene and region expression studies. Allows visualizing
     expression data much more deeply in an interactive and faster way. By
-    changing the parameters, user can easily discover different parts of the
+    changing the parameters, users can easily discover different parts of the
     data that like never have been done before. Manually creating and looking
-    these plots takes time. With this system users can prepare plots without
+    these plots takes time. With DEBrowser users can prepare plots without
     writing any code. Differential expression, PCA and clustering analysis are
     made on site and the results are shown in various plots such as scatter,
     bar, box, volcano, ma plots and Heatmaps.
@@ -56,7 +54,8 @@ Imports:
     methods,
     sva,
     shinydashboard,
-    devtools
+    devtools,
+    RCurl
 RoxygenNote: 6.0.1
 Suggests: testthat,
     rmarkdown,

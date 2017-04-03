@@ -9,7 +9,7 @@ Getting Started
 
 First off, we need to head to the DEBrowser webpage at this url:
 
-http://debrowser.umassmed.edu/
+https://debrowser.umassmed.edu/
 
 Alternatively, if you have the R package installed, you can call these R commands:
 
@@ -29,9 +29,9 @@ by selecting a file under the "Choose TSV File" selection.  If you do not have a
 to use the built in demo by clicking on the 'Load Demo!'.  To view the entire demo data file, you can download
 this `demo set`_.  For an example case study, try our `advanced demo`_.
 
-.. _demo set: http://bioinfo.umassmed.edu/pub/debrowser/simple_demo.tsv
+.. _demo set: https://bioinfo.umassmed.edu/pub/debrowser/simple_demo.tsv
 
-.. _advanced demo: http://bioinfo.umassmed.edu/pub/debrowser/advanced_demo.tsv
+.. _advanced demo: https://bioinfo.umassmed.edu/pub/debrowser/advanced_demo.tsv
 
 The TSV files used to describe the quantification counts are similar to this:
 
@@ -48,22 +48,22 @@ AK028  uc011   2.00   1.29   0.00   0.00
 DEBrowser also accepts TSV's via hyperlink by following a few conversion steps.  First, using the API provided by
 Dolphin, we will convert TSV into an html represented TSV using this website:
 
-*http://dolphin.umassmed.edu/public/api/*
+*https://dolphin.umassmed.edu/public/api/*
 
 The Two parameters it accepts (and examples) are:
 
-	1. source=http://bioinfo.umassmed.edu/pub/debrowser/advanced_demo.tsv
+	1. source=https://bioinfo.umassmed.edu/pub/debrowser/advanced_demo.tsv
 	2. format=JSON
 
 Leaving you with a hyperlink for:
 
-*http://dolphin.umassmed.edu/public/api/?source=http://bioinfo.umass*
+*https://dolphin.umassmed.edu/public/api/?source=https://bioinfo.umass*
 
 *med.edu/pub/debrowser/advanced_demo.tsv&format=JSON*
 
 Next you will need to encode the url so you can pass it to the DEBrowser website.
 You can find multiple url encoders online, such as the one located at this
-web address: http://www.url-encode-decode.com/.
+web address: https://www.url-encode-decode.com/.
 
 Encoding our URL will turn it into this:
 
@@ -75,7 +75,7 @@ Encoding our URL will turn it into this:
 
 Now this link can be be used in debrowser as:
 
-*http://debrowser.umassmed.edu:443/debrowser/R/*
+*https://debrowser.umassmed.edu:443/debrowser/R/*
 
 It accepts two parameters:
 
@@ -89,9 +89,9 @@ It accepts two parameters:
 The finished product of the link will look like this:
 
 
-*http://debrowser.umassmed.edu:443/debrowser/R/?jsonobject=http://do*
+*https://debrowser.umassmed.edu:443/debrowser/R/?jsonobject=https://do*
 
-*lphin.umassmed.edu/public/api/?source=http://bioinfo.umassmed.edu/p*
+*lphin.umassmed.edu/public/api/?source=https://bioinfo.umassmed.edu/p*
 
 *ub/debrowser/advanced_demo.tsv&format=JSON&title=no*
 
@@ -304,11 +304,11 @@ like to use for this heatmap just abot the plot just like in the previous QC sec
 
 For additional information about the clustering methods used, you can consult `this website`_.
 
-.. _this website: http://www.inside-r.org/r-doc/stats/hclust
+.. _this website: https://www.inside-r.org/r-doc/stats/hclust
 
 For additional information about the distance methods used, you can consult `here`_.
 
-.. _here: http://www.inside-r.org/r-doc/stats/dist
+.. _here: https://www.inside-r.org/r-doc/stats/dist
 
 For distances other than 'cor', the distance function defined will be ( 1 - (the correlation between samples)).
 Each qc plot also has options to adjust the plot height and width, as well as a download button for a pdf output located above each plot.

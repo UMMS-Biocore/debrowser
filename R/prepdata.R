@@ -86,8 +86,9 @@ prepDataContainer <- function(data = NULL, counter=NULL,
         rep(paste0("Cond", 2*i), length(inputconds()$conds[[2*i]])))
         cols <- c(paste(inputconds()$conds[[2*i-1]]), 
         paste(inputconds()$conds[[2*i]]))
-        m <- prepDEOutput(data, cols, conds, inputconds(), i, input)
-        m <- list(conds = conds, cols = cols, init_data=m, 
+        de_res <- prepDEOutput(data, cols, conds, inputconds(), i)
+        initd <- addDataCols(data, de_res, cols, inputconds(), i, input)
+        m <- list(conds = conds, cols = cols, init_data=initd, 
             demethod_params = inputconds()$demethod_params[i])
         dclist[[i]] <- m
     }
@@ -156,7 +157,7 @@ setFilterParams <- function(session = NULL, input = NULL) {
     if (!is.null(input$foldChange)){
         valpadjfoldChange = input$foldChange
         updateTextInput(session, "foldChangetxt",
-                      value = valpadjfoldChange)
+            value = valpadjfoldChange)
     }
 }
 
@@ -170,7 +171,6 @@ setFilterParams <- function(session = NULL, input = NULL) {
 #' @param conds, conds
 #' @param inputconds, inputconds
 #' @param i, selected comparison number
-#' @param input, input
 #' @return data
 #' @export
 #'
@@ -178,29 +178,50 @@ setFilterParams <- function(session = NULL, input = NULL) {
 #'     x <- prepDEOutput()
 #'
 prepDEOutput <- function(data = NULL, cols = NULL, 
-    conds = NULL, inputconds=NULL, i=NULL, input = NULL) {
+    conds = NULL, inputconds=NULL, i=NULL) {
     if (is.null(data)) return (NULL)
     if (length(cols) != length(conds)) return(NULL)
     params <- inputconds$demethod_params[i]
     de_res <- runDE(data, cols, conds, params)
     de_res <- data.frame(de_res)
+}
+
+#' addDataCols
+#'
+#' add aditional data columns to de results
+#'
+#' @param data, loaded dataset
+#' @param de_res, de results
+#' @param cols, columns
+#' @param inputconds, inputconds
+#' @param i, selected comparison number
+#' @param input, input
+#' @return data
+#' @export
+#'
+#' @examples
+#'     x <- addDataCols()
+#'
+addDataCols <- function(data = NULL, de_res = NULL, cols = NULL, 
+    inputconds=NULL, i=NULL, input = NULL) {
+    if (is.null(data) || is.null(de_res)) return (NULL)
     norm_data <- getNormalizedMatrix(data[, cols], input$norm_method)
     mean_cond <- c()
-    mean_cond_first <- getMean(norm_data, de_res, 
+    mean_cond_first <- getMean(norm_data, de_res,
         inputconds, 2*i-1)
     mean_cond_second <- getMean(norm_data, de_res, 
         inputconds, 2*i)
     m <- cbind(rownames(de_res), norm_data[rownames(de_res), cols],
-        log10(unlist(mean_cond_first) + 0.1),
-        log10(unlist(mean_cond_second) + 0.1),
-        de_res[rownames(de_res),
-        c("padj", "log2FoldChange", "pvalue")], 
-        2 ^ de_res[rownames(de_res),
-        "log2FoldChange"],
-        -1 * log10(de_res[rownames(de_res), "padj"]))
+       log10(unlist(mean_cond_first) + 0.1),
+       log10(unlist(mean_cond_second) + 0.1),
+       de_res[rownames(de_res),
+           c("padj", "log2FoldChange", "pvalue")], 
+       2 ^ de_res[rownames(de_res),
+          "log2FoldChange"],
+       -1 * log10(de_res[rownames(de_res), "padj"]))
     colnames(m) <- c("ID", cols, "x", "y",
-        "padj", "log2FoldChange", "pvalue",
-        "foldChange", "log10padj")
+                     "padj", "log2FoldChange", "pvalue",
+                     "foldChange", "log10padj")
     m <- as.data.frame(m)
     m$padj[is.na(m[paste0("padj")])] <- 1
     m$pvalue[is.na(m[paste0("pvalue")])] <- 1
@@ -266,11 +287,11 @@ applyFilters <- function(filt_data = NULL, cols = NULL, conds=NULL,
         most_varied <- getMostVariedList(m, cols, input)
         m[rownames(most_varied), c("Legend")] <- "MV"
     }
-    #if (input$dataset == "selected" && !is.null(cols) &&
-    #    !is.null(input$genenames)) {
-    #    selectedGenes <- unlist(strsplit(input$genenames, ","))
-    #    m[selectedGenes, c("Legend")] <- "GS"
-    #}
+    if (input$dataset == "selected" && !is.null(cols) &&
+        !is.null(input$genenames)) {
+        selectedGenes <- unlist(strsplit(input$genenames, ","))
+        m[selectedGenes, c("Legend")] <- "GS"
+    }
     if (!is.null(input$genesetarea) && input$genesetarea != ""
         && input$methodtabs == "panel1") {
         genelist <- getGeneSetData(m, c(input$genesetarea))
@@ -366,10 +387,9 @@ prepDataForQC<-function(dataset = NULL, input = NULL){
 getMostVariedList <- function(datavar = NULL, cols = NULL, input = NULL){
     if (is.null(datavar)) return (NULL)
     topn <- as.integer(as.numeric(input$topn))
-    mincount <- as.integer(as.numeric(input$mincount))
-    norm_data <- getNormalizedMatrix(datavar[rowSums(datavar[,cols])
-        > mincount,cols], input$norm_method)
-    cv<-cbind(apply(norm_data, 1, function(x) 
+    datavar <- datavar[rowSums(datavar) >
+        as.integer(as.numeric(input$mincount)),]
+    cv<-cbind(apply(datavar, 1, function(x) 
         (sd(x,na.rm=TRUE)/mean(x,na.rm=TRUE))), 1)
     colnames(cv)<-c("coeff", "a")
     cvsort<-cv[order(cv[,1],decreasing=TRUE),]

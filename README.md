@@ -53,7 +53,7 @@ machine:
 # 1. Install DEBrowser and its dependencies by running the lines below
 # in R or RStudio.
 
-source(“http://www.bioconductor.org/biocLite.R”)
+source(“https://www.bioconductor.org/biocLite.R”)
 
 biocLite("debrowser")
 
@@ -90,8 +90,8 @@ sample file looks like:
 
 You can also view/use the demo data by clicking the 'Load Demo!' text as an
 example.  For the case study demo data, feel free to download our case study
-demo files at http://bioinfo.umassmed.edu/pub/debrowser/advanced_demo.tsv or
-a simplified version http://bioinfo.umassmed.edu/pub/debrowser/simple_demo.tsv.
+demo files at https://bioinfo.umassmed.edu/pub/debrowser/advanced_demo.tsv or
+a simplified version https://bioinfo.umassmed.edu/pub/debrowser/simple_demo.tsv.
 Please also note that, DEBrowser skips second column and starts reading the quantification values from the 3rd column.
 
 ## Data via JSON objects
@@ -101,24 +101,24 @@ First, using the API provided by Dolphin, we will convert a TSV file into a JSON
 object using this web api:
 
 ```
-http://dolphin.umassmed.edu/public/api/
+https://dolphin.umassmed.edu/public/api/
 ```
 
 The Two parameters it accepts (and examples) are:
 
-	1. source=http://bioinfo.umassmed.edu/pub/debrowser/advanced_demo.tsv
+	1. source=https://bioinfo.umassmed.edu/pub/debrowser/advanced_demo.tsv
 	2. format=JSON
 
 Leaving you with a hyperlink for:
 
 ```
-http://dolphin.umassmed.edu/public/api/?source=http://bioinfo.umassmed.edu/pub/debrowser/
+https://dolphin.umassmed.edu/public/api/?source=https://bioinfo.umassmed.edu/pub/debrowser/
 advanced_demo.tsv&format=JSON
 ```
 
 Next you will need to encode the URL so you can pass it to the DEBrowser website.
 You can find multiple URL encoders online, such as the one located at this
-web address: http://www.url-encode-decode.com/.
+web address: https://www.url-encode-decode.com/.
 
 Encoding our URL will turn it into this:
 
@@ -130,7 +130,7 @@ http%3A%2F%2Fdolphin.umassmed.edu%2Fpublic%2Fapi%2F%3Fsource%3Dhttp%3A%2F%2Fbioi
 Now this link can be be used in debrowser as:
 
 ```
-http://debrowser.umassmed.edu:443/debrowser/R/
+https://debrowser.umassmed.edu:443/debrowser/R/
 ```
 
 It accepts two parameters:
@@ -142,8 +142,8 @@ It accepts two parameters:
 The finished product of the link will look like this:
 
 ```
-http://debrowser.umassmed.edu:443/debrowser/R/?jsonobject=http://dolphin.umassmed.edu/public/
-api/?source=http://bioinfo.umassmed.edu/pub/debrowser/advanced_demo.tsv&format=JSON&title=no
+https://debrowser.umassmed.edu:443/debrowser/R/?jsonobject=https://dolphin.umassmed.edu/public/
+api/?source=https://bioinfo.umassmed.edu/pub/debrowser/advanced_demo.tsv&format=JSON&title=no
 ```
 
 Entering this URL into your web browser will automatically load in your data as a JSON
@@ -178,7 +178,7 @@ meta data file containing your batch correction fields, you
 then have the option to view QC information of your quantifications or you can
 continue on to running DESeq2 (Figure 1).
 
-![*(A) The initial data selection menu.  Intial TSV data is loaded in the 'Choose TSV File' while the optional meta data file is loaded in under 'Choose Mera Data File (Optional)'.  (B) Options list once data/meta data have been loaded in.*](http://debrowser.umassmed.edu/imgs/debrowser_pics/figure_1.png "Initial option selection")
+![*(A) The initial data selection menu.  Intial TSV data is loaded in the 'Choose TSV File' while the optional meta data file is loaded in under 'Choose Mera Data File (Optional)'.  (B) Options list once data/meta data have been loaded in.*](https://debrowser.umassmed.edu/imgs/debrowser_pics/figure_1.png "Initial option selection")
 
 ## Metadata Upload
 
@@ -237,7 +237,7 @@ display genes as you hover over them for a more in-depth understanding.
 You can select these various plot options by selecting the type of plot you
 wish to view on the left panel.
 
-![*Display of the all-to-all plot in the initial QC plots page.*](http://debrowser.umassmed.edu/imgs/debrowser_pics/figure_2.png "QC plots")
+![*Display of the all-to-all plot in the initial QC plots page.*](https://debrowser.umassmed.edu/imgs/debrowser_pics/figure_2.png "QC plots")
 
 You can also view the genes within your quantification file in various
 ways.  The 'Tables' tab will bring you to a table setup based on the dataset
@@ -248,15 +248,15 @@ selection.  The Last option, 'Most Varied' (Figure 7), will display your
 top N varied genes.  You can alter the value of N by selecting 'most-varied'
 from the dropdown menu on the left.
 
-![*Display of the most varied genes heatmap in the initial QC plots page.*](http://debrowser.umassmed.edu/imgs/debrowser_pics/figure_3.png "Heatmap")
+![*Display of the most varied genes heatmap in the initial QC plots page.*](https://debrowser.umassmed.edu/imgs/debrowser_pics/figure_3.png "Heatmap")
 
-![*Display of the PCA plot in the initial QC plots page.*](http://debrowser.umassmed.edu/imgs/debrowser_pics/figure_4.png "PCA")
+![*Display of the PCA plot in the initial QC plots page.*](https://debrowser.umassmed.edu/imgs/debrowser_pics/figure_4.png "PCA")
 
-![*Display of the IQR in the initial QC plots page.*](http://debrowser.umassmed.edu/imgs/debrowser_pics/figure_5.png "QC plots")
+![*Display of the IQR in the initial QC plots page.*](https://debrowser.umassmed.edu/imgs/debrowser_pics/figure_5.png "QC plots")
 
-![*Display of the density plot in the initial QC plots page.*](http://debrowser.umassmed.edu/imgs/debrowser_pics/figure_6.png "QC plots")
+![*Display of the density plot in the initial QC plots page.*](https://debrowser.umassmed.edu/imgs/debrowser_pics/figure_6.png "QC plots")
 
-![*Displayed table of most varied genes.*](http://debrowser.umassmed.edu/imgs/debrowser_pics/figure_7.png "Most varied")
+![*Displayed table of most varied genes.*](https://debrowser.umassmed.edu/imgs/debrowser_pics/figure_7.png "Most varied")
 
 ## Starting DESeq:
 
@@ -270,7 +270,7 @@ Sample names are created based on the column headers within your data file.
 Once you've selected your comparisons, you are then ready to run DESeq2 to
 calculate differential expression by clicking on the 'Submit!' button (Figure 8).
 
-![*Menus after loading in a sample.*](http://debrowser.umassmed.edu/imgs/debrowser_pics/figure_8.png "Loading in samples")
+![*Menus after loading in a sample.*](https://debrowser.umassmed.edu/imgs/debrowser_pics/figure_8.png "Loading in samples")
 
 # Differential Expression Calculations
 
@@ -406,7 +406,7 @@ button.  It is important to note that the resulting data produced from DESeq
 is normalized. Upon finishing the DESeq analysis, a tab-based menu will appear
 with multiple options (Figure 9) at the top-center of the page.
 
-![*List of the tabbed menus in DEBrowser.*](http://debrowser.umassmed.edu/imgs/debrowser_pics/figure_9.png "tab selection")
+![*List of the tabbed menus in DEBrowser.*](https://debrowser.umassmed.edu/imgs/debrowser_pics/figure_9.png "tab selection")
 
 The first tab, the 'Main Plots' section, is where you will be able to view
 the interactive results plots.  On the left hand side of the screen will be
@@ -428,7 +428,7 @@ Once you have selected your values, you can hit the 'Submit!' button to create
 your interactive plots!  Depending on whether you are using the local install
 or the web-based application, rendering times my vary.
 
-![*The Left parameter options panel*](http://debrowser.umassmed.edu/imgs/debrowser_pics/figure_10.png "geneset plots")
+![*The Left parameter options panel*](https://debrowser.umassmed.edu/imgs/debrowser_pics/figure_10.png "geneset plots")
 
 The top left plot is the main plot of whichever plot you have
 selected to use to analyze your results.  Up-regulated genes are displayed
@@ -452,17 +452,17 @@ All of these filtration options can be located on the left side panel which will
 also change based on the plot or dataset you wish to view/manipulate.
 It's also worth noting that the plots are resizable as well as downloable.
 
-![*Main scatter plot.*](http://debrowser.umassmed.edu/imgs/debrowser_pics/figure_11.png 'scatterplot')
+![*Main scatter plot.*](https://debrowser.umassmed.edu/imgs/debrowser_pics/figure_11.png 'scatterplot')
 
-![*Main volcano plot.*](http://debrowser.umassmed.edu/imgs/debrowser_pics/figure_12.png 'volcano')
+![*Main volcano plot.*](https://debrowser.umassmed.edu/imgs/debrowser_pics/figure_12.png 'volcano')
 
-![*Main MA plot.*](http://debrowser.umassmed.edu/imgs/debrowser_pics/figure_13.png 'ma')
+![*Main MA plot.*](https://debrowser.umassmed.edu/imgs/debrowser_pics/figure_13.png 'ma')
 
-![*The main plots page within DEBrowser.*](http://debrowser.umassmed.edu/imgs/debrowser_pics/figure_14.png "Main plots")
+![*The main plots page within DEBrowser.*](https://debrowser.umassmed.edu/imgs/debrowser_pics/figure_14.png "Main plots")
 
-![*Display of the most varied genes as a scatter plot.*](http://debrowser.umassmed.edu/imgs/debrowser_pics/figure_15.png "varied plots")
+![*Display of the most varied genes as a scatter plot.*](https://debrowser.umassmed.edu/imgs/debrowser_pics/figure_15.png "varied plots")
 
-![*Display of the geneset list as a scatter plot.*](http://debrowser.umassmed.edu/imgs/debrowser_pics/figure_16.png "geneset plots")
+![*Display of the geneset list as a scatter plot.*](https://debrowser.umassmed.edu/imgs/debrowser_pics/figure_16.png "geneset plots")
 
 Selecting the 'QC Plots' tab will take you to the quality control plots
 section.  These QC plots are very similar to the QC plots shown before
@@ -472,7 +472,7 @@ within the previous QC analysis, users can also view a heatmap and PCA
 plot of their analyzed data by selecting the proper plot on the left
 menu.
 
-![*Display of the heatmap within DEBrowser.*](http://debrowser.umassmed.edu/imgs/debrowser_pics/figure_17.png "Heatmap")
+![*Display of the heatmap within DEBrowser.*](https://debrowser.umassmed.edu/imgs/debrowser_pics/figure_17.png "Heatmap")
 
 The heatmap is a great way to analyze replicate results of genes all in
 one simple plot (Figure 19).  Users have the option to change the clustering method used
@@ -556,9 +556,9 @@ This will allow you to compare interesting clusters
 found within the heatmap within our GO Term analysis section which will
 be discussed later within the materials.
 
-![*View of the interactive Heatmap.*](http://debrowser.umassmed.edu/imgs/debrowser_pics/figure_18.png "Interactive Heatmap")
+![*View of the interactive Heatmap.*](https://debrowser.umassmed.edu/imgs/debrowser_pics/figure_18.png "Interactive Heatmap")
 
-![*Display of the PCA plot within DEBrowser.*](http://debrowser.umassmed.edu/imgs/debrowser_pics/figure_19.png "PCA")
+![*Display of the PCA plot within DEBrowser.*](https://debrowser.umassmed.edu/imgs/debrowser_pics/figure_19.png "PCA")
 
 Principal Component Analysis (PCA) is another excellent method of checking
 replicates (Figure 19).  PCA calculates the variance between all of the samples genes
@@ -589,17 +589,17 @@ to switch to the GO Terms tab and use the 'selected' dataset (Figure 25).  Once 
 other parameters have been selected, hit submit and you will use your selected
 genes from the interactive heatmap in your GO Term analysis.
 
-![*Display of the GO Plot section within DEBrowser.*](http://debrowser.umassmed.edu/imgs/debrowser_pics/figure_20.png "GO")
+![*Display of the GO Plot section within DEBrowser.*](https://debrowser.umassmed.edu/imgs/debrowser_pics/figure_20.png "GO")
 
-![*Display of the GO dotplot section within DEBrowser.*](http://debrowser.umassmed.edu/imgs/debrowser_pics/figure_21.png "dotplot GO")
+![*Display of the GO dotplot section within DEBrowser.*](https://debrowser.umassmed.edu/imgs/debrowser_pics/figure_21.png "dotplot GO")
 
-![*Display of the DO plot section within DEBrowser.*](http://debrowser.umassmed.edu/imgs/debrowser_pics/figure_22.png "DO")
+![*Display of the DO plot section within DEBrowser.*](https://debrowser.umassmed.edu/imgs/debrowser_pics/figure_22.png "DO")
 
-![*Display of the DO dotplot section within DEBrowser.*](http://debrowser.umassmed.edu/imgs/debrowser_pics/figure_23.png "DO dotplot")
+![*Display of the DO dotplot section within DEBrowser.*](https://debrowser.umassmed.edu/imgs/debrowser_pics/figure_23.png "DO dotplot")
 
-![*Display of the KEGG dotplot section within DEBrowser.*](http://debrowser.umassmed.edu/imgs/debrowser_pics/figure_24.png "KEGG")
+![*Display of the KEGG dotplot section within DEBrowser.*](https://debrowser.umassmed.edu/imgs/debrowser_pics/figure_24.png "KEGG")
 
-![*Display of Heatmap selected enriched GO Term search.*](http://debrowser.umassmed.edu/imgs/debrowser_pics/figure_25.png "heatmap enrich")
+![*Display of Heatmap selected enriched GO Term search.*](https://debrowser.umassmed.edu/imgs/debrowser_pics/figure_25.png "heatmap enrich")
 
 The last tab, 'Tables', contains various result information in table formats.
 The 'All Detected' option contains the list of all the genes within the
@@ -635,15 +635,15 @@ one sample cannot create statistically significant p-adjust values.  The
 more replicates you have within a condition, the greater the statistical
 significance of your comparisons.
 
-![*Display of the up+down-regulated genes table.*](http://debrowser.umassmed.edu/imgs/debrowser_pics/figure_26.png "Up+Down Regulated")
+![*Display of the up+down-regulated genes table.*](https://debrowser.umassmed.edu/imgs/debrowser_pics/figure_26.png "Up+Down Regulated")
 
-![*Display of the down-regulated genes table.*](http://debrowser.umassmed.edu/imgs/debrowser_pics/figure_27.png "Down Regulated")
+![*Display of the down-regulated genes table.*](https://debrowser.umassmed.edu/imgs/debrowser_pics/figure_27.png "Down Regulated")
 
-![*Display of the geneset input box.*](http://debrowser.umassmed.edu/imgs/debrowser_pics/figure_28.png "geneset")
+![*Display of the geneset input box.*](https://debrowser.umassmed.edu/imgs/debrowser_pics/figure_28.png "geneset")
 
-![*Display of the gene set search of the term '^al'.*](http://debrowser.umassmed.edu/imgs/debrowser_pics/figure_29.png "geneset table")
+![*Display of the gene set search of the term '^al'.*](https://debrowser.umassmed.edu/imgs/debrowser_pics/figure_29.png "geneset table")
 
-![*Condition comparisons table within DEBrowser.*](http://debrowser.umassmed.edu/imgs/debrowser_pics/figure_30.png "Comparisons")
+![*Condition comparisons table within DEBrowser.*](https://debrowser.umassmed.edu/imgs/debrowser_pics/figure_30.png "Comparisons")
 
 Lastly, the tables have a bunch of features that allow you to view your DESeq
 results more conveniently.  By clicking on a column header, you can sort the
@@ -663,9 +663,9 @@ for the study were customized to a high level of specificity.  However,
 using a sample dataset generated from this study, it is possible to
 recreate similar heatmaps (Figure 31-32) displayed within the studies findings.
 
-![*All detected genes heatmap using case study data.*](http://debrowser.umassmed.edu/imgs/debrowser_pics/figure_31.png "")
+![*All detected genes heatmap using case study data.*](https://debrowser.umassmed.edu/imgs/debrowser_pics/figure_31.png "")
 
-![*Most varied genes heatmap using case study data.*](http://debrowser.umassmed.edu/imgs/debrowser_pics/figure_32.png "")
+![*Most varied genes heatmap using case study data.*](https://debrowser.umassmed.edu/imgs/debrowser_pics/figure_32.png "")
 
 The main difference between the heatmaps created within DEBrowser
 and the heatmaps created within the research paper is that the clustering
@@ -680,9 +680,9 @@ stronger effect than JNK1 KO samples. There are 177 genes (Figure 33) that have
 padj < 0.01 and |log2 foldchange| > 1 in the JNK2 KO comparison while there are
 only 17 genes (Figure 34) detected in the JNK1 KO comparison with the same cutoffs.
 
-![*High fat diet JNK2 vs. High fat diet wild type.*](http://debrowser.umassmed.edu/imgs/debrowser_pics/figure_33.png "")
+![*High fat diet JNK2 vs. High fat diet wild type.*](https://debrowser.umassmed.edu/imgs/debrowser_pics/figure_33.png "")
 
-![*High fat diet JNK1 vs. High fat diet wild type.*](http://debrowser.umassmed.edu/imgs/debrowser_pics/figure_34.png "")
+![*High fat diet JNK1 vs. High fat diet wild type.*](https://debrowser.umassmed.edu/imgs/debrowser_pics/figure_34.png "")
 
 **JNK1 and JNK2 serve partially redundant functions:**
 
@@ -701,9 +701,9 @@ and "Biosynthesis of unsaturated fatty acids”. DEBrowser’s powerful comparis
 function makes different condition comparisons and running GO Term analysis
 on selected genes much easier.
 
-![*Upregulated genes in hfd JNK1 KO (C1) vs. hfd wt (C2) DE comparison shows 4 upregulated genes (padj <0.01 and |log2foldchange| > 1).*](http://debrowser.umassmed.edu/imgs/debrowser_pics/figure_35.png "")
+![*Upregulated genes in hfd JNK1 KO (C1) vs. hfd wt (C2) DE comparison shows 4 upregulated genes (padj <0.01 and |log2foldchange| > 1).*](https://debrowser.umassmed.edu/imgs/debrowser_pics/figure_35.png "")
 
-![*Downregulated genes in hfd JNK1 KO (C1) vs. hfd wt (C2) DE comparison shows 13 downregulated genes (padj <0.01 and |log2foldchange| > 1). Only one of them is in JNK2 KO (C3) vs. hfd wt (C4) DE comparison.*](http://debrowser.umassmed.edu/imgs/debrowser_pics/figure_36.png "")
+![*Downregulated genes in hfd JNK1 KO (C1) vs. hfd wt (C2) DE comparison shows 13 downregulated genes (padj <0.01 and |log2foldchange| > 1). Only one of them is in JNK2 KO (C3) vs. hfd wt (C4) DE comparison.*](https://debrowser.umassmed.edu/imgs/debrowser_pics/figure_36.png "")
 
 Comparing the HFD wild type and the normal chow wild type also shows significant differences between regulated genes (Figure 37).
 Expanding on the analysis further, the upregulated genes analyzed are then compared to KEGG and Disease ontologies
@@ -781,18 +781,18 @@ Future plans will include the following:
 
 16. Johnson et al. (2007) Adjusting batch effects in microarray expression data using empirical Bayes methods.  Biostatistics, 8, 118-127.
 
-![*Up and Down regulated genes volcano plot of HFD WT vs Chow WT.*](http://debrowser.umassmed.edu/imgs/debrowser_pics/figure_37.png "")
+![*Up and Down regulated genes volcano plot of HFD WT vs Chow WT.*](https://debrowser.umassmed.edu/imgs/debrowser_pics/figure_37.png "")
 
-![*HFD upregulated gene list used for DO enrichment*](http://debrowser.umassmed.edu/imgs/debrowser_pics/figure_38.png "")
+![*HFD upregulated gene list used for DO enrichment*](https://debrowser.umassmed.edu/imgs/debrowser_pics/figure_38.png "")
 
-![*HFD upregulated gene list used for KEGG enrichment*](http://debrowser.umassmed.edu/imgs/debrowser_pics/figure_39.png "")
+![*HFD upregulated gene list used for KEGG enrichment*](https://debrowser.umassmed.edu/imgs/debrowser_pics/figure_39.png "")
 
-![*Comparison table of DEBrowser, MeV, Chipster, Galaxy, and CummeRBund*](http://debrowser.umassmed.edu/imgs/debrowser_pics/figure_40.png "")
+![*Comparison table of DEBrowser, MeV, Chipster, Galaxy, and CummeRBund*](https://debrowser.umassmed.edu/imgs/debrowser_pics/figure_40.png "")
 
-![*IQR of samples before batch correction*](http://debrowser.umassmed.edu/imgs/debrowser_pics/figure_41.png "")
+![*IQR of samples before batch correction*](https://debrowser.umassmed.edu/imgs/debrowser_pics/figure_41.png "")
 
-![*IQR of samples after batch correction*](http://debrowser.umassmed.edu/imgs/debrowser_pics/figure_42.png "")
+![*IQR of samples after batch correction*](https://debrowser.umassmed.edu/imgs/debrowser_pics/figure_42.png "")
 
-![*All-2-All scatter plots showing QC without batch correction.*](http://debrowser.umassmed.edu/imgs/debrowser_pics/figure_43.png "")
+![*All-2-All scatter plots showing QC without batch correction.*](https://debrowser.umassmed.edu/imgs/debrowser_pics/figure_43.png "")
 
-![*All-2-All scatter plots showing QC with batch correction.*](http://debrowser.umassmed.edu/imgs/debrowser_pics/figure_44.png "")
+![*All-2-All scatter plots showing QC with batch correction.*](https://debrowser.umassmed.edu/imgs/debrowser_pics/figure_44.png "")

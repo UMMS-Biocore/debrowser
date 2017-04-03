@@ -19,8 +19,8 @@ getNormalizedMatrix <- function(M = NULL, method = "TMM") {
     M[is.na(M)] <- 0
     norm <- M
     if (method != "none"){
-        M <- subset(M, 
-            rowSums(M[,1:ncol(M)]) > 0)
+        M <- M[rowSums(M)>0, ]
+        if (is.null(M) ) return (NULL)
         norm.factors <- edgeR::calcNormFactors(M, method = method)
         norm <- edgeR::equalizeLibSizes(edgeR::DGEList(M,
             norm.factors = norm.factors))$pseudo.counts

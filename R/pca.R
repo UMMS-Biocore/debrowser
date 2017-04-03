@@ -17,13 +17,14 @@
 #'
 run_pca <- function(x=NULL, retx = TRUE,
                 center = TRUE, scale = TRUE) {
-    if ( is.null(x) ) return (NULL)
-        pca <- prcomp(t(x), retx = retx,
-            center = center, scale. = scale)
-        variances <- pca$sdev ^ 2
-        explained <- variances / sum(variances)
-       
-        return(list(PCs = pca$x, explained = explained, pca = pca))
+    if ( is.null(x) || ncol(x) < 2) return (NULL)
+    x <- x[rowSums(x)>0, ]
+    pca <- prcomp(t(x), retx = retx,
+        center = center, scale. = scale)
+    variances <- pca$sdev ^ 2
+    explained <- variances / sum(variances)
+   
+    return(list(PCs = pca$x, explained = explained, pca = pca))
 }
 
 #' plot_pca
@@ -58,7 +59,7 @@ run_pca <- function(x=NULL, retx = TRUE,
 plot_pca <- function(dat = NULL, pcx = 1, pcy = 2,
     metadata = NULL, color = NULL, shape = NULL,
     size = NULL, textonoff = "Off", legendSelect = "fill") {
-        if ( is.null(dat) ) return(NULL)
+        if ( is.null(dat) || ncol(dat) < 2) return(NULL)
     
         pca_data <- run_pca(dat)
         x <- pca_data$PCs
@@ -127,7 +128,13 @@ getToolTipPCA <- function(dat=NULL){
 #' @param input, from user
 #' @return explained plot
 #' @examples
-#'     x <- getPCAexplained()
+#' load(system.file("extdata", "demo", "demodata.Rda", 
+#' package="debrowser"))
+#' input<-c()
+#' input$qcplot<-"pca"
+#' input$col_list<-colnames(demodata[,2:7])
+#' x <- getPCAexplained(getNormalizedMatrix(demodata[,2:7]), 
+#'     input)
 #'
 #' @export
 #'
@@ -141,7 +148,7 @@ getPCAexplained <- function(datasetInput = NULL,
         dataset <- datasetInput[,input$col_list[c(input$col_list)
             %in% colnames(datasetInput)]]
         if (dim(dataset)[2] == 0) return(NULL)
-        pca_data <- run_pca(getNormalizedMatrix(dataset, input$norm_method))
+        pca_data <- run_pca(dataset)
         datexp <- data.frame(cbind(unlist(lapply(
             c(1:length(pca_data$explained)), 
             function(x){paste0("PC", x)})), 

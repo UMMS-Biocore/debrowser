@@ -76,6 +76,7 @@
 #'             exactTest estimateCommonDisp glmFit
 #' @importFrom limma lmFit voom eBayes topTable
 #' @importFrom sva ComBat
+#' @importFrom RCurl getURL
 #' @importFrom devtools install_github load_data
 #' @import org.Hs.eg.db
 #' @import org.Mm.eg.db
@@ -282,8 +283,8 @@ deServer <- function(input, output, session) {
         observeEvent(input$add_btn, {
             shinyjs::enable("startDE")
             buttonValues$startDE <- FALSE
-            choicecounter$nc <- choicecounter$nc + 1}
-        )
+            choicecounter$nc <- choicecounter$nc + 1
+        })
         observeEvent(input$rm_btn, {
             buttonValues$startDE <- FALSE
             if (choicecounter$nc > 0) 
@@ -386,8 +387,8 @@ deServer <- function(input, output, session) {
             if (!is.null(comparison()$init_data) &&
                 !is.null(input$padjtxt) &&
                 !is.null(input$foldChangetxt)){
-                applyFilters(init_data(), isolate(cols()), isolate(conds()),
-                    input)
+                applyFilters(init_data(), isolate(cols()), 
+                    isolate(conds()), input)
             }
         })
         randstr <- reactive({ 
@@ -441,21 +442,21 @@ deServer <- function(input, output, session) {
             if (is.null(input$col_list) && is.null(df_select())) return(NULL)
             updateTextInput(session, "dataset", 
                 value =  choicecounter$lastselecteddataset)
-            edat$val <- explainedData()
-            if(input$qcplot=="pca" || input$qcplot=="IQR" || input$qcplot=="Density")
-                shinyjs::js$hideQCPlot()
-            getQCReplot(isolate(cols()), isolate(conds()), 
-                df_select(), input, inputQCPlot(),
-                drawPCAExplained(edat$val$plotdata) )
+            edat$val <- explainedData()            
+            #if(input$qcplot=="pca" || input$qcplot=="IQR" || input$qcplot=="Density")
+            #    shinyjs::js$hideQCPlot()
+            getQCReplot(cols(), conds(), 
+                        df_select(), input, inputQCPlot(),
+                        drawPCAExplained(edat$val$plotdata) )
         })
         df_select <- reactive({
-            getSelectedCols(Dataset(), datasetInput(), input)
+            dat <- getSelectedCols(datasetInput(), datasetInput(), input)
         })
         
         v <- c()
         output$intheatmap <- d3heatmap::renderD3heatmap({
             shinyjs::onclick("intheatmap", js$getNames(v))
-            dat <- getNormalizedMatrix(df_select(), input$norm_method)
+            dat <- df_select()
             getIntHeatmap(dat, input, inputQCPlot())
         })
         
@@ -467,9 +468,8 @@ deServer <- function(input, output, session) {
                 selected=isolate(input$samples))
             )
         })
-        
         explainedData <- reactive({
-            getPCAexplained( datasetInput(), input )
+            getPCAexplained( df_select(), input )
         })
         
         inputQCPlot <- reactiveValues(clustering_method = "ward.D2",
@@ -631,11 +631,12 @@ deServer <- function(input, output, session) {
         output$downloadPlot <- downloadHandler(filename = function() {
             paste(input$qcplot, ".pdf", sep = "")
         }, content = function(file) {
+            
             if (choicecounter$qc == 0)
-                saveQCPlot(file, input, datasetInput(), 
+                saveQCPlot(file, input, df_select(), 
                            cols(), conds(), inputQCPlot())
             else
-                saveQCPlot(file, input, datasetInput(),
+                saveQCPlot(file, input, df_select(),
                            inputQCPlot = inputQCPlot())
         })
         

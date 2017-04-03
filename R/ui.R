@@ -29,10 +29,14 @@ deUI <- function() {
             document.getElementsByClassName("dropdown-toggle")[0].style.display = "block";
         }
         shinyjs.hideQCPlot = function(params) {
-            document.getElementsByClassName("shiny-plot-output")[0].style.display = "none";
+            if (document.getElementsByClassName("shiny-plot-output").length != 0)
+                if (document.getElementsByClassName("shiny-plot-output")[0].getElementsByTagName("img").length != 0)
+                    document.getElementsByClassName("shiny-plot-output")[0].getElementsByTagName("img")[0].style.display = "none";
         }
         shinyjs.showQCPlot = function(params) {
-            document.getElementsByClassName("shiny-plot-output")[0].style.display = "block";
+            if (document.getElementsByClassName("shiny-plot-output").length != 0)
+                if (document.getElementsByClassName("shiny-plot-output")[0].getElementsByTagName("img").length != 0)
+                    document.getElementsByClassName("shiny-plot-output")[0].getElementsByTagName("img")[0].style.display = "block";
         }
     '
     
