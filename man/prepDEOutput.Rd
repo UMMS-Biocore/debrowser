@@ -5,7 +5,7 @@
 \title{prepDEOutput}
 \usage{
 prepDEOutput(data = NULL, cols = NULL, conds = NULL, inputconds = NULL,
-  i = NULL)
+  i = NULL, input = NULL)
 }
 \arguments{
 \item{data, }{loaded dataset}
@@ -17,6 +17,8 @@ prepDEOutput(data = NULL, cols = NULL, conds = NULL, inputconds = NULL,
 \item{inputconds, }{inputconds}
 
 \item{i, }{selected comparison number}
+
+\item{input, }{input}
 }
 \value{
 data

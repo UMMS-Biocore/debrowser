@@ -442,15 +442,16 @@ deServer <- function(input, output, session) {
             if (is.null(input$col_list) && is.null(df_select())) return(NULL)
             updateTextInput(session, "dataset", 
                 value =  choicecounter$lastselecteddataset)
-            edat$val <- explainedData()            
+            edat$val <- explainedData()
             #if(input$qcplot=="pca" || input$qcplot=="IQR" || input$qcplot=="Density")
             #    shinyjs::js$hideQCPlot()
-            getQCReplot(cols(), conds(), 
-                        df_select(), input, inputQCPlot(),
-                        drawPCAExplained(edat$val$plotdata) )
+            getQCReplot(isolate(cols()), isolate(conds()), 
+                df_select(), input, inputQCPlot(),
+                drawPCAExplained(edat$val$plotdata) )
         })
         df_select <- reactive({
-            dat <- getSelectedCols(datasetInput(), datasetInput(), input)
+            getSelectedCols(Dataset(), datasetInput(), input)
+
         })
         
         v <- c()

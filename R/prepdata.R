@@ -171,6 +171,7 @@ setFilterParams <- function(session = NULL, input = NULL) {
 #' @param conds, conds
 #' @param inputconds, inputconds
 #' @param i, selected comparison number
+#' @param input, input
 #' @return data
 #' @export
 #'
@@ -178,7 +179,7 @@ setFilterParams <- function(session = NULL, input = NULL) {
 #'     x <- prepDEOutput()
 #'
 prepDEOutput <- function(data = NULL, cols = NULL, 
-    conds = NULL, inputconds=NULL, i=NULL) {
+    conds = NULL, inputconds=NULL, i=NULL, input = NULL) {
     if (is.null(data)) return (NULL)
     if (length(cols) != length(conds)) return(NULL)
     params <- inputconds$demethod_params[i]
@@ -388,8 +389,9 @@ getMostVariedList <- function(datavar = NULL, cols = NULL, input = NULL){
     if (is.null(datavar)) return (NULL)
     topn <- as.integer(as.numeric(input$topn))
     datavar <- datavar[rowSums(datavar) >
-        as.integer(as.numeric(input$mincount)),]
+        as.integer(as.numeric(input$mincount)), cols]
     cv<-cbind(apply(datavar, 1, function(x) 
+
         (sd(x,na.rm=TRUE)/mean(x,na.rm=TRUE))), 1)
     colnames(cv)<-c("coeff", "a")
     cvsort<-cv[order(cv[,1],decreasing=TRUE),]
