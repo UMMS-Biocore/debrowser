@@ -388,7 +388,7 @@ prepDataForQC<-function(dataset = NULL, input = NULL){
 getMostVariedList <- function(datavar = NULL, cols = NULL, input = NULL){
     if (is.null(datavar)) return (NULL)
     topn <- as.integer(as.numeric(input$topn))
-    datavar <- datavar[rowSums(datavar) >
+    datavar <- datavar[rowSums(datavar[,cols]) >
         as.integer(as.numeric(input$mincount)), cols]
     cv<-cbind(apply(datavar, 1, function(x) 
 
