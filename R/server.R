@@ -451,22 +451,26 @@ deServer <- function(input, output, session) {
         })
         df_select <- reactive({
             getSelectedCols(Dataset(), datasetInput(), input)
-
         })
         
         v <- c()
         output$intheatmap <- d3heatmap::renderD3heatmap({
             shinyjs::onclick("intheatmap", js$getNames(v))
             dat <- df_select()
+            if (!is.null(cols()))
+                dat <- dat[,cols()]
             getIntHeatmap(dat, input, inputQCPlot())
         })
         
-        output$columnSelForHeatmap <- renderUI({
+        output$columnSelForQC <- renderUI({
+            existing_cols <- input$samples
+            if (!is.null(cols()))
+                existing_cols <- cols()
             wellPanel(id = "tPanel",
                 style = "overflow-y:scroll; max-height: 200px",
                 checkboxGroupInput("col_list", "Select col to include:",
-                isolate(input$samples), 
-                selected=isolate(input$samples))
+                existing_cols, 
+                selected=existing_cols)
             )
         })
         explainedData <- reactive({
@@ -606,6 +610,7 @@ deServer <- function(input, output, session) {
             }
             else
                 m <- getSelectedDatasetInput(init_data(), 
+                     getSelected = selected$data$getSelected(),
                      getMostVaried = getMostVaried(),
                      explainedData = isolate(edat$val$pcaset),
                      input = input)

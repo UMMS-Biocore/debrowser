@@ -195,7 +195,7 @@ getQCLeftMenu <- function( input = NULL) {
     if (is.null(input)) return(NULL)
     a <- list(
         shinydashboard::menuItem(" Select Columns", icon = icon("star-o"),
-            uiOutput("columnSelForHeatmap")),
+            uiOutput("columnSelForQC")),
             conditionalPanel( (condition <- "input.qcplot=='heatmap'"),
                  checkboxInput("interactive", "Interactive", value = FALSE)),
             conditionalPanel( (condition <- "(input.qcplot=='all2all' ||
