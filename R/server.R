@@ -160,10 +160,13 @@ deServer <- function(input, output, session) {
             username <- loadingJSON()$username
             user_addition <- ""
             startup_path <- "shiny_saves/startup.rds"
+            past_state_path <- "shiny_saves/past_state.txt"
             if(!is.null(username) && (username != "") ){
                 user_addition <- paste0("&username=", username)
                 startup_path <- paste0("shiny_saves/", 
-                                       username ,"/startup.rds")
+                    username ,"/startup.rds")
+                past_state_path <- paste0("shiny_saves/", 
+                    username, "/past_state.txt")
             }
             updateQueryString(paste0(url, user_addition))
             startup <- list()
@@ -178,6 +181,8 @@ deServer <- function(input, output, session) {
                 dir.create(shiny_saves_dir)
             }
             startup[['startup_bookmark']] <- get_state_id(url)
+            write(startup[['startup_bookmark']],file=past_state_path, append=FALSE)
+            
             saveRDS(startup, startup_path)
             bookmark_dir_id <- get_state_id(url)
             file.copy(isolate(input$file1$datapath), 

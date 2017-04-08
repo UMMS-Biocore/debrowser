@@ -40,7 +40,7 @@ get_state_id <- function(prev_url = NULL){
     if (is.null(prev_url)) return(NULL)
     query_list <- c()
     query_string <- paste0("?", strsplit(prev_url, "?",
-                                         fixed = TRUE)[[1]][2])
+        fixed = TRUE)[[1]][2])
     query_list <- parseQueryString(query_string)
     return(query_list[["_state_id_"]])
 }
@@ -65,6 +65,7 @@ copy2newDirectory <- function(new_state_id = NULL, username = NULL,
     user_addition <- ""
     startup_path <- "shiny_saves/startup.rds"
     f_path <- "shiny_saves/past_saves.txt"
+    past_state_path <- "shiny_saves/past_state.txt"
     if(!is.null(username) && (username != "")){
         new_state_id <- paste0(username, "0u0",
                                new_state_id)
@@ -72,12 +73,15 @@ copy2newDirectory <- function(new_state_id = NULL, username = NULL,
         f_path <- paste0("shiny_saves/", username, "/past_saves.txt")
         startup_path <- paste0("shiny_saves/", 
             username ,"/startup.rds")
+        past_state_path <- paste0("shiny_saves/", 
+            username, "/past_state.txt")
     }
     
-    # Get the state id from the query string
     bookmark_dir <- "shiny_bookmarks/"
-    old_state_id <- system(paste0("ls -t1 shiny_bookmarks",
-                                  " |  head -n 1"), intern=TRUE)
+    # Get the old state id from the past state file
+    conn <- file(past_state_path,open="r")
+    old_state_id <- readLines(conn)
+    close(conn)
     
     if(!dir.exists(paste0(bookmark_dir, new_state_id))){
         
