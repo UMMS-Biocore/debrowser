@@ -1,9 +1,11 @@
 Package: debrowser
 Type: Package
 Title: debrowser: Interactive Differential Expresion Analysis Browser
-Version: 1.3.11
+Version: 1.3.12
 Date: 2016-07-05
 Author: Alper Kucukural <alper.kucukural@umassmed.edu>,
+	Berk Sarioz <berk.sarioz@umassmed.edu>,
+        Nick Merowsky <nick.merowsky@umassmed.edu>,
         Manuel Garber <manuel.garber@umassmed.edu>
 Maintainer: Alper Kucukural <alper.kucukural@umassmed.edu>
 Description: Bioinformatics platform containing interactive plots and tables
