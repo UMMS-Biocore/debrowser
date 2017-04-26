@@ -196,17 +196,15 @@ getQCLeftMenu <- function( input = NULL) {
     a <- list(
         shinydashboard::menuItem(" Select Columns", icon = icon("star-o"),
             uiOutput("columnSelForQC")),
+            shinydashboard::menuItem(" QC Options", icon = icon("star-o"),
             conditionalPanel( (condition <- "input.qcplot=='heatmap'"),
                  checkboxInput("interactive", "Interactive", value = FALSE)),
             conditionalPanel( (condition <- "(input.qcplot=='all2all' ||
             input.qcplot=='heatmap') && !(input.interactive)"),
-
-            
-            shinydashboard::menuItem(" QC Options", icon = icon("star-o"),
             sliderInput("width", "width",
             min = 100, max = 2000, step = 10, value = 700),
             sliderInput("height", "height",
-            min = 100, max = 2000, step = 10, value = 500),
+            min = 100, max = 2000, step = 10, value = 500)),
             conditionalPanel( (condition <- "input.qcplot=='all2all'"),
                 sliderInput("cex", "corr font size",
                 min = 0.1, max = 10,
@@ -229,7 +227,7 @@ getQCLeftMenu <- function( input = NULL) {
             getLegendSelect(),
             getColorShapeSelection(input)
         ),
-        downloadButton("downloadPlot", "Download Plot")))
+        downloadButton("downloadPlot", "Download Plot"))
     )
 }
 
