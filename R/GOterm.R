@@ -194,7 +194,7 @@ compareClust <- function(dat = NULL, ont = "CC", org = "org.Hs.eg.db",
                 res$table <- xx@compareClusterResult[,
                 c("Cluster", "ID", "Description", "GeneRatio", "BgRatio", 
                   "pvalue", "p.adjust", "qvalue")]
-            res$p <- plot(xx, title = title)
+            res$p <- dotplot(xx, title = title)
         })
         res
 }
