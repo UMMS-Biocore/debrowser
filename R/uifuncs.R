@@ -54,7 +54,7 @@ if (is.null(input)) return(NULL)
 a <- list(
         conditionalPanel( (condition <- "input.methodtabs=='panel1'"),
                           actionButton("startPlots", "Submit!"),
-        shinydashboard::menuItem(" Plot Type", icon = icon("star-o"),
+        shinydashboard::menuItem(" Plot Type", icon = icon("star-o"), startExpanded=TRUE,
         radioButtons("mainplot", paste("Main Plots:", sep = ""),
             c(Scatter = "scatter", VolcanoPlot = "volcano",
             MAPlot = "maplot"))
@@ -65,7 +65,7 @@ a <- list(
             conditionalPanel( condition <- "input.qcplot=='heatmap'",
                 actionButton("startQCPlot", "Submit!")),
                           
-        shinydashboard::menuItem(" Plot Type", icon = icon("star-o"),
+        shinydashboard::menuItem(" Plot Type", icon = icon("star-o"), startExpanded = TRUE,
         wellPanel(radioButtons("qcplot",
                 paste("QC Plots:", sep = ""),
                 c(PCA = "pca", All2All = "all2all", Heatmap = "heatmap", IQR = "IQR",
@@ -73,14 +73,14 @@ a <- list(
             getQCLeftMenu(input)),
         conditionalPanel( (condition <- "input.methodtabs=='panel3'"),
             actionButton("startGO", "Submit!"),
-        shinydashboard::menuItem(" Plot Type", icon = icon("star-o"),
+        shinydashboard::menuItem(" Plot Type", icon = icon("star-o"), startExpanded = TRUE,
             wellPanel(radioButtons("goplot", paste("Go Plots:", sep = ""),
                 c(enrichGO = "enrichGO", enrichKEGG = "enrichKEGG",
                 Disease = "disease", compareClusters = "compare")))),
                 getGOLeftMenu()
                 ),
         conditionalPanel( (condition <- "input.methodtabs=='panel4'"),
-        shinydashboard::menuItem(" Select Columns", icon = icon("star-o"),
+        shinydashboard::menuItem(" Select Columns", icon = icon("star-o"), startExpanded=TRUE,
              uiOutput("getColumnsForTables")
         ))
     )
@@ -117,7 +117,7 @@ getMainPlotsLeftMenu <- function() {
 #'
 getGOLeftMenu <- function() {
     a <- list(
-    shinydashboard::menuItem(" Go Term Options", icon = icon("star-o"),
+    shinydashboard::menuItem(" Go Term Options", icon = icon("star-o"), startExpanded=TRUE, 
                                        
     tags$head(tags$script(HTML(logSliderJScode("gopvalue")))),
     sliderInput("gopvalue", "p.adjust cut off",
@@ -194,9 +194,9 @@ getColorShapeSelection <- function(input = NULL) {
 getQCLeftMenu <- function( input = NULL) {
     if (is.null(input)) return(NULL)
     a <- list(
-        shinydashboard::menuItem(" Select Columns", icon = icon("star-o"),
+        shinydashboard::menuItem(" Select Columns", icon = icon("star-o"), startExpanded=TRUE, 
             uiOutput("columnSelForQC")),
-            shinydashboard::menuItem(" QC Options", icon = icon("star-o"),
+            shinydashboard::menuItem(" QC Options", icon = icon("star-o"), startExpanded=FALSE,
             conditionalPanel( (condition <- "input.qcplot=='heatmap'"),
                  checkboxInput("interactive", "Interactive", value = FALSE)),
             conditionalPanel( (condition <- "(input.qcplot=='all2all' ||
