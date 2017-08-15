@@ -43,13 +43,13 @@ runHeatmap <- function(data, title="Title", dend = "both",
     }
     if (interactive == FALSE){
         m <- heatmap.2(cld, Rowv = TRUE, main = title, dendrogram = dend,
-        Colv = TRUE, col = redblue(256), labRow = names,
+        Colv = TRUE, col = bluered(256), labRow = names,
         distfun = dist2, hclustfun = hclust2, density.info = "none",
         trace = "none", margins = c(10, 10))
     }
     else {
         m <- d3heatmap::d3heatmap(cld,
-                  colors = redblue(256),
+                  colors = bluered(256),
                   RowV = TRUE,
                   ColV = TRUE,
                   distfun = dist2, hclustfun = hclust2,
