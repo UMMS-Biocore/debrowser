@@ -59,8 +59,7 @@
 #'             nchar paste rownames toupper unique which
 #'             as.matrix lapply rev "rownames<-"
 #'             gsub ifelse
-#' @importMethodsFrom S4Vectors eval grep grepl levels rowMeans
-#'             rowSums sapply t 
+#' @importMethodsFrom S4Vectors eval grep grepl levels sapply t 
 #' @importMethodsFrom SummarizedExperiment cbind order rbind
 #' @importFrom jsonlite fromJSON
 #' @importFrom methods new

@@ -28,9 +28,13 @@ startDEBrowser <- function(){
         # Clean up the bookmark directory of unnamed bookmarks - begin
         l <- list.files("shiny_bookmarks")
         if(length(l) > 0){
-            last_bookmark_id <- system(paste0("ls -t1 shiny_bookmarks",
-                                              " |  head -n 1"), intern=TRUE)
-            l_without_last <- setdiff(l, list(last_bookmark_id))
+            if(file.exists("shiny_saves/past_state.txt")){
+              past_state_path <- "shiny_saves/past_state.txt"
+              conn <- file(past_state_path,open="r")
+              last_bookmark_id <- readLines(conn)
+              close(conn)
+              l_without_last <- setdiff(l, list(last_bookmark_id))
+           
             if(file.exists("shiny_saves/past_saves.txt")){
                 named_bookmarks <- scan("shiny_saves/past_saves.txt", what="",
                                         sep="\n")
@@ -43,9 +47,9 @@ startDEBrowser <- function(){
                     #unlink(paste0("shiny_bookmarks/", x), recursive = TRUE)
                 }
             )
+            }
         }
         # Clean up the bookmark directory of unnamed bookmarks - end
-        
         
         startup_obj <- list()
         # To restore, set counter to 0 and bookmark to the last bookmark dir
