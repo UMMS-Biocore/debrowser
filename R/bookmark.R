@@ -137,16 +137,16 @@ getJsonObj <- function(session = NULL, input = NULL,
     # coming from json
     if(!is.null(json_obj) && (json_obj != "")){
         loadingJSON$username <- parseQueryString(session$clientData$url_search)[['username']]
-        updateStore(session, "text",
-            isolate(loadingJSON$username))
+        #updateStore(session, "text",
+        #    isolate(loadingJSON$username))
     } else{
         user_email <- user_details()$emails$value
         username_from_email <- gsub("[[:punct:]]", "", user_email)
         # just logged in via google
         if(!is.null(user_email) && (username_from_email != "")){
             loadingJSON$username <- username_from_email
-            updateStore(session, "text",
-                isolate(loadingJSON$username))
+            #updateStore(session, "text",
+            #    isolate(loadingJSON$username))
         } else{
             # Check local storage
             if(!is.null(input$store$text) && (input$store$text != "")){
@@ -373,8 +373,8 @@ bookmarkServer <- function(input = NULL, output  = NULL,
     onRestore(function(state) {
         log_out <- parseQueryString(session$clientData$url_search)[['logout']]
         if(!is.null(log_out) && (log_out != "")){
-            updateStore(session, "text",
-                        isolate(""))
+            #updateStore(session, "text",
+            #            isolate(""))
         } else {
             query_list <- parseQueryString(session$clientData$url_search)
             dir_to_create <- paste0("shiny_saves/", loadingJSON$username)

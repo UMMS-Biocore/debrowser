@@ -4,7 +4,7 @@ Title: debrowser: Interactive Differential Expresion Analysis Browser
 Version: 1.4.5
 Date: 2016-07-05
 Author: Alper Kucukural <alper.kucukural@umassmed.edu>,
-	Berk Sarioz <berk.sarioz@umassmed.edu>,
+  	    Berk Sarioz <berk.sarioz@umassmed.edu>,
         Nick Merowsky <nick.merowsky@umassmed.edu>,
         Manuel Garber <manuel.garber@umassmed.edu>
 Maintainer: Alper Kucukural <alper.kucukural@umassmed.edu>
@@ -57,7 +57,10 @@ Imports:
     sva,
     shinydashboard,
     devtools,
-    RCurl
+    RCurl,
+    shinyBS,
+    pathview,
+    googleAuthR
 RoxygenNote: 6.0.1
 Suggests: testthat,
     rmarkdown,

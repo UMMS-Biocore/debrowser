@@ -14,8 +14,7 @@ getDataPrepPanel <- function(flag = FALSE){
     a <- NULL
     if(flag)
     a<- list(
-        conditionalPanel(condition = "input.demo ||
-            output.dataready",
+        conditionalPanel(condition = "input.demo || output.dataready",
         wellPanel(
         uiOutput("sampleSelector"),
         actionButton("goDE", "Go to DE Analysis!"),
@@ -125,6 +124,7 @@ getGOLeftMenu <- function() {
         animate = FALSE),
     textInput("pvaluetxt", "or p.adjust", value = "0.01" ),
         getOrganismBox(),
+        #actionButton("KeggPathway", "KeggPathway", style="text-align:center;color: #0000ff; font-size:120%"),
         conditionalPanel( ( condition <- "(input.goplot=='enrichGO' ||
             (input.goplot=='compare' && input.gofunc!='enrichDO' &&
             input.gofunc!='enrichKEGG'))" ),
@@ -807,4 +807,19 @@ btn <- actionButton(paste0("info_",name),"",icon="info",
 a <- HTML(paste0("<a id=\"info_",name,"\" href=\"",link,"\" target=\"_blank\">",
                  btn,"</a>"))
 
+}
+
+
+#' getKEGGModal
+#' prepares a helpbutton for to go to a specific site in the documentation
+#'
+#' @return the info button
+#'
+#' @examples
+#'     x<- getKEGGModal()
+#'
+#' @export
+getKEGGModal<-function(){
+    a <- bsModal("modalExample", "KEGG Pathway", "KeggPathway", size = "large",
+    div(style = "display:block;overflow-y:auto; overflow-x:auto;",imageOutput("KEGGPlot")))
 }

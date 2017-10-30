@@ -29,6 +29,43 @@ getGeneList <- function(genes = NULL, org = "org.Hs.eg.db") {
     genelist
 }
 
+#' getGeneList
+#'
+#' Gathers the gene list to use for GOTerm analysis.
+#"
+#' @note \code{GOTerm}
+#'
+#' @export
+#'
+#' @note \code{getEntrezIds}
+#' symobol to ENTREZ ID conversion
+#' @param genes, gene list with fold changes 
+#' @param org, orgranism for gene symbol entrez ID conversion
+#' @return ENTREZ ID list
+#'
+#' @examples
+#'     x <- getEntrezIds()
+#'
+getEntrezIds <- function(genes = NULL, org = "org.Hs.eg.db") {
+    if (is.null(genes)) return(NULL)
+    installpack(org)
+    allkeys <- AnnotationDbi::keys(eval(parse(text = org)),
+                                   keytype="SYMBOL")
+    
+    mapped_genes <- mapIds(eval(parse(text = org)), keys = rownames(genes),
+                           column="ENTREZID", keytype="SYMBOL",
+                           multiVals = "first")
+    mapped_genes <- mapped_genes[!is.na(mapped_genes)]
+    genelist <- cbind(mapped_genes, genes[names(mapped_genes), "log2FoldChange"])
+    
+    colnames(genelist) <- c("ENTREZID", "log2FoldChange")
+    genelist <- data.frame(genelist)
+    genelist$log2FoldChange <- as.numeric(as.character(genelist$log2FoldChange))
+    rownames(genelist) <- genelist$ENTREZID
+    fchange <- genelist$log2FoldChange
+    names(fchange) <- genelist$ENTREZID
+    fchange
+}
 #' getEnrichGO
 #'
 #' Gathers the Enriched GO Term analysis data to be used within the

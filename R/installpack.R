@@ -12,22 +12,18 @@
 #'
 #' @export
 #'
-installpack <- function(package_name = NULL, github = FALSE) {
+installpack <- function(package_name = NULL) {
     if (is.null(package_name)) return(NULL)
    
     if (!loadpack(package_name))
     {
-       if (github != FALSE) { 
-            devtools::install_github(github)
-       } else {
-           update.packages(ask= FALSE) #update installed packages.
-           eval (parse(text = sprintf("install.packages(\"%s\", 
-               dependencies = TRUE)",  package_name)))
-           source("http://bioconductor.org/biocLite.R")
-           biocLite(character(), ask=FALSE) #update installed packages.
-           eval(parse(text = sprintf("biocLite(\"%s\")", package_name)))
-           eval(parse(text = sprintf("require(\"%s\")", package_name)))
-       }
+       update.packages(ask= FALSE) #update installed packages.
+       eval (parse(text = sprintf("install.packages(\"%s\", 
+           dependencies = TRUE)",  package_name)))
+       source("http://bioconductor.org/biocLite.R")
+       biocLite(character(), ask=FALSE) #update installed packages.
+       eval(parse(text = sprintf("biocLite(\"%s\")", package_name)))
+       eval(parse(text = sprintf("require(\"%s\")", package_name)))
     }
     loadpack(package_name)
 }
@@ -49,22 +45,4 @@ loadpack <- function (package_name = NULL){
         return (TRUE)
     }
     return(FALSE)
-}
-
-#' loadpacks
-#'
-#' load initial packages 
-#'
-#' @note \code{loadpack}
-#'
-#' @examples
-#'     x <- loadpacks()
-#'
-#' @export
-#'
-loadpacks <- function (){
-    installpack("googleAuthR", "UMMS-Biocore/googleAuthR")   
-    installpack("googleID", "UMMS-Biocore/googleID")
-    installpack("shinyStore", "trestletech/shinyStore")
-    return(TRUE)
 }

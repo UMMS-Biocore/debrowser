@@ -4,7 +4,7 @@
 \alias{installpack}
 \title{installpack}
 \usage{
-installpack(package_name = NULL, github = FALSE)
+installpack(package_name = NULL)
 }
 \arguments{
 \item{package_name, }{package name to be installed}

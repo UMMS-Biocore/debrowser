@@ -26,7 +26,8 @@ getGoPanel <- function(flag = FALSE){
                      column(12, wellPanel( plotOutput("GOPlots1")))),
                 tabPanel(title = "Table", value = "gopanel2", id = "gopanel2",
                      column(12, wellPanel( DT::dataTableOutput("gotable"))))
-            ))
+            ),
+            getKEGGModal())
     a
 }
 

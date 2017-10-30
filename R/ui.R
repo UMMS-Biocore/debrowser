@@ -12,7 +12,6 @@
 #'
 
 deUI <- function() {
-    debrowser::loadpacks()
     getUrlJSCode <- '
         shinyjs.setButtonHref = function(params) {
             var current_url = window.location.href.split(\"?\")[0];
@@ -91,7 +90,7 @@ enableBookmarking("server")
 
     else{
     a <- (fluidPage(
-    initStore("store", "shinyStore-debrowser"),
+    #initStore("store", "shinyStore-debrowser"),
     shinyjs::useShinyjs(),
     shinyjs::extendShinyjs(text = heatmapJScode, functions = c("getNames")),
     shinyjs::inlineCSS("
@@ -118,7 +117,7 @@ enableBookmarking("server")
         shinydashboard::dashboardSidebar(
             width = 350,
             conditionalPanel(condition = "!output.user_name",
-                googleAuthUI("initial_google_button")),
+                googleAuthR::googleAuthUI("initial_google_button")),
             conditionalPanel(condition = "output.user_name",
                 uiOutput("loading"),
                 uiOutput("initialmenu"),
@@ -144,8 +143,7 @@ enableBookmarking("server")
                             uiOutput("preppanel")),
                     tabPanel(title = "Main Plots", value = "panel1", id="panel1",
                             uiOutput("mainmsgs"),
-                            conditionalPanel(condition = "input.demo ||
-                            output.dataready", uiOutput("mainpanel"))),
+                            conditionalPanel(condition = "input.demo || output.dataready", uiOutput("mainpanel"))),
                     tabPanel(title = "QC Plots", value = "panel2", id="panel2",
                             uiOutput("qcpanel")),
                     tabPanel(title = "GO Term", value = "panel3", id="panel3",
