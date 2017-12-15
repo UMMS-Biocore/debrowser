@@ -1,0 +1,412 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>DESeq/DEBrowser &mdash; DEBrowser 1.1.10 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="DEBrowser 1.1.10 documentation" href="../index.html"/>
+        <link rel="next" title="DEBrowser Additions" href="../future/future.html"/>
+        <link rel="prev" title="Local Install Guide" href="../local/local.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> DEBrowser
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.1.10
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../quickstart/quickstart.html">Quick-start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../local/local.html">Local Install Guide</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">DESeq/DEBrowser</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#introduction">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id1">DESeq2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#un-normalized-counts">Un-normalized counts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#used-parameters-for-deseq2">Used parameters for DESeq2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#edger">EdgeR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#used-parameters-for-edger">Used parameters for EdgeR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#limma">Limma</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#used-parameters-for-limma">Used parameters for Limma</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#debrowser">DEBrowser</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../future/future.html">DEBrowser Additions</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">DEBrowser</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+    <li>DESeq/DEBrowser</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/deseq/deseq.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="deseq-debrowser">
+<h1>DESeq/DEBrowser<a class="headerlink" href="#deseq-debrowser" title="Permalink to this headline">¶</a></h1>
+<p>This guide contains a breif discription of DESeq2 used within the DEBrowser</p>
+<div class="section" id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>Differential gene expression analysis has become an increasingly popular tool
+in determining and viewing up and/or down experssed genes between two sets of
+samples.  The goal of Differential gene expression analysis is to find genes
+or transcripts whose difference in expression, when accounting for the
+variance within condition, is higher than expected by chance.  <a class="reference external" href="https://bioconductor.org/packages/release/bioc/html/DESeq2.html">DESeq2</a> is an R
+package available via Bioconductor and is designed to normalize count data
+from high-throughput sequencing assays such as RNA-Seq and test for
+differential expression (Love et al. 2014).  For more information on the
+DESeq2 algorithm, you can visit <a class="reference external" href="https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.pdf">this website</a>  With multiple parameters such as
+padjust values, log fold changes, and plot styles, altering plots
+created with your DE data can be a hassle as well as time consuming.  The
+Differential Expression Browser uses DESeq2, EdgeR, and Limma coupled with shiny to produce
+real-time changes within your plot queries and allows for interactive browsing
+of your DESeq results. In addition to DESeq analysis, DEBrowser also offers
+a variety of other plots and analysis tools to help visualize your data
+even further.</p>
+</div>
+<div class="section" id="id1">
+<h2>DESeq2<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>For the details please check the user guide.
+<a class="reference external" href="https://www.bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.pdf">DESeq2 userguide</a></p>
+<p>DESeq2 performs multiple steps in order to analyze the data you&#8217;ve provided for it.
+The first step is to indicate the condition that each column (experiment) in the table represent.
+You can group multiple samples into one condition column.
+DESeq2 will compute the probability that a gene is differentially expressed (DE) for ALL genes in the table. It outputs
+both a nominal and a multiple hypothesis corrected p-value (padj) using a negative binomial distribution.</p>
+</div>
+<div class="section" id="un-normalized-counts">
+<h2>Un-normalized counts<a class="headerlink" href="#un-normalized-counts" title="Permalink to this headline">¶</a></h2>
+<p>DESeq2 rquires count data as input obtained from RNA-Seq or another high-thorughput sequencing experiment in the form of matrix values. Here we convert un-integer values to integer to be able to run DESeq2. The matrix values should be un-normalized, since DESeq2 model internally corrects for library size. So, transformed or normalized values such as counts scaled by library size should not be used as input. Please use edgeR or limma for normalized counts.</p>
+</div>
+<div class="section" id="used-parameters-for-deseq2">
+<h2>Used parameters for DESeq2<a class="headerlink" href="#used-parameters-for-deseq2" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><ul>
+<li><dl class="first docutils">
+<dt>fitType:</dt>
+<dd><p class="first last">either &#8220;parametric&#8221;, &#8220;local&#8221;, or &#8220;mean&#8221; for the type
+of fitting of dispersions to the mean intensity.
+See estimateDispersions for description.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>betaPrior:</dt>
+<dd><p class="first last">whether or not to put a zero-mean normal prior
+on the non-intercept coefficients See nbinomWaldTest for
+description of the calculation of the beta prior. By default,
+the beta prior is used only for the Wald test, but can also be
+specified for the likelihood ratio test.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>testType:</dt>
+<dd><p class="first last">either &#8220;Wald&#8221; or &#8220;LRT&#8221;, which will then use either
+Wald significance tests (defined by nbinomWaldTest), or the
+likelihood ratio test on the difference in deviance between a
+full and reduced model formula (defined by nbinomLRT)</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>rowsum.filter:</dt>
+<dd><p class="first last">regions/genes/isoforms with total count (across all samples) below this value will be filtered out</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="edger">
+<h2>EdgeR<a class="headerlink" href="#edger" title="Permalink to this headline">¶</a></h2>
+<p>For the details please check the user guide.
+<a class="reference external" href="https://www.bioconductor.org/packages/release/bioc/vignettes/edgeR/inst/doc/edgeRUsersGuide.pdf">EdgeR userguide</a>.</p>
+</div>
+<div class="section" id="used-parameters-for-edger">
+<h2>Used parameters for EdgeR<a class="headerlink" href="#used-parameters-for-edger" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><ul>
+<li><dl class="first docutils">
+<dt>Normalization:</dt>
+<dd><p class="first last">Calculate normalization factors to scale the raw
+library sizes. Values can be &#8220;TMM&#8221;,&#8221;RLE&#8221;,&#8221;upperquartile&#8221;,&#8221;none&#8221;.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Dispersion:</dt>
+<dd><p class="first last">either a numeric vector of dispersions or a character
+string indicating that dispersions should be taken from the data
+object.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>testType:</dt>
+<dd><p class="first last">exactTest or glmLRT. exactTest: Computes p-values for differential
+abundance for each gene between two samples, conditioning
+on the total count for each gene. The counts in each group are assumed to
+follow a binomial distribution.
+glmLRT: Fits a negative binomial generalized log-linear model to the read
+counts for each gene and conducts genewise statistical tests.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>rowsum.filter:</dt>
+<dd><p class="first last">regions/genes/isoforms with total count (across all samples) below this value will be filtered out</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="limma">
+<h2>Limma<a class="headerlink" href="#limma" title="Permalink to this headline">¶</a></h2>
+<p>For the details please check the user guide.
+<a class="reference external" href="https://bioconductor.org/packages/release/bioc/vignettes/limma/inst/doc/usersguide.pdf">Limma userguide</a>.</p>
+<p>Limma is a package to analyse of microarray or RNA-Seq data. If data is normalized with spike-in or any other scaling, tranforamtion or normalization method, Limma can be ideal. In that case, prefer limma rather than DESeq2 or EdgeR.</p>
+</div>
+<div class="section" id="used-parameters-for-limma">
+<h2>Used parameters for Limma<a class="headerlink" href="#used-parameters-for-limma" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><ul>
+<li><dl class="first docutils">
+<dt>Normalization:</dt>
+<dd><p class="first last">Calculate normalization factors to scale the raw library sizes. Values can be &#8220;TMM&#8221;,&#8221;RLE&#8221;,&#8221;upperquartile&#8221;,&#8221;none&#8221;.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Fit Type:</dt>
+<dd><p class="first last">fitting method; &#8220;ls&#8221; for least squares or &#8220;robust&#8221; for robust regression</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Norm. Bet. Arrays:</dt>
+<dd><p class="first last">Normalization Between Arrays; Normalizes expression intensities so that the
+intensities or log-ratios have similar distributions across a set of arrays.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>rowsum.filter:</dt>
+<dd><p class="first last">regions/genes/isoforms with total count (across all samples) below this value will be filtered out</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="debrowser">
+<h2>DEBrowser<a class="headerlink" href="#debrowser" title="Permalink to this headline">¶</a></h2>
+<p>DEBrowser utilizes <a class="reference external" href="http://shiny.rstudio.com/">Shiny</a>, a R based application development tool that creates a wonderful interactive user interface (UI)
+combinded with all of the computing prowess of R.  After the user has selected the data to analyze and has used the shiny
+UI to run DESeq2, the results are then input to DEBrowser.  DEBrowser manipulates your results in a way that allows for
+interactive plotting by which changing padj or fold change limits also changes the displayed graph(s).
+For more details about these plots and tables, please visit our quickstart guide for some helpful tutorials.</p>
+<p>For comparisons against other popular data visualization tools, see the table below.</p>
+<img alt="../_images/comparison_table.png" class="align-center" src="../_images/comparison_table.png" />
+<p>For more information on the programs compared against DEBrowser, please visit these pages:</p>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference external" href="http://www.tm4.org/mev.html">MeV</a></li>
+<li><a class="reference external" href="http://chipster.csc.fi">Chipster</a></li>
+<li><a class="reference external" href="https://usegalaxy.org/">Galaxy</a></li>
+<li><a class="reference external" href="http://compbio.mit.edu/cummeRbund/">CummeRbund</a></li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li>Anders,S. et al. (2014) HTSeq - A Python framework to work with high-throughput sequencing data.</li>
+<li>Chang,W. et al. (2016) shiny: Web Application Framework for R.</li>
+<li>Chang,W. and Wickham,H. (2015) ggvis: Interactive Grammar of Graphics.</li>
+<li>Giardine,B. et al. (2005) Galaxy: a platform for interactive large-scale genome analysis. Genome Res., 15, 1451–1455.</li>
+<li>Howe,E.A. et al. (2011) RNA-Seq analysis in MeV. Bioinformatics, 27, 3209–3210.</li>
+<li>Kallio,M.A. et al. (2011) Chipster: user-friendly analysis software for microarray and other high-throughput data. BMC Genomics, 12, 507.</li>
+<li>Li,B. and Dewey,C.N. (2011) RSEM: accurate transcript quantification from RNA-Seq data with or without a reference genome. BMC Bioinformatics, 12, 323.</li>
+<li>Love,M.I. et al. (2014) Moderated estimation of fold change and dispersion for RNA-seq data with DESeq2. Genome Biol., 15, 550.</li>
+<li>Reese,S.E. et al. (2013) A new statistic for identifying batch effects in high-throughput genomic data that uses guided principal component analysis. Bioinformatics, 29, 2877–2883.</li>
+<li>Reich,M. et al. (2006) GenePattern 2.0. Nat. Genet., 38, 500–501.</li>
+<li>Risso,D. et al. (2014) Normalization of RNA-seq data using factor analysis of control genes or samples. Nat. Biotechnol., 32, 896–902.</li>
+<li>Ritchie,M.E. et al. (2015) limma powers differential expression analyses for RNA-sequencing and microarray studies. Nucleic Acids Res., 43, e47–e47.</li>
+<li>Trapnell,C. et al. (2012) Differential gene and transcript expression analysis of RNA-seq experiments with TopHat and Cufflinks. Nat. Protoc., 7, 562–578.</li>
+<li>Vernia,S. et al. (2014) The PPAR$alpha$-FGF21 hormone axis contributes to metabolic regulation by the hepatic JNK signaling pathway. Cell Metab., 20, 512–525.</li>
+<li>Murtagh, Fionn and Legendre, Pierre (2014). Ward&#8217;s hierarchical agglomerative clustering method: which algorithms implement Ward&#8217;s criterion? Journal of Classification 31 (forthcoming).</li>
+</ol>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../future/future.html" class="btn btn-neutral float-right" title="DEBrowser Additions" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../local/local.html" class="btn btn-neutral" title="Local Install Guide" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Alper Kucukural, Nicholas Merowsky.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'1.1.10',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
