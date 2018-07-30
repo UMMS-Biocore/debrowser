@@ -94,7 +94,9 @@ getBarMainPlot <- function(data=NULL, conds=NULL, cols = NULL, key=NULL, title =
                  type = "bar")
     p <- p %>% 
         plotly::layout(title = title,
-            xaxis = list(title = "Conditions"),
+            xaxis = list(categoryorder = "array",
+                        categoryarray = "conds",
+                        title = "Conditions"),
             yaxis = list(title = "Read Count"),
             height=input$height, width=input$width,
             margin = list(l = input$left,
