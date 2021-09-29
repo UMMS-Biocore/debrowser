@@ -13,7 +13,7 @@
 startDEBrowser <- function(){
     if (interactive()) {
         #the upload file size limit is 30MB
-        options( shiny.maxRequestSize = 30 * 1024 ^ 2, warn = -1,
+        options( shiny.maxRequestSize = 100 * 1024 ^ 2, warn = -1,
                  shiny.sanitize.errors = TRUE)
         addResourcePath(prefix = "demo", directoryPath =
                         system.file("extdata", "demo", 
