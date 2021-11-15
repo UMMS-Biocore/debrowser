@@ -129,7 +129,7 @@ getMethodDetails <- function(num = 0, input = NULL) {
 #' @export
 #'
 getCovariateDetails <- function(num = 0, input = NULL, metadata = NULL) {
-    choices <- c("No Covariate", colnames(metadata))
+    choices <- as.list(c("No Covariate", colnames(metadata)[2:ncol(metadata)]))
     if (num > 0)
         list(
             getSelectInputBox("covariate", "Covariate", num, choices,
@@ -356,7 +356,7 @@ selectConditions<-function(Dataset = NULL,
             # update choices of the covariate
             # if condition is selected, dont let the same column selected as covariate
             # if condition and covariate is the same, reset covariate
-            metadata_columns <- colnames(metadata)
+            metadata_columns <- colnames(metadata)[2:ncol(metadata)]
             metadata_columns <- metadata_columns[!metadata_columns %in% selectedInput("conditions_from_meta", i, NULL, input)]
             if(!is.null(selectedInput("conditions_from_meta", i, NULL, input)) && !is.null(selectedInput("covariate", i, NULL, input))){
                 if(selectedInput("conditions_from_meta", i, NULL, input) == selectedInput("covariate", i, NULL, input)){
