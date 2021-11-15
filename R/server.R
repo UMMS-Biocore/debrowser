@@ -152,7 +152,7 @@ deServer <- function(input, output, session) {
             observeEvent (input$startDE, {
                 if(!is.null(batch()$BatchEffect()$count)){
                     togglePanels(0, c(0), session)
-                    res <- prepDataContainer(batch()$BatchEffect()$count, sel()$cc(), input)
+                    res <- prepDataContainer(batch()$BatchEffect()$count, sel()$cc(), input, batch()$BatchEffect()$meta)
                     if(is.null(res)) return(NULL)
                     dc(res)
                     updateTabItems(session, "DataPrep", "DEAnalysis")

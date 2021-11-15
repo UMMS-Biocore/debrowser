@@ -6,6 +6,7 @@
 #' @param output, output objects
 #' @param session, session 
 #' @param data, a matrix that includes expression values
+#' @param metadata, metadata
 #' @param columns, columns
 #' @param conds, conditions
 #' @param params, de parameters
@@ -16,10 +17,10 @@
 #'     x <- debrowserdeanalysis()
 #'
 debrowserdeanalysis <- function(input = NULL, output = NULL, session = NULL, 
-    data = NULL, columns = NULL, conds = NULL, params = NULL) {
+    data = NULL, metadata = NULL, columns = NULL, conds = NULL, params = NULL) {
     if(is.null(data)) return(NULL)
     deres <- reactive({
-        runDE(data, columns, conds, params)
+        runDE(data, metadata, columns, conds, params)
     })
     prepDat <- reactive({
         applyFiltersNew(addDataCols(data, deres(), columns, conds), input)
@@ -116,6 +117,7 @@ applyFiltersNew <- function(data = NULL, input = NULL) {
 #'
 #' @param data, A matrix that includes all the expression raw counts,
 #'     rownames has to be the gene, isoform or region names/IDs
+#' @param metadata, metadata of the matrix of expression raw counts
 #' @param columns, is a vector that includes the columns that are going
 #'     to be analyzed. These columns has to match with the given data.
 #' @param conds, experimental conditions. The order has to match
@@ -128,16 +130,15 @@ applyFiltersNew <- function(data = NULL, input = NULL) {
 #' @examples
 #'     x <- runDE()
 #'
-runDE <- function(data = NULL, columns = NULL, conds = NULL, params = NULL) {
+runDE <- function(data = NULL, metadata = NULL, columns = NULL, conds = NULL, params = NULL) {
     if (is.null(data)) return(NULL)
     de_res <- NULL
-
     if (startsWith(params[1], "DESeq2"))    
-        de_res <- runDESeq2(data, columns, conds, params)
+        de_res <- runDESeq2(data, metadata, columns, conds, params)
     else if (startsWith(params[1], "EdgeR"))    
-        de_res <- runEdgeR(data, columns, conds, params)
+        de_res <- runEdgeR(data, metadata, columns, conds, params)
     else if (startsWith(params[1], "Limma"))
-        de_res <- runLimma(data, columns, conds, params)
+        de_res <- runLimma(data, metadata, columns, conds, params)
     data.frame(de_res)
 }
 
@@ -148,6 +149,7 @@ runDE <- function(data = NULL, columns = NULL, conds = NULL, params = NULL) {
 #'
 #' @param data, A matrix that includes all the expression raw counts,
 #'     rownames has to be the gene, isoform or region names/IDs
+#' @param metadata, metadata of the matrix of expression raw counts
 #' @param columns, is a vector that includes the columns that are going
 #'     to be analyzed. These columns has to match with the given data.
 #' @param conds, experimental conditions. The order has to match
@@ -179,15 +181,15 @@ runDE <- function(data = NULL, columns = NULL, conds = NULL, params = NULL) {
 #' @examples
 #'     x <- runDESeq2()
 #'
-runDESeq2 <- function(data = NULL, columns = NULL, conds = NULL, params = NULL) {
+runDESeq2 <- function(data = NULL, metadata = NULL, columns = NULL, conds = NULL, params = NULL) {
     if (is.null(data)) return(NULL)
     if (length(params)<3)
         params <- strsplit(params, ",")[[1]]
-    
-    fitType <- if (!is.null(params[2])) params[2]
-    betaPrior <-  if (!is.null(params[3])) params[3]
-    testType <- if (!is.null(params[4])) params[4]
-    shrinkage <-  if (!is.null(params[5])) params[5]
+    covariates <- if (!is.null(params[2])) params[2]
+    fitType <- if (!is.null(params[3])) params[3]
+    betaPrior <-  if (!is.null(params[4])) params[4]
+    testType <- if (!is.null(params[5])) params[5]
+    shrinkage <-  if (!is.null(params[6])) params[6]
 
     if(length(columns)<3){
         showNotification("You cannot use DESeq2 if you don't have multiple samples per condition", type = "error")
@@ -199,20 +201,25 @@ runDESeq2 <- function(data = NULL, columns = NULL, conds = NULL, params = NULL) 
     data[, columns] <- apply(data[, columns], 2,
         function(x) as.integer(x))
 
-    coldata <- prepGroup(conds, columns)
+    coldata <- prepGroup(conds, columns, metadata, covariates)
     # Filtering non expressed genes
     filtd <- data
     
     # DESeq data structure is going to be prepared
-    dds <- DESeqDataSetFromMatrix(countData = as.matrix(filtd),
-        colData = coldata, design = ~group)
+    if(covariates != "No Covariate"){
+        dds <- DESeqDataSetFromMatrix(countData = as.matrix(filtd),
+                                      colData = coldata, design = ~ group + covariate1)
+    } else {
+        dds <- DESeqDataSetFromMatrix(countData = as.matrix(filtd),
+                                      colData = coldata, design = ~group)
+    }
     # Running DESeq
     if (testType == "LRT")
         dds <- DESeq(dds, fitType = fitType, betaPrior = as.logical(betaPrior), test=testType, reduced= ~ 1)
     else
         dds <- DESeq(dds, fitType = fitType, betaPrior = as.logical(betaPrior), test=testType)
         
-    res <- results(dds)
+    res <- results(dds, name = "group_Cond2_vs_Cond1")
     if (shrinkage != "None"){
         res <- lfcShrink(dds, coef=2, res=res, type = shrinkage)
         if (testType == "Wald"){
@@ -234,6 +241,7 @@ runDESeq2 <- function(data = NULL, columns = NULL, conds = NULL, params = NULL) 
 #'
 #' @param data, A matrix that includes all the expression raw counts,
 #'     rownames has to be the gene, isoform or region names/IDs
+#' @param metadata, metadata of the matrix of expression raw counts
 #' @param columns, is a vector that includes the columns that are going
 #'     to be analyzed. These columns has to match with the given data.
 #' @param conds, experimental conditions. The order has to match
@@ -261,13 +269,14 @@ runDESeq2 <- function(data = NULL, columns = NULL, conds = NULL, params = NULL) 
 #' @examples
 #'     x <- runEdgeR()
 #'
-runEdgeR<- function(data = NULL, columns = NULL, conds = NULL, params = NULL){
+runEdgeR<- function(data = NULL, metadata = NULL, columns = NULL, conds = NULL, params = NULL){
     if (is.null(data)) return(NULL)
     if (length(params)<3)
         params <- strsplit(params, ",")[[1]]
-    normfact <- if (!is.null(params[2])) params[2]
-    dispersion <- if (!is.null(params[3])) params[3]
-    testType <- if (!is.null(params[4])) params[4]
+    covariates <- if (!is.null(params[2])) params[2]
+    normfact <- if (!is.null(params[3])) params[3]
+    dispersion <- if (!is.null(params[4])) params[4]
+    testType <- if (!is.null(params[5])) params[5]
 
     data <- data[, columns]
     data[, columns] <- apply(data[, columns], 2,
@@ -294,7 +303,15 @@ runEdgeR<- function(data = NULL, columns = NULL, conds = NULL, params = NULL){
             Please use a numeric value if that's the case.", type = "error")
         return(NULL)
     }
-    design <- model.matrix(~des)
+    
+    if(covariates != "No Covariate"){
+        covariates <- metadata[match(columns,metadata$sample),covariates]
+        covariates <- factor(covariates)
+        design <- model.matrix(~ des + covariates)
+    } else {
+        design <- model.matrix(~des)
+    }
+
     d <- edgeR::estimateDisp(d, design)
     if (testType == "exactTest"){
         if (dispersion == 0){
@@ -331,6 +348,7 @@ runEdgeR<- function(data = NULL, columns = NULL, conds = NULL, params = NULL){
 #'
 #' @param data, A matrix that includes all the expression raw counts,
 #'     rownames has to be the gene, isoform or region names/IDs
+#' @param metadata, metadata of the matrix of expression raw counts
 #' @param columns, is a vector that includes the columns that are going
 #'     to be analyzed. These columns has to match with the given data.
 #' @param conds, experimental conditions. The order has to match
@@ -348,13 +366,14 @@ runEdgeR<- function(data = NULL, columns = NULL, conds = NULL, params = NULL){
 #' @examples
 #'     x <- runLimma()
 #'
-runLimma<- function(data = NULL, columns = NULL, conds = NULL, params = NULL){
+runLimma<- function(data = NULL, metadata = NULL, columns = NULL, conds = NULL, params = NULL){
     if (is.null(data)) return(NULL)
     if (length(params)<3)
         params <- strsplit(params, ",")[[1]]
-    normfact = if (!is.null(params[2])) params[2]
-    fitType = if (!is.null(params[3])) params[3]
-    normBet = if (!is.null(params[4])) params[4]
+    covariates <- if (!is.null(params[2])) params[2]
+    normfact = if (!is.null(params[3])) params[3]
+    fitType = if (!is.null(params[4])) params[4]
+    normBet = if (!is.null(params[5])) params[5]
 
     data <- data[, columns]
     data[, columns] <- apply(data[, columns], 2,
@@ -367,8 +386,15 @@ runLimma<- function(data = NULL, columns = NULL, conds = NULL, params = NULL){
     
     des <- factor(c(rep(levels(conds)[1], cnum),rep(levels(conds)[2], tnum)))
     names(filtd) <- des
-    design <- cbind(Grp1=1,Grp2vs1=des)
-   
+    
+    if(covariates != "No Covariate"){
+        covariates <- metadata[match(columns,metadata$sample),covariates]
+        covariates <- factor(covariates)
+        design <- cbind(Grp1=1,Grp2vs1=des, covariate = covariates)
+    } else {
+        design <- cbind(Grp1=1,Grp2vs1=des)
+    }
+
     dge <- DGEList(counts=filtd, group = des)
     
     dge <- calcNormFactors(dge, method=normfact, samples=columns)
@@ -393,17 +419,28 @@ runLimma<- function(data = NULL, columns = NULL, conds = NULL, params = NULL){
 #'
 #' @param cols, columns
 #' @param conds, inputconds
+#' @param metadata, metadata
+#' @param covariates, covariates
 #' @return data
 #' @export
 #'
 #' @examples
 #'     x <- prepGroup()
 #'
-prepGroup <- function(conds = NULL, cols = NULL) {
+prepGroup <- function(conds = NULL, cols = NULL, metadata = NULL, covariates = NULL) {
     if (is.null(conds) || is.null(cols)) return (NULL)
     coldata <- data.frame(cbind(cols, conds))
     coldata$conds <- factor(coldata$conds)
-    colnames(coldata) <- c("libname", "group")
+    colnames_coldata <- c("libname", "group")
+    if(!is.null(covariates)){
+        if(covariates!="No Covariate"){
+            covariates <- metadata[match(cols,metadata$sample),covariates]
+            covariates <- factor(covariates)
+            coldata <- data.frame(cbind(coldata, covariates))
+            colnames_coldata <- c(colnames_coldata, "covariate1")
+        }
+    }
+    colnames(coldata) <- colnames_coldata
     coldata
 }
 
