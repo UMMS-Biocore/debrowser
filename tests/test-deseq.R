@@ -3,6 +3,7 @@ library(testthat)
 
 load(system.file("extdata", "demo", "demodata.Rda",
     package = "debrowser"))
+metadata <- metadatatable 
 columns <- c("exper_rep1", "exper_rep2", "exper_rep3",
     "control_rep1", "control_rep2", "control_rep3")
 conds <- factor( c("Control", "Control", "Control",
@@ -10,16 +11,16 @@ conds <- factor( c("Control", "Control", "Control",
 data <- data.frame(demodata[, columns])
 
 #Run DESeq2 with the following parameters
-params <- c("DESeq2", "parametric", F, "Wald", "None") 
+params <- c("DESeq2", "No Covariate", "parametric", F, "Wald", "None") 
 non_expressed_cutoff <- 10
 data <- subset(data, rowSums(data) > 10)
 test_that("Able to run DESeq2", {
-    deseqrun <- runDE(data, columns, conds, params)
+    deseqrun <- runDE(data, metadata, columns, conds, params)
     expect_true(exists("deseqrun"))
 })
 
 ##################################################
-deseqrun <- runDE(data, columns, conds, params)
+deseqrun <- runDE(data, metadata, columns, conds, params)
 
 de_res <- data.frame(deseqrun)
 norm_data <- getNormalizedMatrix(data[, columns])

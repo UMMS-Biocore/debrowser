@@ -219,7 +219,9 @@ runDESeq2 <- function(data = NULL, metadata = NULL, columns = NULL, conds = NULL
     else
         dds <- DESeq(dds, fitType = fitType, betaPrior = as.logical(betaPrior), test=testType)
         
-    res <- results(dds, name = "group_Cond2_vs_Cond1")
+    coef_names <- colnames(coef(dds))
+    group_name <- coef_names[grepl("group",coef_names)][1]
+    res <- results(dds, name = group_name)
     if (shrinkage != "None"){
         res <- lfcShrink(dds, coef=2, res=res, type = shrinkage)
         if (testType == "Wald"){

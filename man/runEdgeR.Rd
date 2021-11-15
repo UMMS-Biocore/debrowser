@@ -4,11 +4,19 @@
 \alias{runEdgeR}
 \title{runEdgeR}
 \usage{
-runEdgeR(data = NULL, columns = NULL, conds = NULL, params = NULL)
+runEdgeR(
+  data = NULL,
+  metadata = NULL,
+  columns = NULL,
+  conds = NULL,
+  params = NULL
+)
 }
 \arguments{
 \item{data, }{A matrix that includes all the expression raw counts,
 rownames has to be the gene, isoform or region names/IDs}
+
+\item{metadata, }{metadata of the matrix of expression raw counts}
 
 \item{columns, }{is a vector that includes the columns that are going
 to be analyzed. These columns has to match with the given data.}

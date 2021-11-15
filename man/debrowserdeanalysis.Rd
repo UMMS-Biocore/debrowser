@@ -9,6 +9,7 @@ debrowserdeanalysis(
   output = NULL,
   session = NULL,
   data = NULL,
+  metadata = NULL,
   columns = NULL,
   conds = NULL,
   params = NULL
@@ -22,6 +23,8 @@ debrowserdeanalysis(
 \item{session, }{session}
 
 \item{data, }{a matrix that includes expression values}
+
+\item{metadata, }{metadata}
 
 \item{columns, }{columns}
 

@@ -10,7 +10,8 @@ getSelectInputBox(
   num = 0,
   choices = NULL,
   selected = NULL,
-  cw = 2
+  cw = 2,
+  multiple = FALSE
 )
 }
 \arguments{
@@ -25,6 +26,8 @@ getSelectInputBox(
 \item{selected, }{selected smaple list}
 
 \item{cw, }{column width}
+
+\item{multiple, }{if multiple choices are available}
 }
 \description{
 Selects user input conditions to run in DESeq.
