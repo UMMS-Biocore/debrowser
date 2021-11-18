@@ -27,8 +27,8 @@ debrowserbatcheffect <- function(input, output, session, ldata = NULL) {
         }
     })
     withProgress(message = 'Batch Effect Correction', detail = "Adjusting the Data", value = NULL, {
-    if (input$batchmethod == "Combat"){
-        batchdata$count <- correctCombat(input, countData, ldata$meta)
+    if (input$batchmethod == "CombatSeq" |  input$batchmethod == "Combat"){
+        batchdata$count <- correctCombat(input, countData, ldata$meta, method = input$batchmethod)
     }
     else if (input$batchmethod == "Harman"){
         batchdata$count <- correctHarman(input, countData, ldata$meta)
@@ -192,7 +192,7 @@ normalizationMethods <- function(id) {
 batchMethod <- function(id) {
   ns <- NS(id)
   selectInput(ns("batchmethod"), "Correction Method:",
-              choices = c("none", "Combat", "Harman"),
+              choices = c("none", "Combat", "CombatSeq", "Harman"),
                selected='none'
   )
 }
@@ -203,12 +203,13 @@ batchMethod <- function(id) {
 #' @param input, input values
 #' @param idata, data
 #' @param metadata, metadata
+#' @param method, method: either Combat or CombatSeq
 #' @return data
 #' @export
 #'
 #' @examples
 #'     x<-correctCombat ()
-correctCombat <- function (input = NULL, idata = NULL, metadata = NULL) {
+correctCombat <- function (input = NULL, idata = NULL, metadata = NULL, method = NULL) {
   if (is.null(idata)) return(NULL)
   
   if (input$batch == "None") {
@@ -227,13 +228,22 @@ correctCombat <- function (input = NULL, idata = NULL, metadata = NULL) {
       treatment <- metadata[, input$treatment]
       meta <- data.frame(cbind(columns, treatment, batch))
       modcombat = model.matrix(~as.factor(treatment), data = meta)
-      combat_res = sva::ComBat(dat=as.matrix(datacor), mod=modcombat, batch=batch)
-  }else {
-    combat_res = sva::ComBat(dat=as.matrix(datacor), batch=batch)
+      if(method == "Combat"){
+        combat_res = sva::ComBat(dat=as.matrix(datacor), mod=modcombat, batch=batch)
+      } else {
+        combat_res = sva::ComBat_seq(counts=as.matrix(datacor), covar_mod = modcombat, batch=batch)
+      }
+  } else {
+      if(method == "Combat"){
+        combat_res = sva::ComBat(dat=as.matrix(datacor), batch=batch)
+      } else {
+        combat_res = sva::ComBat_seq(counts=as.matrix(datacor), batch=batch)
+      }
   }
   
   a <- cbind(idata[rownames(combat_res), 2], combat_res)
   a[, columns] <- apply(a[, columns], 2, function(x) ifelse(x<0, 0, x))
+  a[, columns] <- apply(a[, columns], 2, function(x) as.integer(x))
   colnames(a[, 1]) <- colnames(idata[, 1])
   a[,columns]
 }
