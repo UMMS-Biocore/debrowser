@@ -117,7 +117,7 @@ getMethodDetails <- function(num = 0, input = NULL) {
 
 # getCovariateDetails
 #'
-#' get the detail boxes after DE method selected 
+#' get the covariate detail box after DE method selected 
 #'
 #' @param num, panel that is going to be shown
 #' @param input, user input
@@ -129,12 +129,12 @@ getMethodDetails <- function(num = 0, input = NULL) {
 #' @export
 #'
 getCovariateDetails <- function(num = 0, input = NULL, metadata = NULL) {
-    choices <- as.list(c("No Covariate", colnames(metadata)[2:ncol(metadata)]))
+    choices <- as.list(c(colnames(metadata)[2:ncol(metadata)]))
     if (num > 0)
         list(
             getSelectInputBox("covariate", "Covariate", num, choices,
-                              selected = selectedInput("covariate", num, "No Covariate", input), 
-                              2, multiple = FALSE)
+                              selected = selectedInput("covariate", num, NULL, input), 
+                              2, multiple = TRUE)
         )
 }
 
@@ -340,17 +340,19 @@ selectConditions<-function(Dataset = NULL,
             }
             
             # check covariates
-            if (!is.null(selectedInput("covariate", 
-                                       i, NULL, input)) && selectedInput("covariate", 
-                                                                         i, NULL, input) != "No Covariate"){
-                covariates <- levels(factor(metadata[,selectedInput("covariate", 
-                                                                    i, NULL, input)]))
-                covariates <- covariates[covariates != "" & covariates != "NA"]
-                if (length(covariates) < 2) {
-                    showNotification("There must be at least 2 groups in the selected covariate.", 
-                                     type = "error")
-                    updateSelectInput(session, paste0("covariate", i), selected= "No Covariate")
+            if (!is.null(selectedInput("covariate", i, NULL, input))){
+                selected_metadata <- metadata[,selectedInput("covariate",i, NULL, input), drop = FALSE]
+                flag_selected <- rep(F,ncol(selected_metadata))
+                for(kk in 1:ncol(selected_metadata)){
+                    covariates <- selected_metadata[,kk]
+                    if (length(covariates) < 2) {
+                        showNotification("There must be at least 2 groups in the selected covariate.", 
+                                         type = "error")
+                        flag_selected[i] <- T
+                    }
                 }
+                new_selected <- selectedInput("covariate",i, NULL, input)[!flag_selected]
+                updateSelectInput(session, paste0("covariate", i), selected= new_selected)
             }
             
             # update choices of the covariate
@@ -359,12 +361,13 @@ selectConditions<-function(Dataset = NULL,
             metadata_columns <- colnames(metadata)[2:ncol(metadata)]
             metadata_columns <- metadata_columns[!metadata_columns %in% selectedInput("conditions_from_meta", i, NULL, input)]
             if(!is.null(selectedInput("conditions_from_meta", i, NULL, input)) && !is.null(selectedInput("covariate", i, NULL, input))){
-                if(selectedInput("conditions_from_meta", i, NULL, input) == selectedInput("covariate", i, NULL, input)){
-                    updateSelectInput(session, paste0("covariate", i), choices = c("No Covariate", metadata_columns), 
-                                      selected = "No Covariate")
-                } else {
-                    updateSelectInput(session, paste0("covariate", i), choices = c("No Covariate", metadata_columns), 
-                                      selected = selectedInput("covariate", i, NULL, input))
+                if(selectedInput("conditions_from_meta", i, NULL, input) %in% selectedInput("covariate", i, NULL, input)){
+                    selected_meta <- selectedInput("covariate", i, NULL, input)
+                    selected_meta <- selected_meta[!selected_meta %in% selectedInput("conditions_from_meta", i, NULL, input)]
+                    updateSelectInput(session, paste0("covariate", i), choices = c(metadata_columns), 
+                                      selected = selected_meta)
+                    showNotification("Condition column is included in covariate list, removing!", 
+                                     type = "error")
                 } 
             }
             
@@ -498,7 +501,6 @@ prepDataContainer <- function(data = NULL, counter=NULL,
     if (is.null(data)) return(NULL)
     
     inputconds <- reactiveValues(demethod_params = list(), conds = list(), dclist = list())
-
     inputconds$conds <- list()
     for (cnt in seq(1:(2*counter))){
         inputconds$conds[cnt] <- list(isolate(input[[paste0("condition",cnt)]]))
@@ -506,10 +508,12 @@ prepDataContainer <- function(data = NULL, counter=NULL,
     #Get parameters for each method
     inputconds$demethod_params <- NULL
     for (cnt in seq(1:counter)){
+        covariate <- isolate(paste(input[[paste0("covariate",cnt)]], collapse = "|"))
+        covariate <- ifelse(covariate == "", "NoCovariate", covariate)
         if (isolate(input[[paste0("demethod",cnt)]]) == "DESeq2"){
             inputconds$demethod_params[cnt] <- paste(
                 isolate(input[[paste0("demethod",cnt)]]),
-                isolate(paste(input[[paste0("covariate",cnt)]], collapse = "|")),
+                covariate,
                 isolate(input[[paste0("fitType",cnt)]]),
                 isolate(input[[paste0("betaPrior",cnt)]]),
                 isolate(input[[paste0("testType",cnt)]]),
@@ -518,7 +522,7 @@ prepDataContainer <- function(data = NULL, counter=NULL,
         else if (isolate(input[[paste0("demethod",cnt)]]) == "EdgeR"){
             inputconds$demethod_params[cnt]<- paste(
                 isolate(input[[paste0("demethod",cnt)]]),
-                isolate(paste(input[[paste0("covariate",cnt)]], collapse = "|")),
+                covariate,
                 isolate(input[[paste0("edgeR_normfact",cnt)]]),
                 isolate(input[[paste0("dispersion",cnt)]]),
                 isolate(input[[paste0("edgeR_testType",cnt)]]), sep=",")
@@ -526,7 +530,7 @@ prepDataContainer <- function(data = NULL, counter=NULL,
         else if (isolate(input[[paste0("demethod",cnt)]]) == "Limma"){
             inputconds$demethod_params[cnt] <- paste(
                 isolate(input[[paste0("demethod",cnt)]]),
-                isolate(paste(input[[paste0("covariate",cnt)]], collapse = "|")),
+                covariate,
                 isolate(input[[paste0("limma_normfact",cnt)]]),
                 isolate(input[[paste0("limma_fitType",cnt)]]),
                 isolate(input[[paste0("normBetween",cnt)]]), sep=",")

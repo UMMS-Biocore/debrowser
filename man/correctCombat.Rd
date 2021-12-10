@@ -4,7 +4,7 @@
 \alias{correctCombat}
 \title{Correct Batch Effect using Combat in sva package}
 \usage{
-correctCombat(input = NULL, idata = NULL, metadata = NULL)
+correctCombat(input = NULL, idata = NULL, metadata = NULL, method = NULL)
 }
 \arguments{
 \item{input, }{input values}
@@ -12,6 +12,8 @@ correctCombat(input = NULL, idata = NULL, metadata = NULL)
 \item{idata, }{data}
 
 \item{metadata, }{metadata}
+
+\item{method, }{method: either Combat or CombatSeq}
 }
 \value{
 data

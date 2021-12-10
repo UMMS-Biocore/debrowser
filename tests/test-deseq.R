@@ -11,7 +11,7 @@ conds <- factor( c("Control", "Control", "Control",
 data <- data.frame(demodata[, columns])
 
 #Run DESeq2 with the following parameters
-params <- c("DESeq2", "No Covariate", "parametric", F, "Wald", "None") 
+params <- c("DESeq2", "NoCovariate", "parametric", F, "Wald", "None") 
 non_expressed_cutoff <- 10
 data <- subset(data, rowSums(data) > 10)
 test_that("Able to run DESeq2", {

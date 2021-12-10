@@ -186,6 +186,7 @@ runDESeq2 <- function(data = NULL, metadata = NULL, columns = NULL, conds = NULL
     if (length(params)<3)
         params <- strsplit(params, ",")[[1]]
     covariates <- if (!is.null(params[2])) params[2]
+    covariates <- strsplit(covariates, split = "\\|")[[1]]
     fitType <- if (!is.null(params[3])) params[3]
     betaPrior <-  if (!is.null(params[4])) params[4]
     testType <- if (!is.null(params[5])) params[5]
@@ -206,9 +207,10 @@ runDESeq2 <- function(data = NULL, metadata = NULL, columns = NULL, conds = NULL
     filtd <- data
     
     # DESeq data structure is going to be prepared
-    if(covariates != "No Covariate"){
+    if(covariates != "NoCovariate"){
+        dds_formula <- as.formula(paste0("~ group", paste0(" + covariate", 1:length(covariates))))
         dds <- DESeqDataSetFromMatrix(countData = as.matrix(filtd),
-                                      colData = coldata, design = ~ group + covariate1)
+                                      colData = coldata, design = dds_formula)
     } else {
         dds <- DESeqDataSetFromMatrix(countData = as.matrix(filtd),
                                       colData = coldata, design = ~group)
@@ -276,6 +278,7 @@ runEdgeR<- function(data = NULL, metadata = NULL, columns = NULL, conds = NULL, 
     if (length(params)<3)
         params <- strsplit(params, ",")[[1]]
     covariates <- if (!is.null(params[2])) params[2]
+    covariates <- strsplit(covariates, split = "\\|")[[1]]
     normfact <- if (!is.null(params[3])) params[3]
     dispersion <- if (!is.null(params[4])) params[4]
     testType <- if (!is.null(params[5])) params[5]
@@ -306,10 +309,16 @@ runEdgeR<- function(data = NULL, metadata = NULL, columns = NULL, conds = NULL, 
         return(NULL)
     }
     
-    if(covariates != "No Covariate"){
-        covariates <- metadata[match(columns,metadata$sample),covariates]
-        covariates <- factor(covariates)
-        design <- model.matrix(~ des + covariates)
+    if(covariates != "NoCovariate"){
+        des_formula <- as.formula(paste0("~ des", paste0(" + covariate", 1:length(covariates))))
+        model.matrix_data <- data.frame(des = des)
+        cov_metadata <- metadata[match(columns,metadata$sample),covariates, drop = FALSE]
+        for(i in 1:length(covariates)){
+            cur_covariate <- cov_metadata[,i]
+            cur_covariate <- factor(cur_covariate)
+            model.matrix_data[[paste0("covariate",i)]] <- cur_covariate 
+        }
+        design <- model.matrix(des_formula, data = model.matrix_data)
     } else {
         design <- model.matrix(~des)
     }
@@ -373,6 +382,7 @@ runLimma<- function(data = NULL, metadata = NULL, columns = NULL, conds = NULL, 
     if (length(params)<3)
         params <- strsplit(params, ",")[[1]]
     covariates <- if (!is.null(params[2])) params[2]
+    covariates <- strsplit(covariates, split = "\\|")[[1]]
     normfact = if (!is.null(params[3])) params[3]
     fitType = if (!is.null(params[4])) params[4]
     normBet = if (!is.null(params[5])) params[5]
@@ -389,16 +399,20 @@ runLimma<- function(data = NULL, metadata = NULL, columns = NULL, conds = NULL, 
     des <- factor(c(rep(levels(conds)[1], cnum),rep(levels(conds)[2], tnum)))
     names(filtd) <- des
     
-    if(covariates != "No Covariate"){
-        covariates <- metadata[match(columns,metadata$sample),covariates]
-        covariates <- factor(covariates)
-        design <- cbind(Grp1=1,Grp2vs1=des, covariate = covariates)
+    if(covariates != "NoCovariate"){
+        design <- cbind(Grp1=1,Grp2vs1=des)
+        cov_metadata <- metadata[match(columns,metadata$sample),covariates, drop = FALSE]
+        for(i in 1:length(covariates)){
+            cur_covariate <- cov_metadata[,i]
+            cur_covariate <- factor(cur_covariate)
+            design <- cbind(design, cur_covariate)
+            colnames(design)[length(colnames(design))] <-  paste0("covariate",i)
+        }
     } else {
         design <- cbind(Grp1=1,Grp2vs1=des)
     }
-
-    dge <- DGEList(counts=filtd, group = des)
     
+    dge <- DGEList(counts=filtd, group = des)
     dge <- calcNormFactors(dge, method=normfact, samples=columns)
     
     v <- voom(dge, design=design, normalize.method = normBet, plot=FALSE)
@@ -435,11 +449,14 @@ prepGroup <- function(conds = NULL, cols = NULL, metadata = NULL, covariates = N
     coldata$conds <- factor(coldata$conds)
     colnames_coldata <- c("libname", "group")
     if(!is.null(covariates)){
-        if(covariates!="No Covariate"){
-            covariates <- metadata[match(cols,metadata$sample),covariates]
-            covariates <- factor(covariates)
-            coldata <- data.frame(cbind(coldata, covariates))
-            colnames_coldata <- c(colnames_coldata, "covariate1")
+        if(covariates!="NoCovariate"){
+            covariates <- metadata[match(cols,metadata$sample),covariates, drop = FALSE]
+            for(i in 1:ncol(covariates)){
+                cur_covariate <- covariates[,i]
+                cur_covariate <- factor(cur_covariate)
+                coldata <- data.frame(cbind(coldata, cur_covariate))
+                colnames_coldata <- c(colnames_coldata, paste0("covariate",i))   
+            }
         }
     }
     colnames(coldata) <- colnames_coldata
