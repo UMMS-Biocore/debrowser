@@ -14,8 +14,11 @@
     ".Rbuildignore": {
       "checksum": "b448807b8fb2d44e049c8d54dc8b2074"
     },
+    ".RData": {
+      "checksum": "d5b15493b4d15449f40eb295e0e47d1d"
+    },
     "DESCRIPTION": {
-      "checksum": "79e30e901fcf9b732f056256dc802f54"
+      "checksum": "04045e6d14d3b6ad87c807747494fcc4"
     },
     "inst/CITATION": {
       "checksum": "2e5f7315243a891daf649a37aef8f896"
@@ -698,6 +701,9 @@
     "NEWS": {
       "checksum": "cbc74e10543a041c64168a7ce3b5d239"
     },
+    "R/.gitignore": {
+      "checksum": "126e0c1a7512a032f8d16f03a50484b0"
+    },
     "R/all2all.R": {
       "checksum": "a94288eb81a422d4820f928396fbd5b4"
     },
@@ -714,13 +720,13 @@
       "checksum": "085a2402337bc4b6e7d04c4b2d33c511"
     },
     "R/dataLoad.R": {
-      "checksum": "28d7c5cb5b29b5760c6a2e1caf573a38"
+      "checksum": "4839d91183ea25801e4ffd0c85eaf8f6"
     },
     "R/density.R": {
       "checksum": "39ca443f798eda18954597740422bfb1"
     },
     "R/deprogs.R": {
-      "checksum": "d0b849d744b8baf43b0e23725c3ceb61"
+      "checksum": "2cae6adb414bc9951bfcb42aa756df6b"
     },
     "R/funcs.R": {
       "checksum": "fddffbe3b101190f1b6e259e76b97115"
@@ -760,6 +766,12 @@
     },
     "R/prepdata.R": {
       "checksum": "5027e937744bcf62caac4b4441097b6a"
+    },
+    "R/rsconnect/connect.modernatx.net/akucukural@modernatx.com/debrowser.dcf": {
+      "checksum": "93ed758434d66e66add474c8769f6b11"
+    },
+    "R/rsconnect/rstudio-connect.dolphinnext.com/alper/debrowser.dcf": {
+      "checksum": "41c056034687a28b8106199f62761c07"
     },
     "R/server.R": {
       "checksum": "9e21677bf10b49174ab5bc455c0c6894"

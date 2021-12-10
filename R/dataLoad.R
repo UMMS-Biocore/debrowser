@@ -118,6 +118,7 @@ debrowserdataload <- function(input = NULL, output = NULL, session = NULL, nextp
                   showNotification(checkRes, type = "error")
                   return(NULL)
             }
+            counttable <- counttable[, metadatatable[,1]]
         }
         else{
             metadatatable <- cbind(colnames(counttable), 1)
