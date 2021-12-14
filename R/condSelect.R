@@ -312,7 +312,7 @@ selectConditions<-function(Dataset = NULL,
     
     if (nc >= 0) {
         allsamples <- getSampleNames( colnames(Dataset), "all" )
-        
+
         lapply(seq_len(nc), function(i) {
 
             selected1 <- selectedSamples(2 * i - 1)
@@ -349,36 +349,68 @@ selectConditions<-function(Dataset = NULL,
                 }
             }
             
-            # check covariates
-            if (!is.null(selectedInput("covariate", i, NULL, input))){
-                selected_metadata <- metadata[,selectedInput("covariate",i, NULL, input), drop = FALSE]
-                flag_selected <- rep(F,ncol(selected_metadata))
-                for(kk in 1:ncol(selected_metadata)){
-                    covariates <- selected_metadata[,kk]
-                    if (length(covariates) < 2) {
-                        showNotification("There must be at least 2 groups in the selected covariate.", 
-                                         type = "error")
-                        flag_selected[i] <- T
-                    }
-                }
-                new_selected <- selectedInput("covariate",i, NULL, input)[!flag_selected]
-                updateSelectInput(session, paste0("covariate", i), selected= new_selected)
-            }
-            
-            # update choices of the covariate
-            # if condition is selected, dont let the same column selected as covariate
-            # if condition and covariate is the same, reset covariate
+            # update selected of the covariate
+            # if condition is selected, dont let the same column selected as covariate, then remove
             metadata_columns <- colnames(metadata)[2:ncol(metadata)]
             metadata_columns <- metadata_columns[!metadata_columns %in% selectedInput("conditions_from_meta", i, NULL, input)]
-            if(!is.null(selectedInput("conditions_from_meta", i, NULL, input)) && !is.null(selectedInput("covariate", i, NULL, input))){
+            if(!is.null(selectedInput("conditions_from_meta", i, NULL, input)) && !is.null(selectedInput("covariate", i, NULL, input)) &&
+               selectedInput("conditions_from_meta", i, NULL, input) != "No Selection"){
                 if(selectedInput("conditions_from_meta", i, NULL, input) %in% selectedInput("covariate", i, NULL, input)){
                     selected_meta <- selectedInput("covariate", i, NULL, input)
                     selected_meta <- selected_meta[!selected_meta %in% selectedInput("conditions_from_meta", i, NULL, input)]
                     updateSelectInput(session, paste0("covariate", i), choices = c(metadata_columns), 
-                                      selected = selected_meta)
+                                      selected = c(selected_meta))
                     showNotification("Condition column is included in covariate list, removing!", 
                                      type = "error")
+                    return(to_return)
                 } 
+            }
+    
+            # check appropriateness of covariates
+            if (!is.null(selectedInput("covariate", i, NULL, input))){
+                
+                # establish metadata with selected samples, conditions and covariates
+                selected_samples <- c(selected1,selected2)
+                match_selected_samples <- match(selected_samples, colnames(Dataset))
+                selected_covariate_names <- selectedInput("covariate",i, NULL, input)
+                selected_covariates_metadata <- metadata[match_selected_samples,selected_covariate_names, drop = FALSE]
+                selected_treatment <- rep(c("Cond1","Cond2"), c(length(selected1), length(selected2)))
+
+                # loop over all covariates, flag covariates to be removed
+                flag_selected <- rep(F,length(selected_covariate_names))
+                for(kk in 1:ncol(selected_covariates_metadata)){
+                    covariate <- selected_covariates_metadata[,kk]
+
+                    # check if there are at least two groups in metadata
+                    if (sum(is.na(covariate)) > 0) {
+                        showNotification("Covariate shouldnt have an NA or empty values in any selected sample.",
+                                         type = "error")
+                        flag_selected[kk] <- T
+                    }
+                    
+                    # check if there are at least two groups in metadata
+                    if (length(unique(covariate)) < 2) {
+                        showNotification("There must be at least 2 groups in the selected covariate.",
+                                         type = "error")
+                        flag_selected[kk] <- T
+                    }
+                    
+                    # check if there are confounding covariates with treatment
+                    covariate_vs_treatment <- table(covariate, selected_treatment)
+                    if (any(covariate_vs_treatment == 0)) {
+                        showNotification("Each condition should have at least one of all covariate groups.",
+                                         type = "error")
+                        flag_selected[kk] <- T
+                    }
+                }
+                
+                # remove covariates if an inappropriate flag is found
+                if(any(flag_selected)){
+                    new_covariate_names <- selected_covariate_names[!flag_selected]
+                    selected_covariate_names <- selectedInput("covariate",i, NULL, input)
+                    selected_covariate_names <- selected_covariate_names[selected_covariate_names %in% new_covariate_names]
+                    updateSelectInput(session, paste0("covariate", i), selected= c(selected_covariate_names))   
+                }
             }
             
             return(to_return)
@@ -601,7 +633,7 @@ prepDataContainer <- function(data = NULL, counter=NULL,
         })
     }
 
-    if(length(inputconds$dclist) <1) return(NULL)
+    if(length(inputconds$dclist) < 1) return(NULL)
 
     inputconds$dclist
 }
