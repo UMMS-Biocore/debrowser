@@ -2,7 +2,7 @@
 % Please edit documentation in R/condSelect.R
 \name{getCovariateDetails}
 \alias{getCovariateDetails}
-\title{get the covariate detail box after DE method selected}
+\title{getCovariateDetails}
 \usage{
 getCovariateDetails(num = 0, input = NULL, metadata = NULL)
 }

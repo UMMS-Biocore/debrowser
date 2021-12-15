@@ -115,7 +115,7 @@ getMethodDetails <- function(num = 0, input = NULL) {
             br())
 }
 
-# getCovariateDetails
+#' getCovariateDetails
 #'
 #' get the covariate detail box after DE method selected 
 #'
@@ -129,13 +129,14 @@ getMethodDetails <- function(num = 0, input = NULL) {
 #' @export
 #'
 getCovariateDetails <- function(num = 0, input = NULL, metadata = NULL) {
-    choices <- as.list(c(colnames(metadata)[2:ncol(metadata)]))
-    if (num > 0)
+    if (num > 0){
+        choices <- c(colnames(metadata)[2:ncol(metadata)])
         list(
             getSelectInputBox("covariate", "Covariate", num, choices,
                               selected = selectedInput("covariate", num, NULL, input), 
                               2, multiple = TRUE)
         )
+    }
 }
 
 #' getConditionSelector
