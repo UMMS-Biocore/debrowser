@@ -320,7 +320,9 @@ runEdgeR<- function(data = NULL, metadata = NULL, columns = NULL, conds = NULL, 
     if(covariates != "NoCovariate"){
         des_formula <- as.formula(paste0("~ des", paste0(" + covariate", 1:length(covariates))))
         model.matrix_data <- data.frame(des = des)
-        cov_metadata <- metadata[match(columns,metadata$sample),covariates, drop = FALSE]
+        sample_column_ind <- which(apply(metadata, 2, function(x) sum(x %in% columns) == length(columns))) 
+        sample_column <- colnames(metadata)[sample_column_ind]
+        cov_metadata <- metadata[match(columns,metadata[,sample_column]),covariates, drop = FALSE]
         for(i in 1:length(covariates)){
             cur_covariate <- cov_metadata[,i]
             cur_covariate <- factor(cur_covariate)
@@ -409,7 +411,9 @@ runLimma<- function(data = NULL, metadata = NULL, columns = NULL, conds = NULL, 
     
     if(covariates != "NoCovariate"){
         design <- cbind(Grp1=1,Grp2vs1=des)
-        cov_metadata <- metadata[match(columns,metadata$sample),covariates, drop = FALSE]
+        sample_column_ind <- which(apply(metadata, 2, function(x) sum(x %in% columns) == length(columns))) 
+        sample_column <- colnames(metadata)[sample_column_ind]
+        cov_metadata <- metadata[match(columns,metadata[,sample_column]),covariates, drop = FALSE]
         for(i in 1:length(covariates)){
             cur_covariate <- cov_metadata[,i]
             cur_covariate <- factor(cur_covariate)
@@ -458,7 +462,9 @@ prepGroup <- function(conds = NULL, cols = NULL, metadata = NULL, covariates = N
     colnames_coldata <- c("libname", "group")
     if(!is.null(covariates)){
         if(covariates!="NoCovariate"){
-            covariates <- metadata[match(cols,metadata$sample),covariates, drop = FALSE]
+            sample_column_ind <- which(apply(metadata, 2, function(x) sum(x %in% cols) == length(cols))) 
+            sample_column <- colnames(metadata)[sample_column_ind]
+            covariates <- metadata[match(cols,metadata[,sample_column]), covariates, drop = FALSE]
             for(i in 1:ncol(covariates)){
                 cur_covariate <- covariates[,i]
                 cur_covariate <- factor(cur_covariate)
