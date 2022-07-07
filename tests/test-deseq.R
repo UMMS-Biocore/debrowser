@@ -59,7 +59,4 @@ dat$A <- (rdata$Cond1 + rdata$Cond2) / 2
 updown <- rdata[rdata$Legend=="Up" | rdata$Legend=="Down",columns]
 ##################################################
 
-test_that("Check the QC plots", {
-    expect_silent( all2all(data) )
-})
 

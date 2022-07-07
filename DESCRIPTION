@@ -1,7 +1,7 @@
 Package: debrowser
 Type: Package
 Title: Interactive Differential Expresion Analysis Browser
-Version: 1.23.4
+Version: 1.23.5
 Date: 2020-12-07
 Author: Alper Kucukural <alper.kucukural@umassmed.edu>,
         Onur Yukselen <onur.yukselen@umassmed.edu>,

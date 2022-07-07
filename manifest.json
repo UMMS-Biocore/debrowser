@@ -1,7 +1,7 @@
 {
   "version": 1,
   "locale": "en_US",
-  "platform": "4.1.1",
+  "platform": "4.1.2",
   "metadata": {
     "appmode": "static",
     "primary_rmd": null,
@@ -15,7 +15,7 @@
       "checksum": "b448807b8fb2d44e049c8d54dc8b2074"
     },
     "DESCRIPTION": {
-      "checksum": "2546f073973f758fc6ac6e81bbe3a94b"
+      "checksum": "a207c1441c8d4a86b371c9ca63b5482a"
     },
     "inst/CITATION": {
       "checksum": "2e5f7315243a891daf649a37aef8f896"
@@ -297,7 +297,7 @@
       "checksum": "8e72207878b7cfd5fa16d922af4998d5"
     },
     "man/getConditionSelector.Rd": {
-      "checksum": "2ab867f45ba0014ae2c452fec7209718"
+      "checksum": "0a730059c346f068ff0750101787f2d0"
     },
     "man/getConditionSelectorFromMeta.Rd": {
       "checksum": "62c5896fe3e9077df32f095b6bbb59f3"
@@ -306,7 +306,7 @@
       "checksum": "cd7462c17202f8218124a2d4acad83d9"
     },
     "man/getCovariateDetails.Rd": {
-      "checksum": "796c28a92370cdca107eaa0e269c6c21"
+      "checksum": "c471b77141f4d2713031b89481767682"
     },
     "man/getCutOffSelection.Rd": {
       "checksum": "5b163812906bf3e08add47a06a008da8"
@@ -444,7 +444,7 @@
       "checksum": "f40fac3f7373b4a70ae22485f3de914a"
     },
     "man/getMethodDetails.Rd": {
-      "checksum": "b80d0c2ab37c69bf3ea94d6b67f7b0bf"
+      "checksum": "d2d2c5eaec8872dca9c3cb73de7d76a2"
     },
     "man/getMostVariedList.Rd": {
       "checksum": "11b106b3b7b576f83a7beb39c392fb2b"
@@ -699,7 +699,7 @@
       "checksum": "88b0451641d862b77da4c397bb20151f"
     },
     "NAMESPACE": {
-      "checksum": "ec9148f2edcee1c7fbb0501711530a60"
+      "checksum": "d785e235b77127fd80b1a7ed6103adf5"
     },
     "NEWS": {
       "checksum": "cbc74e10543a041c64168a7ce3b5d239"
@@ -717,10 +717,10 @@
       "checksum": "77fc5851b50eb8f3f42d9472d80455df"
     },
     "R/condSelect.R": {
-      "checksum": "c2d3366b3428fd74d59ca89e21c1954e"
+      "checksum": "3b0ad8b693b48aba823700658398cd6b"
     },
     "R/dataLoad.R": {
-      "checksum": "4839d91183ea25801e4ffd0c85eaf8f6"
+      "checksum": "033ce7208e2ca57833677e8e915e9981"
     },
     "R/density.R": {
       "checksum": "39ca443f798eda18954597740422bfb1"
@@ -768,7 +768,7 @@
       "checksum": "5027e937744bcf62caac4b4441097b6a"
     },
     "R/server.R": {
-      "checksum": "65733246210ca359fa7bcca0a0b90758"
+      "checksum": "c93e6c6a999d63843c493a4af233a399"
     },
     "R/startShiny.R": {
       "checksum": "f99fdbf8496f6e71d0bac6001b721f53"
@@ -786,7 +786,7 @@
       "checksum": "f8697ed90437f92e3f9b10aecbad3bde"
     },
     "tests/test-deseq.R": {
-      "checksum": "199cfd9c6fff5a7e4f5d31ca0276c17e"
+      "checksum": "80af5367f65216ed52172a19d8866e79"
     },
     "tests/test-null.R": {
       "checksum": "ba63b7f8d28643aacbc76d11fc4368d0"

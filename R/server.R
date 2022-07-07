@@ -47,7 +47,7 @@
 #' @importFrom stats aggregate as.dist cor cor.test dist
 #'             hclust kmeans na.omit prcomp var sd model.matrix
 #'             p.adjust runif cov mahalanobis quantile as.dendrogram
-#'             density
+#'             density as.formula coef
 #' @importFrom utils read.csv read.table write.table update.packages
 #'             download.file read.delim data install.packages
 #'             packageDescription installed.packages

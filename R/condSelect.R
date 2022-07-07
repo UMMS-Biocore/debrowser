@@ -69,7 +69,8 @@ condSelectUI<- function () {
 #' @export
 #'
 #'
-getMethodDetails <- function(num = 0, input = NULL) {
+getMethodDetails <- function(num = NULL, input = NULL) {
+    if (is.null(num)) return(NULL)
     if (num > 0)
         list(
             conditionalPanel(
@@ -128,9 +129,10 @@ getMethodDetails <- function(num = 0, input = NULL) {
 #'
 #' @export
 #'
-getCovariateDetails <- function(num = 0, input = NULL, metadata = NULL) {
-    if (num > 0){
-        choices <- c(colnames(metadata)[2:ncol(metadata)])
+getCovariateDetails <- function(num = NULL, input = NULL, metadata = NULL) {
+    if (is.null(num)) return(NULL)
+    if (num > 0)
+        choices <- as.list(c(colnames(metadata)[2:ncol(metadata)]))
         list(
             getSelectInputBox("covariate", "Covariate", num, choices,
                               selected = selectedInput("covariate", num, NULL, input), 
@@ -151,7 +153,8 @@ getCovariateDetails <- function(num = 0, input = NULL, metadata = NULL) {
 #'
 #' @export
 #'
-getConditionSelector<- function(num=0, choices = NULL, selected = NULL) {
+getConditionSelector<- function(num=NULL, choices = NULL, selected = NULL) {
+    if (is.null(num)) return(NULL)
     if (!is.null(choices))
         list(column(3, selectInput(paste0("condition", num),
             label = paste0("Condition ", num),
@@ -177,6 +180,7 @@ getConditionSelector<- function(num=0, choices = NULL, selected = NULL) {
 #'
 getConditionSelectorFromMeta <- function(metadata = NULL, input = NULL, index = 1, num=0, 
     choices = NULL, selected = NULL) {
+    if (is.null(metadata)) return(NULL)
      a <- list(column(6, selectInput(paste0("condition", num),
             label = paste0("Condition ", num),
             choices = choices, multiple = TRUE,

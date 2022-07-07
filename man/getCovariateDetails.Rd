@@ -4,7 +4,7 @@
 \alias{getCovariateDetails}
 \title{getCovariateDetails}
 \usage{
-getCovariateDetails(num = 0, input = NULL, metadata = NULL)
+getCovariateDetails(num = NULL, input = NULL, metadata = NULL)
 }
 \arguments{
 \item{num, }{panel that is going to be shown}
