@@ -48,13 +48,14 @@ debrowserdataload <- function(input = NULL, output = NULL, session = NULL, nextp
     #http://127.0.0.1:3427/?jsonobject=https%3A%2F%2Fdolphin.umassmed.edu%2Fpublic%2Fapi%2F%3Fsource%3Dhttps%3A%2F%2Fbioinfo.umassmed.edu%2Fpub%2Fdebrowser%2Fsimple_demo.tsv%26format%3DJSON&meta=https%3A%2F%2Fdolphin.umassmed.edu%2Fpublic%2Fapi%2F%3Fsource%3Dhttps%3A%2F%2Fbioinfo.umassmed.edu%2Fpub%2Fdebrowser%2Fsimple_meta.tsv%26format%3DJSON
     #
     #
-    
     if (!is.null(jsonobj))
     {
         raw <- RCurl::getURL(jsonobj, .opts = list(ssl.verifypeer = FALSE),
              crlf = TRUE)
-        jsondata<-data.frame(fromJSON(raw, simplifyDataFrame = TRUE),
-                             stringsAsFactors = TRUE)
+        data <- fromJSON(raw, simplifyDataFrame = TRUE)
+        colnames(data) <- gsub("\\s+|\\.|\\-", "_", colnames(data))
+        jsondata<-data.frame(data,stringsAsFactors = TRUE)
+        
         rownames(jsondata)<-jsondata[, 1]
         jsondata<-jsondata[,c(3:ncol(jsondata))]
         jsondata[,c(1:ncol(jsondata))] <- sapply(
@@ -67,7 +68,10 @@ debrowserdataload <- function(input = NULL, output = NULL, session = NULL, nextp
         if(!is.null(jsonmet)){
             raw <- RCurl::getURL(jsonmet, .opts = list(ssl.verifypeer = FALSE),
                 crlf = TRUE)
-            metadatatable<-data.frame(fromJSON(raw, simplifyDataFrame = TRUE),
+            data <- fromJSON(raw, simplifyDataFrame = TRUE)
+            data[,1] <- gsub("\\s+|\\.|\\-", "_", data[,1])
+            
+            metadatatable<-data.frame(data,
                 stringsAsFactors = TRUE)
             
         }else{
@@ -105,6 +109,7 @@ debrowserdataload <- function(input = NULL, output = NULL, session = NULL, nextp
                 read.delim(input$countdata$datapath, 
                 header=T, sep=input$countdataSep, 
             row.names=1, strip.white=TRUE ), TRUE))
+        colnames(counttable) <- gsub("\\s+|\\.|\\-", "_", colnames(counttable))
         counttable <- counttable[,sapply(counttable, is.numeric)]
         metadatatable <- c()
         if (!is.null(input$metadata$datapath)){
@@ -113,6 +118,7 @@ debrowserdataload <- function(input = NULL, output = NULL, session = NULL, nextp
                 read.delim(input$metadata$datapath, 
                 header=TRUE, sep=input$metadataSep, strip.white=TRUE), TRUE))
 
+            metadatatable[,1] <- gsub("\\s+|\\.|\\-", "_", metadatatable[,1])
             checkRes <- checkMetaData(input, counttable)
             if (checkRes != "success"){
                   showNotification(checkRes, type = "error")
@@ -309,6 +315,7 @@ checkMetaData <- function(input = NULL, counttable = NULL){
         metadatatable <- read.table(input$metadata$datapath, sep=input$metadataSep, header=T)
         if (ncol(metadatatable) < 2) return ("Error: Please check if you chose the right separator!")
         met <- as.vector(metadatatable[order(as.vector(metadatatable[,1])), 1])
+        met <- gsub("\\s+|\\.|\\-", "_", met)
         count <- as.vector(colnames(counttable)[order(as.vector(colnames(counttable)))])
         difference <- base::setdiff(met, count)
         if (length(difference)>0){

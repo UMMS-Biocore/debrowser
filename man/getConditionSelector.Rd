@@ -4,7 +4,7 @@
 \alias{getConditionSelector}
 \title{getConditionSelector}
 \usage{
-getConditionSelector(num = 0, choices = NULL, selected = NULL)
+getConditionSelector(num = NULL, choices = NULL, selected = NULL)
 }
 \arguments{
 \item{num, }{panel that is going to be shown}
