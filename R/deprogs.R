@@ -26,7 +26,15 @@ debrowserdeanalysis <- function(input = NULL, output = NULL, session = NULL,
         applyFiltersNew(addDataCols(data, deres(), columns, conds), input)
     })
     observe({
-        dat <-  prepDat()[prepDat()$Legend == input$legendradio,]
+        if(!is.null(input$legendradio)){
+            if(input$legendradio == "All"){
+                dat <- prepDat()
+            } else {
+                dat <- prepDat()[prepDat()$Legend == input$legendradio,]
+            }   
+        } else {
+            dat <- NULL
+        }
         dat2 <- removeCols(c("ID", "x", "y","Legend", "Size"), dat)
         getTableDetails(output, session, "DEResults", dat2, modal=FALSE)
     })
@@ -540,7 +548,7 @@ getMean<-function(data = NULL, selcols=NULL) {
 #'
 getLegendRadio <- function(id) {
     ns <- NS(id)
-    types <- c("Up", "Down", "NS")
+    types <- c("Up", "Down", "NS", "All")
     radioButtons(inputId=ns("legendradio"), 
                  label="Data Type:",
                  choices=types
