@@ -26,7 +26,7 @@ if (is.null(input)) return(NULL)
         shinydashboard::menuItem(" Plot Type", startExpanded = TRUE,
             wellPanel(radioButtons("goplot", paste("Go Plots:", sep = ""),
                 c(enrichGO = "enrichGO", enrichKEGG = "enrichKEGG",
-                Disease = "disease", compareClusters = "compare")))),
+                Disease = "disease", compareClusters = "compare", GSEA = "GSEA")))),
                 getGOLeftMenu()
                 ),
         conditionalPanel( (condition <- "input.methodtabs=='panel4'"),
@@ -51,9 +51,9 @@ getMainPlotsLeftMenu <- function() {
         plotSizeMarginsUI("main",  w=600, h=400),
         shinydashboard::menuItem("Heatmap Options", startExpanded=FALSE,
         heatmapControlsUI("heatmap"),
-        plotSizeMarginsUI("heatmap", w=600, h=400)),
-        plotSizeMarginsUI("barmain", w=600,h=400, t=90),
-        plotSizeMarginsUI("boxmain", w=600, h=400, t=90)
+        plotSizeMarginsUI("heatmap", w=550, h=400)),
+        plotSizeMarginsUI("barmain", w=550,h=400, t=90),
+        plotSizeMarginsUI("boxmain", w=550, h=400, t=90)
         )
     return(mainPlotsLeftMenu)
 }
@@ -90,6 +90,10 @@ getGOLeftMenu <- function() {
                 selectInput("gofunc", "Plot Function:",
                 choices =  c( "enrichGO", "enrichDO", "enrichKEGG"))
             ),
+            conditionalPanel( ( condition <- "input.goplot=='GSEA'"),
+                selectInput("sortfield", "Sort field:",
+                choices =  c( "stat", "log2FoldChange"))
+            ),
             downloadButton("downloadGOPlot", "Download Plots"))
     )
 
@@ -121,13 +125,15 @@ getQCLeftMenu <- function( input = NULL) {
                 all2allControlsUI("all2all")
             ),
             conditionalPanel( condition <- "(input.qcplot=='Density')",
-                              plotSizeMarginsUI("Density")
+                              plotSizeMarginsUI("density"),
+                              plotSizeMarginsUI("normdensity")
             ),
             conditionalPanel( condition <- "(input.qcplot=='IQR')",
-                              plotSizeMarginsUI("IQR")
+                              plotSizeMarginsUI("IQR"),
+                              plotSizeMarginsUI("normIQR")
             ),
         getHelpButton("method",
-        "http://debrowser.readthedocs.io/en/develop/quickstart/quickstart.html#heat-maps"),
+        "http://debrowser.readthedocs.io/en/master/heatmap/heatmap.html"),
         conditionalPanel( (condition <- "input.qcplot=='pca'"),
             shinydashboard::menuItem("PCA Options",
             pcaPlotControlsUI("qcpca")),
@@ -338,11 +344,11 @@ helpText( "To be able to select conditions please click
 #' @export
 #'
 getStartPlotsMsg <- function() {
-a <- list( conditionalPanel(condition <- "!input.startPlots",
+a <- list( conditionalPanel(condition <- "!input.goMain",
     column( 12, 
     helpText( "Please choose the appropriate parameters to discover
                more in DE Results" ),
-    getHelpButton("method", "http://debrowser.readthedocs.io/en/develop/quickstart/quickstart.html#the-main-plots"))))
+    getHelpButton("method", "http://debrowser.readthedocs.io/en/master/quickstart/quickstart.html"))))
 }
 
 #' getCondMsg
@@ -351,7 +357,7 @@ a <- list( conditionalPanel(condition <- "!input.startPlots",
 #' within the DEBrowser.
 #'
 #' @param dc, columns
-#' @param num, selected comparison
+#' @param input, selected comparison
 #' @param cols, columns
 #' @param conds, selected conditions
 #' @note \code{getCondMsg}
@@ -360,15 +366,25 @@ a <- list( conditionalPanel(condition <- "!input.startPlots",
 #'     x <- getCondMsg()
 #' @export
 #'
-getCondMsg <- function(dc = NULL, num = NULL, cols = NULL, conds = NULL) {
+getCondMsg <- function(dc = NULL, input = NULL, cols = NULL, conds = NULL) {
     if (is.null(cols) || is.null(conds)) return (NULL)
+    num <- input$compselect
     if (is.null(num)) num <- 1
     cnd <- data.frame(cbind(conds, cols))
     params_str <- paste(dc[[as.numeric(num)]]$demethod_params, collapse = ',')
-    a <-list( conditionalPanel(condition <- "input.startPlots",
-        column( 12, wellPanel(
+    heatmap_str <-  paste0( "<b>Heatmap Params: Scaled:</b> ", input[['heatmap-scale']],
+        " <b>Centered:</b> ", input[['heatmap-center']],
+        " <b>Log:</b> ", input[['heatmap-log']],
+        " <b>Pseudo-count:</b> ", input[['heatmap-pseudo']])
+    a <-list( conditionalPanel(condition <- "input.goMain",
+            shinydashboard::box(
+            collapsible = TRUE, title = "Plot Information", status = "primary", 
+            solidHeader = TRUE, width = NULL,
+            draggable = TRUE,
             style = "overflow-x:scroll",
-            HTML( paste0( "<b>Selected Parameters:</b> ", params_str,
+            HTML( paste0( "<b>DE Params:</b> ", params_str,
+            " - <b>Dataset:</b> ", input$dataset," <b>Normalization:</b> ",input$norm_method,
+            " - ", heatmap_str,
             "</br><b>",unique(conds)[1], ":</b> "),
             paste(cnd[cnd$conds == unique(conds)[1], "cols"],
             collapse =","),
@@ -376,7 +392,8 @@ getCondMsg <- function(dc = NULL, num = NULL, cols = NULL, conds = NULL) {
             paste(cnd[cnd$conds == unique(conds)[2], "cols"],
             collapse =",")),
         getHelpButton("method",
-"http://debrowser.readthedocs.io/en/develop/quickstart/quickstart.html#the-main-plots")))))
+"http://debrowser.readthedocs.io/en/master/quickstart/quickstart.html#the-main-plots-of-de-analysis")
+)))
 }
 
 #' togglePanels
@@ -444,7 +461,7 @@ getTableStyle <- function(dat = NULL, input = NULL,
             backgroundColor = styleInterval(
             c(1/as.numeric(input$foldChange),
             as.numeric(input$foldChange)),
-            c('red', 'white', 'green'))
+            c('blue', 'white', 'red'))
     )
     a
 }
@@ -551,4 +568,106 @@ getDownloadSection <- function(choices=NULL) {
         helpText("Regular expressions can be used\n
         Ex: ^Al => Al.., Al$ => ...al")
     )))
+}
+
+#' getQCPanel
+#'
+#' Gathers the conditional panel for QC plots
+#'
+#' @param input, user input
+#' @note \code{getQCSection}
+#' @return the panel for QC plots
+#'
+#' @examples
+#'     x <- getQCPanel()
+#'
+#' @export
+#'
+getQCPanel <- function(input = NULL) {
+    height = "700"
+    width = "500"
+    if (!is.null(input)) {
+        height = input$height
+        width = input$width
+    }
+    qcPanel <- list(
+        wellPanel(helpText( "Please select the parameters and press the 
+                            submit button in the left menu for the plots" ),
+                  getHelpButton("method", 
+                                "http://debrowser.readthedocs.io/en/master/quickstart/quickstart.html#quality-control-plots")),
+        conditionalPanel(condition = "input.qcplot == 'pca'",
+                         getPCAPlotUI("qcpca")),    
+        conditionalPanel(condition = "(input.qcplot == 'heatmap')",
+                         getHeatmapUI("heatmapQC")),
+        conditionalPanel(condition = "(input.qcplot == 'IQR')",
+                         getIQRPlotUI("IQR"),
+                         getIQRPlotUI("normIQR")),
+        conditionalPanel(condition = "(input.qcplot == 'Density')",
+                         getDensityPlotUI("density"),
+                         getDensityPlotUI("normdensity")),
+        conditionalPanel(condition = "(input.qcplot == 'all2all')",
+                         getAll2AllPlotUI("all2all"))
+        )
+    return(qcPanel)
+}
+
+#' getSelectedCols
+#'
+#' gets selected columns
+#'
+#' @param data, all loaded data
+#' @param datasetInput, selected dataset
+#' @param input, user input params 
+#'
+#' @export
+#'
+#' @examples
+#'     getSelectedCols()
+#'
+#'
+getSelectedCols <- function(data = NULL, datasetInput = NULL, input=NULL){
+    if(is.null(data) || is.null(datasetInput)) return(NULL)
+    selCols <- NULL
+    if (!is.null(input$dataset)){
+        selection <- colnames(data)
+        if (!is.null(input$col_list))
+            selection <- input$col_list
+
+        selection <- selection[selection %in% colnames(data)]
+        
+        if (!is.null(selection))
+            selCols <- data[rownames(datasetInput), selection]
+    }
+    return(selCols)
+}
+
+
+#' removeExtraCols
+#'
+#' remove extra columns for QC plots
+#'
+#' @param dat, selected data
+#'
+#' @export
+#'
+#' @examples
+#'     removeExtraCols()
+#'
+#'
+removeExtraCols <- function(dat = NULL){
+    rcols <- c(names(dat)[grep("^padj", names(dat))], 
+               names(dat)[grep("^foldChange", names(dat))],
+               names(dat)[grep("^log2FoldChange$", names(dat))],
+               names(dat)[grep("^pvalue$", names(dat))],
+               names(dat)[grep("^Legend$", names(dat))],
+               names(dat)[grep("^Size$", names(dat))],
+               names(dat)[grep("^log10padj$", names(dat))],
+               names(dat)[grep("^x$", names(dat))],
+               names(dat)[grep("^y$", names(dat))],
+               names(dat)[grep("^M$", names(dat))],
+               names(dat)[grep("^A$", names(dat))],
+               names(dat)[grep("^ID$", names(dat))],
+               names(dat)[grep("^stat$", names(dat))]
+    )
+    dat <- dat[, !(names(dat) %in% rcols)]
 }

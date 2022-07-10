@@ -4,8 +4,12 @@
 \alias{debrowserlowcountfilter}
 \title{debrowserlowcountfilter}
 \usage{
-debrowserlowcountfilter(input = NULL, output = NULL, session = NULL,
-  ldata = NULL)
+debrowserlowcountfilter(
+  input = NULL,
+  output = NULL,
+  session = NULL,
+  ldata = NULL
+)
 }
 \arguments{
 \item{input, }{input variables}

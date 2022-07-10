@@ -4,10 +4,12 @@
 \alias{getGOPlots}
 \title{getGOPlots}
 \usage{
-getGOPlots(dataset = NULL, input = NULL)
+getGOPlots(dataset = NULL, GSEARes = NULL, input = NULL)
 }
 \arguments{
 \item{dataset, }{the dataset used}
+
+\item{GSEARes, }{GSEA results}
 
 \item{input, }{input params}
 }

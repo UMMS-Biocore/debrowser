@@ -4,14 +4,14 @@
 \alias{runHeatmap}
 \title{runHeatmap}
 \usage{
-runHeatmap(input = NULL, session = NULL, data = NULL)
+runHeatmap(input = NULL, session = NULL, expdata = NULL)
 }
 \arguments{
 \item{input, }{input variables}
 
 \item{session, }{session}
 
-\item{data, }{a matrix that includes expression values}
+\item{expdata, }{a matrix that includes expression values}
 }
 \value{
 heatmapply plot

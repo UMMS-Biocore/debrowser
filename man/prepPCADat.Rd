@@ -4,8 +4,7 @@
 \alias{prepPCADat}
 \title{prepPCADat}
 \usage{
-prepPCADat(pca_data = NULL, metadata = NULL, input = NULL, pcx = 1,
-  pcy = 2)
+prepPCADat(pca_data = NULL, metadata = NULL, input = NULL, pcx = 1, pcy = 2)
 }
 \arguments{
 \item{pca_data, }{pca run results}

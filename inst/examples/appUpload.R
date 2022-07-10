@@ -21,7 +21,7 @@ body <- dashboardBody(
 ui <- dashboardPage(header, sidebar, body, skin = "blue")
 
 server <- function(input, output, session) {
-    data <- callModule(debrowserdataload, "load")
+    data <- callModule(debrowserdataload, "load", "Filter")
 
     output$counttable <- renderPrint({
         head( data$load()$count )

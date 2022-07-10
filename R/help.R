@@ -71,7 +71,7 @@ p(strong("CPM:"), "First, counts per million (CPM) is calculated as the raw coun
     defined number of samples is less than defined CPM threshold."),
 withMathJax(),
 p("The expression cutoff value is determined according to the library size 
-    and normalization factors with formula $$\\text{CPM} = \\frac{\\text{raw counts}}{\\text{library size} * \\text{normalization factors} * 10^{-6}}$$ 
+    and normalization factors with formula $$\\text{CPM} = \\frac{\\text{raw counts}}{\\text{library size} * \\text{normalization factors}} * 10^{-6}$$ 
     For example, if the cutoff CPM value is 10,
     the library size and normalization factors are estimated approximately equal to \\(\\ 3 \\text{ x} 10 ^ 6\\) and 1 for at least 4 samples, 
     then 10 CPM expression cutoff corresponds to about 30 read counts. 
@@ -232,13 +232,13 @@ getQAText<-function(){
           scaled by library size should not be used as input. Please use edgeR 
           or limma for normalized counts."),
         h4("5.2 Why am I getting error while uploading files?"),
-        p("* DEBrowser supports tab, comma or semi-colon separated files. However spaces or characters in numeric regions not supoorted and causes an error while uploading files. It is crutial to remove for these kind of instances from the files before uploading files."),
+        p("* DEBrowser supports tab, comma or semi-colon separated files. However spaces or characters in numeric regions not supported and causes an error while uploading files. It is crutial to remove these kind of instances from the files before uploading files."),
         p("* Another reason of getting an error is using same gene name multiple times. This may occurs after opening files in programs such as Excel, which tends to automatically convert some gene names to dates (eg. SEP9 to SEP.09.2018). This leads numerous problems therefore you need to disable these kind of automatic conversion before opening files in these kind of programs."),
+        p("* Some files contain both tab and space as an delimiter which lead to error. It is required to be cleaned from these kind of files before loading."),
         h4("5.3 Why some columns not showed up after upload?"),
         p("If a character in numeric area or space is exist in one of your column, either column will be eliminated or you will get an error. Therefore it is crutial to remove for these kind of instances from your files before uploading."),
         h4("5.4 Why am I getting error while uploading CSV/TSV files exported from Excel?"),
-        p("* Excel like programs creates DOS/Windows line-ending characters (^M) when saved as CSV or TSV (comma or tab separated formats) which leads to an error. Therefore it is crutial to remove for these kind of instances from your files before uploading."),
-        p("* Another reason of getting an error is using same gene name multiple times. This may occurs after opening files in programs such as Excel, which tends to automatically convert some gene names to dates (eg. SEP9 to SEP.09.2018). Therefore you need to disable these kind of automatic conversion before opening files in these kind of programs."),
+        p("* You might getting an error, because of using same gene name multiple times. This may occurs after opening files in programs such as Excel, which tends to automatically convert some gene names to dates (eg. SEP9 to SEP.09.2018). Therefore you need to disable these kind of automatic conversion before opening files in these kind of programs."),
         h4("5.5 Why can't I see all the background data in Main Plots?"),
         p("In order to increase the performance, by default 10% of non-significant(NS) genes are used to generate plots. We strongly suggest you to use all of the NS genes in your plots while publishing your results. You can easily change this parameter by clicking **Main Options** button and change Background Data(%) to 100% on the left sidebar."),
         h4("5.6 Why am I getting error when I click on DE Genes in Go Term Analysis?"),
@@ -248,7 +248,3 @@ getQAText<-function(){
     )
 }
 
-
-
-
- 

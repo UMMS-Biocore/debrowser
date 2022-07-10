@@ -102,5 +102,7 @@ getIQRPlot <- function(data=NULL, input=NULL, title = ""){
                                  r = input$right
     ))
   p$elementId <- NULL
+  if (!is.null(input$svg) && input$svg == TRUE)
+      p <- p %>% config(toImageButtonOptions = list(format = "svg"))
   p
 }

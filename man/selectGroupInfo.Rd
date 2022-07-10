@@ -4,8 +4,12 @@
 \alias{selectGroupInfo}
 \title{selectGroupInfo}
 \usage{
-selectGroupInfo(metadata = NULL, input = NULL, selectname = "groupselect",
-  label = "Group info")
+selectGroupInfo(
+  metadata = NULL,
+  input = NULL,
+  selectname = "groupselect",
+  label = "Group info"
+)
 }
 \arguments{
 \item{metadata, }{metadata}

@@ -4,8 +4,15 @@
 \alias{debrowserbarmainplot}
 \title{debrowserbarmainplot}
 \usage{
-debrowserbarmainplot(input, output, session, data = NULL, conds = NULL,
-  cols = NULL, key = NULL)
+debrowserbarmainplot(
+  input,
+  output,
+  session,
+  data = NULL,
+  cols = NULL,
+  conds = NULL,
+  key = NULL
+)
 }
 \arguments{
 \item{input, }{input variables}
@@ -16,9 +23,9 @@ debrowserbarmainplot(input, output, session, data = NULL, conds = NULL,
 
 \item{data, }{a matrix that includes expression values}
 
-\item{conds, }{conditions}
-
 \item{cols, }{columns}
+
+\item{conds, }{conditions}
 
 \item{key, }{the gene or region name}
 }

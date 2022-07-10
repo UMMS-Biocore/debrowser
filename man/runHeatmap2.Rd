@@ -4,14 +4,14 @@
 \alias{runHeatmap2}
 \title{runHeatmap2}
 \usage{
-runHeatmap2(input = NULL, session = NULL, data = NULL)
+runHeatmap2(input = NULL, session = NULL, expdata = NULL)
 }
 \arguments{
 \item{input, }{input variables}
 
 \item{session, }{session}
 
-\item{data, }{a matrix that includes expression values}
+\item{expdata, }{a matrix that includes expression values}
 }
 \value{
 heatmap.2

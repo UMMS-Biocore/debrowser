@@ -4,7 +4,7 @@
 \alias{prepDataContainer}
 \title{prepDataContainer}
 \usage{
-prepDataContainer(data = NULL, counter = NULL, input = NULL)
+prepDataContainer(data = NULL, counter = NULL, input = NULL, meta = NULL)
 }
 \arguments{
 \item{data, }{loaded dataset}
@@ -12,6 +12,8 @@ prepDataContainer(data = NULL, counter = NULL, input = NULL)
 \item{counter, }{the number of comparisons}
 
 \item{input, }{input parameters}
+
+\item{meta, }{loaded metadata}
 }
 \value{
 data

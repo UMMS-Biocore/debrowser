@@ -2,7 +2,6 @@
 suppressPackageStartupMessages({
     library(gplots)
     library(ggplot2)
-    library(ggvis)
     library(shiny)
     library(DT)
     library(clusterProfiler)

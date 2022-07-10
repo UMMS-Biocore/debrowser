@@ -99,7 +99,7 @@ dataLCFUI<- function (id) {
                     width = 12, 
                     lcfMetRadio(id),
                     uiOutput(ns("cutoffLCFMet")),
-                    actionButton(ns("submitLCF"), label = "Filter", styleclass = "primary")
+                    actionButtonDE(ns("submitLCF"), label = "Filter", styleclass = "primary")
                 )
             ),
             column(5,div(style = 'overflow: scroll',
@@ -109,10 +109,10 @@ dataLCFUI<- function (id) {
             )
           ),
           conditionalPanel(condition = paste0("input['", ns("submitLCF"),"']"),
-          actionButton("Batch", label = "Batch Effect Correction", styleclass = "primary"),
+          actionButtonDE("Batch", label = "Batch Effect Correction", styleclass = "primary"),
           conditionalPanel(condition = "!(input.Batch)",
-          actionButton("goDEFromFilter", "Go to DE Analysis", styleclass = "primary"),
-          actionButton("goQCplotsFromFilter", "Go to QC plots", styleclass = "primary")))
+          actionButtonDE("goDEFromFilter", "Go to DE Analysis", styleclass = "primary"),
+          actionButtonDE("goQCplotsFromFilter", "Go to QC plots", styleclass = "primary")))
       ),
       shinydashboard::box(title = "Histograms",
                           solidHeader = TRUE, status = "info",  width = 12, 

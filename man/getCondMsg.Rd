@@ -4,12 +4,12 @@
 \alias{getCondMsg}
 \title{getCondMsg}
 \usage{
-getCondMsg(dc = NULL, num = NULL, cols = NULL, conds = NULL)
+getCondMsg(dc = NULL, input = NULL, cols = NULL, conds = NULL)
 }
 \arguments{
 \item{dc, }{columns}
 
-\item{num, }{selected comparison}
+\item{input, }{selected comparison}
 
 \item{cols, }{columns}
 

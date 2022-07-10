@@ -4,8 +4,14 @@
 \alias{getConditionSelectorFromMeta}
 \title{getConditionSelectorFromMeta}
 \usage{
-getConditionSelectorFromMeta(metadata = NULL, input = NULL, index = 1,
-  num = 0, choices = NULL, selected = NULL)
+getConditionSelectorFromMeta(
+  metadata = NULL,
+  input = NULL,
+  index = 1,
+  num = 0,
+  choices = NULL,
+  selected = NULL
+)
 }
 \arguments{
 \item{metadata, }{meta data table}

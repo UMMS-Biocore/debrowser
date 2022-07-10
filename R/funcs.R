@@ -108,11 +108,12 @@ getVariationData <- function(inputdata = NULL,
     # Pick out the gene with this ID
     vardata <- inputdata[key, ]
     bardata <- as.data.frame(cbind(key, cols,
-         t(vardata[, cols]), conds) )
+        t(vardata[, cols]), as.character(conds)) )
     colnames(bardata) <- c("genename", "libs", "count", "conds")
     bardata$count <- as.numeric(as.character(bardata$count))
+    bardata$conds <- factor(bardata$conds)
     data <- rbind(bardata[bardata$conds == levels(bardata$conds)[1], ],
-                  bardata[bardata$conds == levels(bardata$conds)[2], ])
+        bardata[bardata$conds == levels(bardata$conds)[2], ])
     data$conds  <- factor(data$conds, levels = unique(data$conds))
     data
 }
@@ -177,7 +178,7 @@ getTableDetails <- function(output  = NULL, session  = NULL, tablename  = NULL, 
         ret <- getBSTableUI( session$ns(tablenameUI), "Show Data", paste0("show",tablename), modal = modal) 
         if (!is.null(modal) && modal)
            ret <- list( downloadButton(session$ns(paste(tablename, "Download")), "Download"),
-               actionButton(paste0("show",tablename), "Show Data", styleclass = "primary", icon="show"),
+               actionButtonDE(paste0("show",tablename), "Show Data", styleclass = "primary", icon="show"),
                ret)
         ret    
     })
@@ -254,9 +255,9 @@ round_vals <- function(l) {
 #' @export
 #'
 #' @examples
-#'     actionButton("goDE", "Go to DE Analysis")
+#'     actionButtonDE("goDE", "Go to DE Analysis")
 #'
-actionButton <- function(inputId, label, styleclass = "", size = "",
+actionButtonDE <- function(inputId, label, styleclass = "", size = "",
         block = FALSE, icon = NULL, css.class = "", ...) {
     if (styleclass %in% c("primary", "info", "success", "warning",
         "danger", "inverse", "link")) {
@@ -350,7 +351,7 @@ getCompSelection <- function(name = NULL, count = NULL) {
 #' @export
 getHelpButton<-function(name = NULL, link = NULL){
     if (is.null(name)) return(NULL)
-    btn <- actionButton(paste0("info_",name),"",icon="info",
+    btn <- actionButtonDE(paste0("info_",name),"",icon="info",
         styleclass="info", size="small")
     
     HTML(paste0("<a id=\"info_",name,"\" href=\"",link,"\" target=\"_blank\">",
@@ -578,4 +579,33 @@ getPCAcontolUpdatesJS<-function(){
                      setTimeout(function () { $($($('#batcheffect-pcacontrols')[0]).children()[0]).children().trigger('click')}, 1000);
                      }, 1000); })
                      "))
+}
+
+.initial <- function() {
+    req <- function(...){
+    reqFun <- function(pack) {
+        if(!suppressWarnings(suppressMessages(require(pack, character.only = TRUE)))) {
+            message(paste0("unable to load package ", pack))
+            require(pack, character.only = TRUE)
+        }
+    }
+    lapply(..., reqFun)
+    }
+    packs <- c("debrowser", "plotly", "shiny", "jsonlite", "shinyjs", "shinydashboard", "shinyBS")
+    req(packs)
+}
+
+.onAttach <- function(libname, pkgname) {
+    pkgVersion <- packageDescription("debrowser", fields="Version")
+    msg <- paste0("DEBrowser v", pkgVersion, "  ",
+                  "For help: https://debrowser.readthedocs.org/", "\n\n")
+    
+    citation <- paste0("If you use DEBrowser in published research, please cite:\n\n",
+                       "Alper Kucukural, Onur Yukselen, Deniz M. Ozata, Melissa J. Moore, Manuel Garber\n", 
+                       "DEBrowser: Interactive Differential Expression Analysis and Visualization Tool for Count Data\n",
+                       "BMC Genomics 2019 20:6\n\ndoi:0.1186/s12864-018-5362-x\n")
+    
+    packageStartupMessage(paste0(msg, citation))
+    .initial()
+
 }

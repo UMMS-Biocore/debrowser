@@ -4,8 +4,7 @@
 \alias{getSampleDetails}
 \title{getSampleDetails}
 \usage{
-getSampleDetails(output = NULL, summary = NULL, details = NULL,
-  data = NULL)
+getSampleDetails(output = NULL, summary = NULL, details = NULL, data = NULL)
 }
 \arguments{
 \item{output, }{output}

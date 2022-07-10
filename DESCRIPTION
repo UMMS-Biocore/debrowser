@@ -1,8 +1,8 @@
 Package: debrowser
 Type: Package
 Title: Interactive Differential Expresion Analysis Browser
-Version: 1.9.6
-Date: 2018-07-31
+Version: 1.23.5
+Date: 2020-12-07
 Author: Alper Kucukural <alper.kucukural@umassmed.edu>,
         Onur Yukselen <onur.yukselen@umassmed.edu>,
         Manuel Garber <manuel.garber@umassmed.edu>
@@ -18,16 +18,15 @@ Description: Bioinformatics platform containing interactive plots and tables
     bar, box, volcano, ma plots and Heatmaps.
 Depends:
     R (>= 3.5.0),
+License: GPL-3 + file LICENSE
+LazyData: true
+Imports:
     shiny,
     jsonlite,
     shinyjs,
     shinydashboard,
     shinyBS,
-    pathview,
-    gplots
-License: GPL-3 + file LICENSE
-LazyData: true
-Imports:
+    gplots,
     DT,
     ggplot2,
     RColorBrewer,
@@ -46,29 +45,28 @@ Imports:
     SummarizedExperiment,
     stringi,
     reshape2,
-    baySeq,
-    d3heatmap,
     org.Hs.eg.db,
     org.Mm.eg.db,
     limma,
     edgeR,
     clusterProfiler,
-    V8,
     methods,
     sva,
     RCurl,
-    googleAuthR,
     enrichplot,
     colourpicker,
     plotly,
     heatmaply,
-    Harman
-RoxygenNote: 6.0.1
+    Harman,
+    pathview,
+    apeglm,
+    ashr
+RoxygenNote: 7.1.2
+Encoding: UTF-8
 Suggests: testthat,
     rmarkdown,
-    knitr,
-    R.rsp
-VignetteBuilder: knitr,  R.rsp
+    knitr
+VignetteBuilder: knitr, rmarkdown
 URL: https://github.com/UMMS-Biocore/debrowser
 BugReports: https://github.com/UMMS-Biocore/debrowser/issues/new
 biocViews:
@@ -77,4 +75,5 @@ biocViews:
     RNASeq,
     DifferentialExpression,
     GeneExpression,
-    Clustering
+    Clustering,
+    ImmunoOncology

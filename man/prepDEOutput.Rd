@@ -4,8 +4,14 @@
 \alias{prepDEOutput}
 \title{prepDEOutput}
 \usage{
-prepDEOutput(data = NULL, cols = NULL, conds = NULL, inputconds = NULL,
-  i = NULL, input = NULL)
+prepDEOutput(
+  data = NULL,
+  cols = NULL,
+  conds = NULL,
+  inputconds = NULL,
+  i = NULL,
+  input = NULL
+)
 }
 \arguments{
 \item{data, }{loaded dataset}

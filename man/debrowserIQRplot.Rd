@@ -4,8 +4,7 @@
 \alias{debrowserIQRplot}
 \title{debrowserIQRplot}
 \usage{
-debrowserIQRplot(input = NULL, output = NULL, session = NULL,
-  data = NULL)
+debrowserIQRplot(input = NULL, output = NULL, session = NULL, data = NULL)
 }
 \arguments{
 \item{input, }{input variables}

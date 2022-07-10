@@ -16,7 +16,7 @@ getGoPanel <- function(){
            wellPanel(helpText( "Please select parameters and press the 
                     submit button in the left menu for the plots"),
             getHelpButton("method", 
-            "http://debrowser.readthedocs.io/en/develop/quickstart/quickstart.html#go-term-plots")),
+            "http://debrowser.readthedocs.io/en/master/examples/examples.html#go-term-plots")),
             tabsetPanel(id = "gotabs", type = "tabs",
                 tabPanel(title = "Plot", value = "gopanel1", id = "gopanel1",
                      column(12, wellPanel( plotOutput("GOPlots1")))),
@@ -35,6 +35,7 @@ getGoPanel <- function(){
 #' based on user selection.
 #'
 #' @param dataset, the dataset used
+#' @param GSEARes, GSEA results
 #' @param input, input params
 #' @note \code{getGOPlots}
 #' @return the panel for go plots;
@@ -43,13 +44,14 @@ getGoPanel <- function(){
 #'     x<- getGOPlots()
 #' @export
 #' 
-getGOPlots <- function(dataset = NULL, input = NULL){
+getGOPlots <- function(dataset = NULL, GSEARes = NULL, input = NULL){
     if (is.null(dataset)) return(NULL)
     goplots <- NULL
     org <- input$organism
     if (input$goplot == "disease")
         org <- "org.Hs.eg.db"
     genelist <- getGeneList(rownames(dataset), org)
+    genelist <- genelist$ENTREZID
     gopval <- as.numeric(input$gopvalue)
     if (input$goplot == "enrichGO"){
         res <- getEnrichGO(genelist, ont = input$ontology,
@@ -77,8 +79,25 @@ getGOPlots <- function(dataset = NULL, input = NULL){
         if (input$goextplot == "Dotplot")
             goplots$p <- dotplot(res$enrich_p, showCategory=30)
     }
+    else if (input$goplot == "GSEA") {
+        res <- GSEARes
+        if (nrow(res$enrich_p@result)>0) {
+            res$p <-  gseaplot(res$enrich_p, by = "all", 
+                title = res$enrich_p$Description[1], geneSetID = 1)
+            goplots <- res
+            
+            if (input$goextplot == "Dotplot")
+                goplots$p <- dotplot(res$enrich_p, showCategory=10, 
+                    split=".sign") + facet_grid(.~.sign)
+        } else {
+            showNotification("no term enriched under specific pvalueCutoff...", 
+                type = "error")
+        }
+    }
     return(goplots)
 }
+
+
 
 #' getOrganismBox
 #'
@@ -106,7 +125,8 @@ getOrganismBox <- function(){
             "Zebrafish" = "org.Dr.eg.db",
             "Fly" = "org.Dm.eg.db",
             "Worm" = "org.Ce.eg.db",
-            "Yeast" = "org.Sc.sgd.db"
+            "Yeast" = "org.Sc.sgd.db",
+            "Arabidopsis" = "org.At.tair.db"
         ))))
     return(organismBox)
 }
@@ -123,15 +143,16 @@ getOrganismBox <- function(){
 #'     x <- getOrganism()
 #'
 getOrganism <- function(org){
-    organisms =  list("hsa", "mmu", "rno", 
-                      "dre", "dme", "cel", "sce")
+    organisms <-  list("hsa", "mmu", "rno", 
+                      "dre", "dme", "cel", "sce", "At")
     names(organisms) <- c("org.Hs.eg.db", 
                           "org.Mm.eg.db", 
                           "org.Rn.eg.db", 
                           "org.Dr.eg.db",
                           "org.Dm.eg.db",
                           "org.Ce.eg.db",
-                          "org.Sc.sgd.db")
+                          "org.Sc.sgd.db",
+                          "org.At.tair.db")
     organisms[org][[1]]
 }
 
@@ -147,14 +168,15 @@ getOrganism <- function(org){
 #'     x <- getOrganismPathway()
 #'
 getOrganismPathway <- function(org){
-    organisms =  list("human", "mouse", "rat", 
-                      "zebrafish", "fly", "celegans", "yeast")
+    organisms <- list("human", "mouse", "rat", 
+                      "zebrafish", "fly", "celegans", "yeast", "arabidopsis")
     names(organisms) <- c("org.Hs.eg.db", 
                           "org.Mm.eg.db", 
                           "org.Rn.eg.db", 
                           "org.Dr.eg.db",
                           "org.Dm.eg.db",
                           "org.Ce.eg.db",
-                          "org.Sc.sgd.db")
+                          "org.Sc.sgd.db",
+                          "org.At.tair.db")
     organisms[org][[1]]
 }

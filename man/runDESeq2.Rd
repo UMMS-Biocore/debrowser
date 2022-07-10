@@ -4,11 +4,19 @@
 \alias{runDESeq2}
 \title{runDESeq2}
 \usage{
-runDESeq2(data = NULL, columns = NULL, conds = NULL, params = NULL)
+runDESeq2(
+  data = NULL,
+  metadata = NULL,
+  columns = NULL,
+  conds = NULL,
+  params = NULL
+)
 }
 \arguments{
 \item{data, }{A matrix that includes all the expression raw counts,
 rownames has to be the gene, isoform or region names/IDs}
+
+\item{metadata, }{metadata of the matrix of expression raw counts}
 
 \item{columns, }{is a vector that includes the columns that are going
 to be analyzed. These columns has to match with the given data.}
@@ -28,8 +36,14 @@ testType: either "Wald" or "LRT", which will then use either
     Wald significance tests (defined by nbinomWaldTest), or the 
     likelihood ratio test on the difference in deviance between a 
     full and reduced model formula (defined by nbinomLRT)
-rowsum.filter: regions/genes/isoforms with total count 
-     (across all samples) below this value will be filtered out}
+shrinkage: Adds shrunken log2 fold changes (LFC) and SE to a results 
+    table from DESeq run without LFC shrinkage. For consistency with 
+    results, the column name lfcSE is used here although what is 
+    returned is a posterior SD. Three shrinkage estimators for 
+    LFC are available via type (see the vignette for more details 
+    on the estimators). The apeglm publication demonstrates that 
+    'apeglm' and 'ashr' outperform the original 'normal' shrinkage 
+    estimator.}
 }
 \value{
 deseq2 results

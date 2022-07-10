@@ -31,17 +31,19 @@ body <- dashboardBody(
 ui <- dashboardPage(header, sidebar, body, skin = "blue")
 
 server <- function(input, output, session) {
-    load(system.file("extdata", "demo", "demodata.Rda",
-                     package = "debrowser"))
+    #load(system.file("extdata", "demo", "demodata.Rda",
+     #                package = "debrowser"))
     
     filtd <- reactive({
         # Filter out the rows that has maximum 100 reads in a sample
-        subset(demodata, apply(demodata, 1, max, na.rm = TRUE)  >=  
-            as.numeric(input$maxCutoff))
+        #subset(demodata, apply(demodata, 1, max, na.rm = TRUE)  >=  
+        #    as.numeric(input$maxCutoff))
+        subset(cpmnorm, apply(cpmnorm, 1, max, na.rm = TRUE)  >=  
+                      as.numeric(input$maxCutoff))
     })
     observe({
       if(!is.null(filtd())){
-          callModule(debrowserhistogram, "histogram", demodata)
+          callModule(debrowserhistogram, "histogram", cpmnorm)
           callModule(debrowserhistogram, "afterFiltering", filtd())
       }
     })

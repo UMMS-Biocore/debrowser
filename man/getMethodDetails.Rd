@@ -4,7 +4,7 @@
 \alias{getMethodDetails}
 \title{get the detail boxes after DE method selected}
 \usage{
-getMethodDetails(num = 0, input = NULL)
+getMethodDetails(num = NULL, input = NULL)
 }
 \arguments{
 \item{num, }{panel that is going to be shown}

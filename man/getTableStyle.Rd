@@ -4,8 +4,13 @@
 \alias{getTableStyle}
 \title{getTableStyle}
 \usage{
-getTableStyle(dat = NULL, input = NULL, padj = c("padj"),
-  foldChange = c("foldChange"), DEsection = TRUE)
+getTableStyle(
+  dat = NULL,
+  input = NULL,
+  padj = c("padj"),
+  foldChange = c("foldChange"),
+  DEsection = TRUE
+)
 }
 \arguments{
 \item{dat, }{dataset}

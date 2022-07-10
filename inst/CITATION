@@ -1,0 +1,17 @@
+citEntry(entry="article",
+         title = "DEBrowser: Interactive Differential Expression Analysis and Visualization Tool for Count Data",
+         author = personList( as.person("Alper Kucukural"),
+                              as.person("Onur Yukselen"),
+                              as.person("Deniz M. Ozata"),
+			      as.person("Melissa J. Moore"),
+			      as.person("Manuel Garber")),
+         year = 2019,
+         volume = 20,
+         pages = "6",
+	 journal = "BMC Genomics",
+         doi = "10.1186/s12864-018-5362-x",
+         url = "https://bmcgenomics.biomedcentral.com/articles/10.1186/s12864-018-5362-x",
+         textVersion = 
+         paste("Alper Kucukural, Onur Yukselen, Deniz M. Ozata, Melissa J. Moore, Manuel Garber", 
+               "DEBrowser: Interactive Differential Expression Analysis and Visualization Tool for Count Data",
+                "BMC Genomics 2019 20:6" ) )

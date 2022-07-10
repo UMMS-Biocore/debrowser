@@ -4,8 +4,7 @@
 \alias{mainScatterNew}
 \title{mainScatterNew}
 \usage{
-mainScatterNew(input = NULL, data = NULL, source = NULL, x = NULL,
-  y = NULL)
+mainScatterNew(input = NULL, data = NULL, source = NULL)
 }
 \arguments{
 \item{input, }{input params}
@@ -13,10 +12,6 @@ mainScatterNew(input = NULL, data = NULL, source = NULL, x = NULL,
 \item{data, }{dataframe that has log2FoldChange and log10padj values}
 
 \item{source, }{for event triggering to select genes}
-
-\item{x, }{the name of the x coordinate}
-
-\item{y, }{the name of the y coordinate}
 }
 \value{
 scatter, volcano or MA plot

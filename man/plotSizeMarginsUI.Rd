@@ -4,8 +4,7 @@
 \alias{plotSizeMarginsUI}
 \title{plotSizeMarginsUI}
 \usage{
-plotSizeMarginsUI(id, w = 800, h = 640, t = 20, b = 100, l = 100,
-  r = 20)
+plotSizeMarginsUI(id, w = 800, h = 640, t = 20, b = 100, l = 100, r = 20)
 }
 \arguments{
 \item{id, }{id}

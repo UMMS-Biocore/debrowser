@@ -2,7 +2,6 @@
 % Please edit documentation in R/funcs.R, R/uifuncs.R
 \name{getKEGGModal}
 \alias{getKEGGModal}
-\alias{getKEGGModal}
 \title{getKEGGModal
 prepares a modal for KEGG plots}
 \usage{

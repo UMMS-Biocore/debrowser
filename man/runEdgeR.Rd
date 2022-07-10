@@ -4,11 +4,19 @@
 \alias{runEdgeR}
 \title{runEdgeR}
 \usage{
-runEdgeR(data = NULL, columns = NULL, conds = NULL, params = NULL)
+runEdgeR(
+  data = NULL,
+  metadata = NULL,
+  columns = NULL,
+  conds = NULL,
+  params = NULL
+)
 }
 \arguments{
 \item{data, }{A matrix that includes all the expression raw counts,
 rownames has to be the gene, isoform or region names/IDs}
+
+\item{metadata, }{metadata of the matrix of expression raw counts}
 
 \item{columns, }{is a vector that includes the columns that are going
 to be analyzed. These columns has to match with the given data.}
@@ -31,9 +39,7 @@ testType: exactTest or glmLRT. exactTest: Computes p-values for differential
     proportion of the whole are assumed to follow a binomial distribution. 
     glmLRT: Fit a negative binomial generalized log-linear model to the read 
     counts for each gene. Conduct genewise statistical tests for a given 
-    coefficient or coefficient contrast.
-rowsum.filter: regions/genes/isoforms with total count 
-     (across all samples) below this value will be filtered out}
+    coefficient or coefficient contrast.}
 }
 \value{
 edgeR results

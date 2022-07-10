@@ -28,10 +28,10 @@
 #'             onRestored NS reactiveVal withProgress tableOutput
 #'             selectizeInput fluidRow div renderPrint renderImage
 #'             verbatimTextOutput imageOutput renderTable incProgress
-#'             a h3 strong h2 withMathJax
+#'             a h3 strong h2 withMathJax updateCheckboxInput
+#'             showNotification updateSelectInput
 #' @importFrom shinyjs show hide enable disable useShinyjs extendShinyjs
 #'             js inlineCSS onclick
-#' @importFrom d3heatmap d3heatmap renderD3heatmap d3heatmapOutput
 #' @importFrom DT datatable dataTableOutput renderDataTable formatStyle
 #'             styleInterval formatRound
 #' @importFrom ggplot2 aes aes_string geom_bar geom_point ggplot
@@ -47,15 +47,16 @@
 #' @importFrom stats aggregate as.dist cor cor.test dist
 #'             hclust kmeans na.omit prcomp var sd model.matrix
 #'             p.adjust runif cov mahalanobis quantile as.dendrogram
-#'             density
+#'             density as.formula coef
 #' @importFrom utils read.csv read.table write.table update.packages
-#'             download.file read.delim data
+#'             download.file read.delim data install.packages
+#'             packageDescription installed.packages
 #' @importFrom DOSE enrichDO
 #' @importFrom enrichplot gseaplot dotplot
 #' @importMethodsFrom DOSE summary
 #' @importMethodsFrom AnnotationDbi as.data.frame as.list colnames
 #'             exists sample subset head mappedkeys ncol nrow subset 
-#'             keys mapIds
+#'             keys mapIds select
 #' @importMethodsFrom GenomicRanges as.factor setdiff
 #' @importMethodsFrom IRanges as.matrix "colnames<-" mean
 #'             nchar paste rownames toupper unique which
@@ -67,15 +68,12 @@
 #' @importFrom stringi stri_rand_strings
 #' @importFrom annotate geneSymbols
 #' @importFrom reshape2 melt
-#' @importFrom baySeq getLibsizes getLikelihoods getLikelihoods.NB
-#'             getPriors getPriors.NB nbinomDensity
 #' @importFrom Harman harman reconstructData
-#' @importMethodsFrom baySeq "densityFunction<-" "libsizes<-"
-#' @importFrom clusterProfiler compareCluster enrichKEGG enrichGO
+#' @importFrom clusterProfiler compareCluster enrichKEGG enrichGO gseGO bitr
 #' @importFrom DESeq2 DESeq DESeqDataSetFromMatrix results estimateSizeFactors
-#'             counts
+#'             counts lfcShrink
 #' @importFrom edgeR calcNormFactors equalizeLibSizes DGEList glmLRT
-#'             exactTest estimateCommonDisp glmFit
+#'             exactTest estimateCommonDisp glmFit topTags
 #' @importFrom shinydashboard dashboardHeader dropdownMenu messageItem
 #'             dashboardPage dashboardSidebar sidebarMenu dashboardBody
 #'             updateTabItems menuItem tabItems tabItem menuSubItem
@@ -84,15 +82,14 @@
 #' @importFrom RCurl getURL
 #' @import org.Hs.eg.db
 #' @import org.Mm.eg.db
-#' @import V8
 #' @import shinyBS
-#' @import pathview
 #' @import colourpicker
 #' @import RColorBrewer
 #' @import heatmaply
+#' @import apeglm
+#' @import ashr
 
 deServer <- function(input, output, session) {
-    #library(debrowser)
     options(warn = -1)
     tryCatch(
     {
@@ -100,13 +97,9 @@ deServer <- function(input, output, session) {
             options( shiny.maxRequestSize = 30 * 1024 ^ 2,
                     shiny.fullstacktrace = FALSE, shiny.trace=FALSE, 
                     shiny.autoreload=TRUE, warn =-1)
-            debrowser::loadpack(debrowser)
         }
         # To hide the panels from 1 to 4 and only show Data Prep
         togglePanels(0, c(0), session)
-        loadingJSON <- reactive({
-            getJsonObj(isolate(session), isolate(input), access_token())
-        })
 
         choicecounter <- reactiveValues(nc = 0)
         
@@ -128,8 +121,8 @@ deServer <- function(input, output, session) {
         })
 
         observe({
-            updata(callModule(debrowserdataload, "load"))
-            
+            updata(callModule(debrowserdataload, "load", "Filter"))
+            updateTabItems(session, "DataPrep", "Upload")
             observeEvent (input$Filter, {
                 if(!is.null(updata()$load())){ 
                     updateTabItems(session, "DataPrep", "Filter")
@@ -157,13 +150,17 @@ deServer <- function(input, output, session) {
                 choicecounter$nc <- sel()$cc()
             })
             observeEvent (input$startDE, {
-                togglePanels(0, c(0), session)
-                dc(prepDataContainer(batch()$BatchEffect()$count, sel()$cc(), input))
-                updateTabItems(session, "DataPrep", "DEAnalysis")
-               
-                buttonValues$startDE <- TRUE
-                buttonValues$goQCplots <- FALSE
-                hideObj(c("load-uploadFile","load-demo", "load-demo2", "goQCplots", "goQCplotsFromFilter"))
+                if(!is.null(batch()$BatchEffect()$count)){
+                    togglePanels(0, c(0), session)
+                    res <- prepDataContainer(batch()$BatchEffect()$count, sel()$cc(), input, batch()$BatchEffect()$meta)
+                    if(is.null(res)) return(NULL)
+                    dc(res)
+                    updateTabItems(session, "DataPrep", "DEAnalysis")
+                    buttonValues$startDE <- TRUE
+                    buttonValues$goQCplots <- FALSE
+                    hideObj(c("load-uploadFile","load-demo", 
+                        "load-demo2", "goQCplots", "goQCplotsFromFilter"))
+                }
             })
 
             observeEvent (input$goMain, {
@@ -173,7 +170,7 @@ deServer <- function(input, output, session) {
             })
             
             output$compselectUI <- renderUI({
-                if (!is.null(sel()))
+                if (!is.null(sel()) && !is.null(sel()$cc()))
                     getCompSelection("compselect_dataprep",sel()$cc())
             })
 
@@ -203,8 +200,8 @@ deServer <- function(input, output, session) {
             if (buttonValues$startDE)
                 choices <- c("up+down", "up", "down",
                              "comparisons", "alldetected",
-                             "most-varied")
-            choices <- c(choices, "selected")
+                             "most-varied", "selected")
+            choices <- c(choices, "searched")
             getDownloadSection(choices)
         })
        
@@ -232,10 +229,7 @@ deServer <- function(input, output, session) {
         buttonValues <- reactiveValues(goQCplots = FALSE, goDE = FALSE,
             startDE = FALSE)
         output$dataready <- reactive({
-            query <- parseQueryString(session$clientData$url_search)
-            jsonobj<-query$jsonobject
-            if (is.null(jsonobj))
-                hide(id = "loading-debrowser", anim = TRUE, animType = "fade")  
+            hide(id = "loading-debrowser", anim = TRUE, animType = "fade")  
             return(!is.null(init_data()))
         })
         outputOptions(output, "dataready", 
@@ -301,11 +295,11 @@ deServer <- function(input, output, session) {
                    genenames <- paste(rownames(tmpDat), collapse = ",")
                 }
             }
-            if(!is.null(input$qcplot) && !is.null(df_select())){
+            if(!is.null(input$qcplot) && !is.null(normdat())){
                 if (input$qcplot == "all2all") {
-                    callModule(debrowserall2all, "all2all", df_select(), input$cex)
+                    callModule(debrowserall2all, "all2all", normdat(), input$cex)
                 } else if (input$qcplot == "pca") {
-                    callModule(debrowserpcaplot, "qcpca", df_select(), batch()$BatchEffect()$meta)
+                    callModule(debrowserpcaplot, "qcpca", normdat(), batch()$BatchEffect()$meta)
                 } else if (input$qcplot == "heatmap") {
                     selectedQCHeat(callModule(debrowserheatmap, "heatmapQC", normdat()))
                 } else if (input$qcplot == "IQR") {
@@ -321,7 +315,7 @@ deServer <- function(input, output, session) {
         selectedMain <- reactiveVal()
         observe({
             if (!is.null(filt_data())) {
-            condmsg(getCondMsg(dc(), input$compselect,
+            condmsg(getCondMsg(dc(), input,
                 cols(), conds()))
             selectedMain(callModule(debrowsermainplot, "main", filt_data()))
             }
@@ -334,25 +328,47 @@ deServer <- function(input, output, session) {
                 })
             }
         })
+        
+        selgenename <- reactiveVal()
         observe({
-            if (!is.null(selectedMain()) && !is.null(selectedMain()$shgClicked()) && selectedMain()$shgClicked()!=""){
+            if (!is.null(selectedMain()) && !is.null(selectedMain()$shgClicked()) 
+                && selectedMain()$shgClicked()!=""){
+                selgenename(selectedMain()$shgClicked())
+                if (!is.null(selectedHeat()) && !is.null(selectedHeat()$shgClicked()) && 
+                    selectedHeat()$shgClicked() != ""){
+                    js$resetInputParam("heatmap-hoveredgenenameclick")
+                }
+            }
+        })
+        observe({
+            if (!is.null(selectedHeat()) && !is.null(selectedHeat()$shgClicked()) && 
+                selectedHeat()$shgClicked() != ""){
+                selgenename(selectedHeat()$shgClicked())
+            }
+        })
+
+        observe({
+            if (!is.null(selgenename()) && selgenename()!=""){
                 withProgress(message = 'Creating Bar/Box plots', style = "notification", value = 0.1, {
                     callModule(debrowserbarmainplot, "barmain", filt_data(), 
-                               cols(), conds(),  
-                               selectedMain()$shgClicked())
+                               cols(), conds(), selgenename())
                     callModule(debrowserboxmainplot, "boxmain", filt_data(), 
-                               cols(), conds(),
-                               selectedMain()$shgClicked())
+                               cols(), conds(), selgenename())
                 })
             }
         })
         
         normdat <-  reactive({
-            dat <- init_data()
-            if(!is.null(cols()))
-                dat <- init_data()[,cols()]
-            norm <- getNormalizedMatrix(dat, input$norm_method)
-            getSelectedCols(norm, datasetInput(), input)
+            if (!is.null(init_data()) && !is.null(datasetInput())){
+                dat <- init_data()
+                norm <- c()
+                if(!is.null(cols())){
+                    norm <- removeExtraCols(datasetInput())
+                }else{
+                    norm <- getNormalizedMatrix(dat, input$norm_method)
+                }
+                getSelectedCols(norm, datasetInput(), input)
+            }
         })
 
         df_select <- reactive({
@@ -361,11 +377,9 @@ deServer <- function(input, output, session) {
         })
         
         output$columnSelForQC <- renderUI({
-            existing_cols <- colnames(datasetInput())
-            if (!is.null(cols()))
-                existing_cols <- cols()
+            existing_cols <- colnames(removeExtraCols(datasetInput()))
             wellPanel(id = "tPanel",
-                style = "overflow-y:scroll; max-height: 200px",
+                style = "overflow-y:scroll; max-height: 300px",
                 checkboxGroupInput("col_list", "Select col to include:",
                 existing_cols, 
                 selected=existing_cols)
@@ -388,68 +402,89 @@ deServer <- function(input, output, session) {
         })
         
         datForTables <- reactive({
-            dat <- getDataForTables(input, init_data(),
+            getDataForTables(input, normdat(),
                 filt_data(), selectedData(),
                 getMostVaried(), mergedComp())
-            return(dat)
         })
 
         inputGOstart <- reactive({
             if (input$startGO){
-                dat <- datForTables()
-                getGOPlots(dat[[1]][, isolate(cols())], input)
+                withProgress(message = 'GO Started', detail = "interactive", value = 0, {
+                    dat <- datForTables()
+                    getGOPlots(dat[[1]], isolate(getGSEARes()), input)
+                })
             }
         })
+        
+        getGSEARes <- reactive({
+            if (input$goplot == "GSEA"){
+                dat <- datForTables()
+                gopval <- as.numeric(input$gopvalue)
+                getGSEA(dat[[1]], pvalueCutoff = gopval, 
+                    org=input$organism, sortfield = input$sortfield)
+            }
+        })
+        
         observeEvent(input$startGO, {
             inputGOstart()
         })
+
         output$GOPlots1 <- renderPlot({
             if (!is.null(inputGOstart()$p) && input$startGO){
+                if (input$goplot == "GSEA" && !is.null(input$gotable_rows_selected)){
+                    pid <- input$gotable_rows_selected
+                    p <- gseaplot(inputGOstart()$enrich_p, by = "all", 
+                    title = inputGOstart()$enrich_p$Description[pid[1]], 
+                    geneSetID = pid[1])
+                    return(p)
+                }
                 return(inputGOstart()$p)
             }
         })
         output$KEGGPlot <- renderImage({
-            validate(need(!is.null(input$gotable_rows_selected),
-                          "Please select a category in the GO/KEGG table to be able
-                          to see the pathway diagram"))
+            shiny::validate(need(!is.null(input$gotable_rows_selected),
+                "Please select a category in the GO/KEGG table tab to be able
+                to see the pathway diagram")
+            )
             
-            org <- input$organism
-            dat <- datForTables()
-            genedata <- getEntrezIds(dat[[1]], org)
+            withProgress(message = 'KEGG Started', detail = "interactive", value = 0, {
+
             i <- input$gotable_rows_selected
+           
             pid <- inputGOstart()$table$ID[i]
-            pathview(gene.data = genedata,
-                 pathway.id = pid,
-                 species = substr(inputGOstart()$table$ID[i],0,3),
-                 out.suffix = "b.2layer", kegg.native = TRUE)
-            unlink(paste0(pid,".png"))
-            unlink(paste0(pid,".xml"))
+
+            drawKEGG(input, datForTables(), pid)
             list(src = paste0(pid,".b.2layer.png"),
                  contentType = 'image/png')
+            })
+
         }, deleteFile = TRUE)
 
         getGOCatGenes <- reactive({
             if(is.null(input$gotable_rows_selected)) return (NULL)
             org <- input$organism
             dat <- tabledat()
-            
             i <- input$gotable_rows_selected
-            genedata <- getEntrezTable(inputGOstart()$enrich_p$geneID[i],
-                                       dat[[1]], org)
-            
+            if (input$goplot == "GSEA"){
+                genes <- inputGOstart()$enrich_p$core_enrichment[i]
+            } else{
+                genes <- inputGOstart()$enrich_p$geneID[i]
+            }
+            genedata <- getEntrezTable(genes,
+                dat[[1]], org)
             dat[[1]] <- genedata
             dat
         })
         output$GOGeneTable <- DT::renderDataTable({
-            validate(need(!is.null(input$gotable_rows_selected),
-                          "Please select a category in the GO/KEGG table to be able
-                          to see the gene list"))
+            shiny::validate(need(!is.null(input$gotable_rows_selected),
+                "Please select a category in the GO/KEGG table to be able
+                to see the gene list"))
             dat <- getGOCatGenes()
             if (!is.null(dat)){
                 DT::datatable(dat[[1]],
-                              list(lengthMenu = list(c(10, 25, 50, 100),
-                                                     c("10", "25", "50", "100")),
-                                   pageLength = 25, paging = TRUE, searching = TRUE)) %>%
+                    list(lengthMenu = list(c(10, 25, 50, 100),
+                        c("10", "25", "50", "100")),
+                        pageLength = 25, paging = TRUE, searching = TRUE)) %>%
                     getTableStyle(input, dat[[2]], dat[[3]], buttonValues$startDE)
             }
         })
@@ -518,14 +553,10 @@ deServer <- function(input, output, session) {
             return(datDT)
         })
         getMostVaried <- reactive({
-            mostVaried <- NULL
-            if (buttonValues$startDE)
-                mostVaried <- filt_data()[filt_data()$Legend=="MV" | 
-                    filt_data()$Legend=="GS", ]
-            else
-                mostVaried <- getMostVariedList(init_data(), 
-                    colnames(init_data()), input)
-            mostVaried
+            dat <- init_data()
+            if (!is.null(cols()))
+                dat <- init_data()[,cols()]
+            getMostVariedList(dat, colnames(dat), input)
         })
         output$gotable <- DT::renderDataTable({
             if (!is.null(inputGOstart()$table)){
@@ -537,15 +568,11 @@ deServer <- function(input, output, session) {
         })
         mergedComp <- reactive({
             dat <- applyFiltersToMergedComparison(
-                isolate(mergedCompInit()), choicecounter$nc, input)
-            ret <- dat[dat$Legend == "Sig", ]
-            #ret[ret$Legend == "Sig", ] <- NULL
-            ret
+                getMergedComparison(isolate(dc()), choicecounter$nc, input), 
+                choicecounter$nc, input)
+            dat[dat$Legend == "Sig", ]
         })
         
-        mergedCompInit <- reactive({
-            getMergedComparison(isolate(dc()), choicecounter$nc, input)
-        })
         datasetInput <- function(addIdFlag = FALSE){
             tmpDat <- NULL
             sdata <- NULL
@@ -559,12 +586,12 @@ deServer <- function(input, output, session) {
                 if (input$dataset == "comparisons"){
                     mergedCompDat <- mergedComp()
                 }
-                tmpDat <- getSelectedDatasetInput(filt_data(), 
-                     sdata, getMostVaried(),
-                     mergedCompDat, input)
+                tmpDat <- getSelectedDatasetInput(rdata = filt_data(), 
+                     getSelected = sdata, getMostVaried = getMostVaried(),
+                     mergedCompDat, input = input)
             }
             else{
-                tmpDat <- getSelectedDatasetInput(init_data(), 
+                tmpDat <- getSelectedDatasetInput(rdata = init_data(), 
                      getSelected = sdata,
                      getMostVaried = getMostVaried(),
                      input = input)

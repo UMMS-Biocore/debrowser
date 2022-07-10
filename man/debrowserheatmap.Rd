@@ -4,7 +4,7 @@
 \alias{debrowserheatmap}
 \title{debrowserheatmap}
 \usage{
-debrowserheatmap(input, output, session, data = NULL)
+debrowserheatmap(input, output, session, expdata = NULL)
 }
 \arguments{
 \item{input, }{input variables}
@@ -13,7 +13,7 @@ debrowserheatmap(input, output, session, data = NULL)
 
 \item{session, }{session}
 
-\item{data, }{a matrix that includes expression values}
+\item{expdata, }{a matrix that includes expression values}
 }
 \value{
 heatmapply plot

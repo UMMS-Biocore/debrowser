@@ -4,8 +4,13 @@
 \alias{getSelectedDatasetInput}
 \title{getSelectedDatasetInput}
 \usage{
-getSelectedDatasetInput(rdata = NULL, getSelected = NULL,
-  getMostVaried = NULL, mergedComparison = NULL, input = NULL)
+getSelectedDatasetInput(
+  rdata = NULL,
+  getSelected = NULL,
+  getMostVaried = NULL,
+  mergedComparison = NULL,
+  input = NULL
+)
 }
 \arguments{
 \item{rdata, }{filtered dataset}

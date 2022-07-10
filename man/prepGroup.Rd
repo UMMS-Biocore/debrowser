@@ -4,12 +4,16 @@
 \alias{prepGroup}
 \title{prepGroup}
 \usage{
-prepGroup(conds = NULL, cols = NULL)
+prepGroup(conds = NULL, cols = NULL, metadata = NULL, covariates = NULL)
 }
 \arguments{
 \item{conds, }{inputconds}
 
 \item{cols, }{columns}
+
+\item{metadata, }{metadata}
+
+\item{covariates, }{covariates}
 }
 \value{
 data

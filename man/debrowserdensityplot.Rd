@@ -4,8 +4,7 @@
 \alias{debrowserdensityplot}
 \title{debrowserdensityplot}
 \usage{
-debrowserdensityplot(input = NULL, output = NULL, session = NULL,
-  data = NULL)
+debrowserdensityplot(input = NULL, output = NULL, session = NULL, data = NULL)
 }
 \arguments{
 \item{input, }{input variables}

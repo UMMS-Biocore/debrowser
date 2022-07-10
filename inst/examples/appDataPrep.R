@@ -32,7 +32,7 @@ server <- function(input, output, session) {
   batch <- reactiveVal()
   observe({
     updata <- reactive({ 
-        ret <- callModule(debrowserdataload, "load")
+        ret <- callModule(debrowserdataload, "load", "Filter")
         ret
     })
     observeEvent (input$Filter, {

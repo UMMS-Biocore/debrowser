@@ -24,12 +24,32 @@ debrowsermainplot <- function(input = NULL, output = NULL, session = NULL, data 
     output$mainplot <- renderUI({
         list(fluidRow(
             column(12,
-                   shinydashboard::box(
-                       collapsible = TRUE, title = "Main Plots", status = "primary", 
-                       solidHeader = TRUE,width = NULL,
-                       draggable = TRUE, plotlyOutput(session$ns("main"), 
-                           height=input$plotheight, width=input$plotwidth)
-                   ))))
+            shinydashboard::box(
+                collapsible = TRUE, title = "Main Plots", status = "primary", 
+                solidHeader = TRUE,width = NULL,
+                draggable = TRUE, plotlyOutput(session$ns("main"), 
+                height=input$plotheight, width=input$plotwidth)
+            ))))
+    })
+    output$mainPlotControlsUI <- renderUI({
+        if (input$mainplot == "scatter"){
+            x <- paste0('log10 Norm. Mean(Read Counts) in cond1')
+            y <- paste0('log10 Norm. Mean(Read Counts) in cond2')
+        }else if  (input$mainplot == "volcano"){
+            x <- "log2FC"
+            y <- "-log10padj"
+        }else {
+            x <- "A"
+            y <- "M"
+        }
+        list(
+            textInput(session$ns('xlab'),'x label', x),
+            textInput(session$ns('ylab'),'y label', y),
+            checkboxInput(session$ns('labelsearched'), 'Label searched points', value = FALSE),
+            conditionalPanel(paste0("input['",session$ns("labelsearched"), "']"),
+            colourpicker::colourInput(session$ns("labelcolor"), "Label colour", "black"),
+            selectInput(session$ns("labelsize"), "Label Size", choices=c(6:30), selected=14))
+        )
     })
     selectedPoint <- reactive({
         eventdata <- event_data("plotly_click", source = session$ns("source"))
@@ -53,9 +73,7 @@ debrowsermainplot <- function(input = NULL, output = NULL, session = NULL, data 
     
     output$main <- renderPlotly({
         data <- plotdata()$data
-        x <- plotdata()$x
-        y <- plotdata()$y
-        mainScatterNew(input, data, session$ns("source"), x, y)
+        mainScatterNew(input, data, session$ns("source"))
     })
     
     list( shg = (selectedPoint), shgClicked=(selectedPoint), selGenes=(getSelected))
@@ -85,8 +103,6 @@ getMainPlotUI <- function(id) {
 #' @param input, input params
 #' @param data, dataframe that has log2FoldChange and log10padj values
 #' @param source, for event triggering to select genes
-#' @param x, the name of the x coordinate
-#' @param y, the name of the y coordinate
 #' @return scatter, volcano or MA plot
 #'
 #' @examples
@@ -95,12 +111,11 @@ getMainPlotUI <- function(id) {
 #'
 #' @export
 #'
-mainScatterNew <- function(input = NULL, data = NULL, source = NULL,
-                        x = NULL, y = NULL) {
+mainScatterNew <- function(input = NULL, data = NULL, source = NULL) {
     if ( is.null(data) ) return(NULL)
     
     p <- plot_ly(source = source, data=data, x=~x, y=~y, key=~key, alpha = 0.8,
-                 color=~Legend, colors=getLegendColors(unique(data$Legend)), 
+                 color=~Legend, colors=getLegendColors(getLevelOrder(unique(data$Legend))), 
                  type="scatter", mode = "markers",
                  width=input$width - 100, height=input$height,
                  text=~paste("<b>", ID, "</b><br>",
@@ -109,14 +124,41 @@ mainScatterNew <- function(input = NULL, data = NULL, source = NULL,
                              "<br>", "log2FC=", round(log2FoldChange, digits = 2), " ",
                              "foldChange=", round(foldChange, digits = 2),
                              "<br>", sep = " ")) %>%
-        plotly::layout(xaxis = list(title = x),
-               yaxis = list(title = y)) %>% 
+        plotly::layout(xaxis = list(title = input$xlab),
+               yaxis = list(title = input$ylab)) %>% 
         plotly::layout(
             margin = list(l = input$left,
                           b = input$bottom,
                           t = input$top,
                           r = input$right
             ))
+    
+    if (!is.null(input$labelsearched) && input$labelsearched == TRUE){
+        searched_genes <- data[(data$Legend == "GS"),]
+        a <- list()
+        for (i in seq_len(nrow(searched_genes))) {
+            m <- searched_genes[i, ]
+            a[[i]] <- list(
+                x = m$x,
+                y = m$y,
+                text = rownames(m),
+                color = 'blue',
+                xref = "x",
+                yref = "y",
+                showarrow = TRUE,
+                arrowhead = 0.5,
+                ax = 20,
+                ay = -40,
+                font = list(color = input$labelcolor,
+                            face = 2,
+                            size = input$labelsize)
+            )
+        }
+        
+        p <- p %>%  plotly::layout(annotations = a)
+    }
+    if (!is.null(input$svg) && input$svg == TRUE)
+        p <- p %>% config(toImageButtonOptions = list(format = "svg"))
     p$elementId <- NULL
     
     return(p)
@@ -147,14 +189,14 @@ plotData <- function(pdata = NULL, input = NULL){
     datapoints <- as.integer(nrow(data_NS) * backperc/ 100)
     if (nrow(data_NS) > datapoints){
         data_rand <- data_NS[sample(1:nrow(data_NS), datapoints,
-                                    replace=FALSE),]
+            replace=FALSE),]
     }else{
         data_rand  <- data_NS
     }
     plot_init_data <- rbind(data_rand, data_rest)
     plot_init_data$Legend  <- factor(plot_init_data$Legend, 
-         levels = unique(plot_init_data$Legend))
-
+         levels = getLevelOrder(unique(plot_init_data$Legend)))
+    
     plot_data <- plot_init_data
     if (mainplot == "volcano") {
         plot_data <- plot_init_data[which(!is.na(plot_init_data$log2FoldChange)
@@ -163,18 +205,11 @@ plotData <- function(pdata = NULL, input = NULL){
         plot_data$x <- plot_data$log2FoldChange
         plot_data$log10padj[plot_data$log10padj>input$log10padjCutoff] <- input$log10padjCutoff
         plot_data$y <- plot_data$log10padj
-        x <- "log2FC"
-        y <- "log10padj"
-    } else if (mainplot == "scatter") {
-        x <-  "x"
-        y <-  "y"
     } else if (mainplot == "maplot") {
         plot_data$x <- (plot_init_data$x + plot_init_data$y) / 2
         plot_data$y <- plot_init_data$y - plot_init_data$x
-        x <- "A"
-        y <- "M"
     }
-    list( data = (plot_data), x=(x), y=(y))
+    list( data = (plot_data))
 }
 
 #' mainPlotControlsUI
@@ -197,15 +232,18 @@ mainPlotControlsUI <- function(id) {
         MAPlot = "maplot"))
     ),
     shinydashboard::menuItem("Main Options",
+        startExpanded=TRUE,
         sliderInput(ns("backperc"), "Background Data(%):",
         min=10, max=100, value=10, sep = "",
-        animate = FALSE), 
+        animate = FALSE),
         conditionalPanel(condition <- paste0("input['", ns("mainplot"),"'] == 'volcano'"),
-             sliderInput(ns("log10padjCutoff"), "Log10 padj value cutoff:",
-                min=2, max=100, value=60, sep = "",
-                animate = FALSE)
-        )
-        ))
+        sliderInput(ns("log10padjCutoff"), "Log10 padj value cutoff:",
+        min=2, max=100, value=60, sep = "",
+        animate = FALSE)
+        ),
+        uiOutput(ns("mainPlotControlsUI"))
+    ))
+    
 }
 
 #' getLegendColors
@@ -282,7 +320,7 @@ generateTestData <- function(dat = NULL) {
     data <- dat$data
     params <-
         #Run DESeq2 with the following parameters
-        c("DESeq2", "parametric", F, "Wald")
+        c("DESeq2", "parametric", F, "Wald", "None")
     non_expressed_cutoff <- 10
     data <- subset(data, rowSums(data) > 10)
     deseqrun <- runDE(data, columns, conds, params)

@@ -1,4 +1,5 @@
 library(debrowser)
+library(DESeq2)
 
 header <- dashboardHeader(
   title = "DEBrowser DE Analysis"
@@ -43,8 +44,8 @@ server <- function(input, output, session) {
   outputOptions(output, 'condReady', suspendWhenHidden = FALSE)
   
   output$compselectUI <- renderUI({
-      if (is.null(dc())) return(NULL)
-      getCompSelection(sel$cc())
+      if (!is.null(sel$cc())) return(NULL)
+        getCompSelection(sel$cc())
   })
 
   compsel <- reactive({

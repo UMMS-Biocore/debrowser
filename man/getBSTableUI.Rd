@@ -5,8 +5,13 @@
 \title{getBSTableUI
 prepares a Modal to put a table}
 \usage{
-getBSTableUI(name = NULL, label = NULL, trigger = NULL, size = "large",
-  modal = NULL)
+getBSTableUI(
+  name = NULL,
+  label = NULL,
+  trigger = NULL,
+  size = "large",
+  modal = NULL
+)
 }
 \arguments{
 \item{name, }{name}

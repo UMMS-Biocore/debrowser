@@ -4,8 +4,13 @@
 \alias{debrowsercondselect}
 \title{debrowsercondselect}
 \usage{
-debrowsercondselect(input = NULL, output = NULL, session = NULL,
-  data = NULL, metadata = NULL)
+debrowsercondselect(
+  input = NULL,
+  output = NULL,
+  session = NULL,
+  data = NULL,
+  metadata = NULL
+)
 }
 \arguments{
 \item{input, }{input variables}

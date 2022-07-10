@@ -4,7 +4,12 @@
 \alias{debrowserdataload}
 \title{debrowserdataload}
 \usage{
-debrowserdataload(input = NULL, output = NULL, session = NULL)
+debrowserdataload(
+  input = NULL,
+  output = NULL,
+  session = NULL,
+  nextpagebutton = NULL
+)
 }
 \arguments{
 \item{input, }{input variables}
@@ -12,6 +17,8 @@ debrowserdataload(input = NULL, output = NULL, session = NULL)
 \item{output, }{output objects}
 
 \item{session, }{session}
+
+\item{nextpagebutton, }{the name of the next page button after loading the data}
 }
 \value{
 main plot

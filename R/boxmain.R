@@ -25,8 +25,8 @@ getBoxMainPlotUI <- function(id) {
 #' @param output, output objects
 #' @param session, session 
 #' @param data, a matrix that includes expression values
-#' @param conds, conditions
 #' @param cols, columns
+#' @param conds, conditions
 #' @param key, the gene or region name
 #' @return density plot 
 #' @export
@@ -35,10 +35,10 @@ getBoxMainPlotUI <- function(id) {
 #'     x <- debrowserboxmainplot()
 #'
 debrowserboxmainplot <- function(input = NULL, output = NULL, session = NULL, data = NULL,
-                                  conds = NULL, cols = NULL, key=NULL) {
+                                 cols = NULL, conds = NULL, key=NULL) {
     if(is.null(data)) return(NULL)
     output$BoxMain <- renderPlotly({
-        getBoxMainPlot(data, conds, cols, key, title="", input)
+        getBoxMainPlot(data, cols, conds, key, title="", input)
     })
     
     output$BoxMainUI <- renderUI({
@@ -73,8 +73,8 @@ BoxMainPlotControlsUI <- function(id) {
 #' Makes Density plots
 #'
 #' @param data, count or normalized data
-#' @param conds, conds
 #' @param cols, cols
+#' @param conds, conds
 #' @param key, key
 #' @param title, title
 #' @param input, input
@@ -83,12 +83,12 @@ BoxMainPlotControlsUI <- function(id) {
 #' @examples
 #'     getBoxMainPlot()
 #'
-getBoxMainPlot <- function(data=NULL, conds=NULL, cols = NULL, key=NULL, title = "", input = NULL){
+getBoxMainPlot <- function(data=NULL, cols = NULL, conds=NULL, key=NULL, title = "", input = NULL){
   if (is.null(data)) return(NULL)
-  vardata <- getVariationData(data, conds, cols, key)
-  title <- paste(vardata$genename, " variation")
+  vardata <- getVariationData(data, cols, conds, key)
+  title <- paste(key, "variation")
   p <- plot_ly(vardata, x = ~conds, y = ~count, 
-               color=~conds, colors=c("Red", "Blue"),
+               color=~conds, colors=c("Blue", "Red"),
                boxpoints = "all", type = "box") %>%
        plotly::layout(title = title,
                    xaxis = list(title = "Conditions"),
@@ -99,6 +99,8 @@ getBoxMainPlot <- function(data=NULL, conds=NULL, cols = NULL, key=NULL, title =
                                  t = input$top,
                                  r = input$right
                    ))
+  if (!is.null(input$svg) && input$svg == TRUE)
+    p <- p %>% config(toImageButtonOptions = list(format = "svg"))
   p$elementId <- NULL
   p
 }

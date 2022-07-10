@@ -4,9 +4,18 @@
 \alias{plot_pca}
 \title{plot_pca}
 \usage{
-plot_pca(dat = NULL, pcx = 1, pcy = 2, metadata = NULL, color = NULL,
-  shape = NULL, size = NULL, textonoff = "Off",
-  legendSelect = "samples", input = NULL)
+plot_pca(
+  dat = NULL,
+  pcx = 1,
+  pcy = 2,
+  metadata = NULL,
+  color = NULL,
+  shape = NULL,
+  size = NULL,
+  textonoff = "Off",
+  legendSelect = "samples",
+  input = NULL
+)
 }
 \arguments{
 \item{dat, }{data}

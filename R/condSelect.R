@@ -20,10 +20,10 @@
 debrowsercondselect <- function(input = NULL, output = NULL, session = NULL, data = NULL, metadata = NULL) {
     if (is.null(data)) return(NULL)
     choicecounter <- reactiveVal(0)
-    
     output$conditionSelector <- renderUI({
-        selectConditions(data, metadata, choicecounter(), input)
+        selectConditions(data, metadata, choicecounter(), session, input)
     })
+    
     observeEvent(input$add_btn, {
         choicecounter(choicecounter() + 1)
     })
@@ -31,7 +31,6 @@ debrowsercondselect <- function(input = NULL, output = NULL, session = NULL, dat
         if (choicecounter() > 0) 
             choicecounter(choicecounter() - 1)
     })
-
     list(cc = choicecounter)
 }
 
@@ -45,18 +44,18 @@ debrowsercondselect <- function(input = NULL, output = NULL, session = NULL, dat
 #' @export
 #'
 condSelectUI<- function () {
-list(
-    shinydashboard::box(title = "Comparison Selection",
-        solidHeader = TRUE, status = "info",  width = NULL, height = NULL, collapsible = TRUE,
-    fluidRow(
-        uiOutput("conditionSelector"),
-        column(12,actionButton("add_btn", "Add New Comparison",styleclass = "primary"),
-            actionButton("rm_btn", "Remove", styleclass = "primary"),
-            getHelpButton("method", "http://debrowser.readthedocs.io/en/develop/deseq/deseq.html"),
-            conditionalPanel(condition <- ("output.condReady>0"),
-            actionButton("startDE", "Start DE", styleclass = "primary")))
-    ))
-)
+    list(
+        shinydashboard::box(title = "Comparison Selection",
+            solidHeader = TRUE, status = "info",  width = NULL, height = NULL, collapsible = TRUE,
+        fluidRow(
+            uiOutput("conditionSelector"),
+            column(12,actionButtonDE("add_btn", "Add New Comparison",styleclass = "primary"),
+                actionButtonDE("rm_btn", "Remove", styleclass = "primary"),
+                getHelpButton("method", "http://debrowser.readthedocs.io/en/master/deseq/deseq.html"),
+                conditionalPanel(condition = ("output.condReady>0"),
+                actionButtonDE("startDE", "Start DE", styleclass = "primary")))
+        ))
+    )
 }
 #getMethodDetails
 #'
@@ -70,7 +69,8 @@ list(
 #' @export
 #'
 #'
-getMethodDetails <- function(num = 0, input = NULL) {
+getMethodDetails <- function(num = NULL, input = NULL) {
+    if (is.null(num)) return(NULL)
     if (num > 0)
         list(
             conditionalPanel(
@@ -84,8 +84,11 @@ getMethodDetails <- function(num = 0, input = NULL) {
                     selectedInput("betaPrior", num,
                     FALSE, input),2),
                 getSelectInputBox("testType", "Test Type", num, 
-                    c("Wald", "LRT"),  
-                    selectedInput("testType", num, "Wald", input))),
+                    c("LRT", "Wald"),  
+                    selectedInput("testType", num, "LRT", input)),
+                getSelectInputBox("shrinkage", "Shrinkage", num, 
+                    c("None", "apeglm", "ashr", "normal"),
+                    selectedInput("shrinkage", num, "None", input))),
             conditionalPanel(
                 (condition <- paste0("input.demethod",num," == 'EdgeR'")),
                 getSelectInputBox("edgeR_normfact", "Normalization", num, 
@@ -113,6 +116,31 @@ getMethodDetails <- function(num = 0, input = NULL) {
             br())
 }
 
+#' getCovariateDetails
+#'
+#' get the covariate detail box after DE method selected 
+#'
+#' @param num, panel that is going to be shown
+#' @param input, user input
+#' @param metadata, metadata
+#' 
+#' @examples
+#'     x <- getCovariateDetails()
+#'
+#' @export
+#'
+getCovariateDetails <- function(num = NULL, input = NULL, metadata = NULL) {
+    if (is.null(num)) return(NULL)
+    if (num > 0) {
+        choices <- as.list(c(colnames(metadata)[2:ncol(metadata)]))
+        list(
+            getSelectInputBox("covariate", "Covariate", num, choices,
+                              selected = selectedInput("covariate", num, NULL, input), 
+                              2, multiple = TRUE)
+        )
+    }
+}
+
 #' getConditionSelector
 #'
 #' Selects user input conditions to run in DESeq.
@@ -125,9 +153,10 @@ getMethodDetails <- function(num = 0, input = NULL) {
 #'
 #' @export
 #'
-getConditionSelector<- function(num=0, choices = NULL, selected = NULL) {
+getConditionSelector<- function(num=NULL, choices = NULL, selected = NULL) {
+    if (is.null(num)) return(NULL)
     if (!is.null(choices))
-        list(column(6, selectInput(paste0("condition", num),
+        list(column(3, selectInput(paste0("condition", num),
             label = paste0("Condition ", num),
             choices = choices, multiple = TRUE,
             selected = selected)))
@@ -151,6 +180,7 @@ getConditionSelector<- function(num=0, choices = NULL, selected = NULL) {
 #'
 getConditionSelectorFromMeta <- function(metadata = NULL, input = NULL, index = 1, num=0, 
     choices = NULL, selected = NULL) {
+    if (is.null(metadata)) return(NULL)
      a <- list(column(6, selectInput(paste0("condition", num),
             label = paste0("Condition ", num),
             choices = choices, multiple = TRUE,
@@ -159,7 +189,7 @@ getConditionSelectorFromMeta <- function(metadata = NULL, input = NULL, index = 
      if (!is.null(metadata)){
         selected_meta <- selectedInput("conditions_from_meta", 
             index, NULL, input)
-        
+            
         if (is.null(selected_meta)) selected_meta <- "No Selection"
     
         if (selected_meta != "No Selection"){
@@ -168,18 +198,27 @@ getConditionSelectorFromMeta <- function(metadata = NULL, input = NULL, index = 
         if(!is.null(input[[paste0("condition", num)]])){
             selected <- input[[paste0("condition", num)]]
         } 
-        meta_choices_all <- NULL
-        if (!is.null(selected_meta))
-            meta_choices_all <- get_conditions_given_selection(metadata,
-                                        selected_meta)
-        if(old_selection != selected_meta){
-            if(typeof(meta_choices_all) == "character"){
-                meta_choices <- list("There must be exactly 2 groups.")
-            } else{
-                meta1 <- meta_choices_all[[2 - (num %% 2)]]
-                meta_choices <- unlist(meta1, recursive=FALSE)
+        grps <- unique(metadata[selected_meta])
+        grps <- grps[grps!="NA"]
+        grps<- grps[!is.na(grps) ]
+        if (length(grps) == 2) {
+            meta_choices_all <- NULL
+            if (!is.null(selected_meta))
+                meta_choices_all <- get_conditions_given_selection(metadata,
+                                            selected_meta)
+            if(old_selection != selected_meta){
+                if(typeof(meta_choices_all) == "character"){
+                    meta_choices <- list("There must be exactly 2 groups.")
+                } else{
+                    meta1 <- meta_choices_all[[2 - (num %% 2)]]
+                    meta_choices <- unlist(meta1, recursive=FALSE)
+                }
+                selected <- meta_choices
             }
-            selected <- meta_choices
+        }else{
+            if(!is.null(input[[paste0("group", num)]])){
+                selected <- metadata[metadata[,selected_meta] == input[[paste0("group", num)]], 1]
+            }
         }
     
         a <- list(column(6, selectInput(paste0("condition", num),
@@ -205,7 +244,7 @@ getConditionSelectorFromMeta <- function(metadata = NULL, input = NULL, index = 
 #' @export
 #'
 selectedInput <- function(id = NULL, num = 0, default = NULL, 
-                          input = NULL) {
+    input = NULL) {
     if (is.null(id)) return(NULL)
     m <- NULL
     if (is.null(input[[paste0(id, num)]]))
@@ -225,19 +264,20 @@ selectedInput <- function(id = NULL, num = 0, default = NULL,
 #' @param choices, sample list
 #' @param selected, selected smaple list
 #' @param cw, column width
+#' @param multiple, if multiple choices are available
 #' @examples
 #'     x <- getSelectInputBox()
 #'
 #' @export
 #'
 getSelectInputBox <- function(id = NULL, name = NULL, 
-                              num = 0, choices = NULL, selected = NULL,
-                              cw = 2) {
+                              num = 0, choices = NULL, selected = NULL, 
+                              cw = 2, multiple = FALSE) {
     if (is.null(id)) return(NULL)
     if (!is.null(choices))
         list(column(cw, selectInput(paste0(id, num),
             label = name,
-            choices = choices, multiple = FALSE,
+            choices = choices, multiple = multiple,
             selected = selected)))
 }
 
@@ -250,6 +290,7 @@ getSelectInputBox <- function(id = NULL, name = NULL,
 #' @param Dataset, used dataset 
 #' @param metadata, metadatatable to select from metadata
 #' @param choicecounter, choicecounter to add multiple comparisons
+#' @param session, session
 #' @param input, input params
 #' @note \code{selectConditions}
 #' @return the panel for go plots;
@@ -262,6 +303,7 @@ getSelectInputBox <- function(id = NULL, name = NULL,
 selectConditions<-function(Dataset = NULL,
                            metadata = NULL,
                            choicecounter = NULL,
+                           session = NULL,
                            input = NULL) {
     if (is.null(Dataset)) return(NULL)
     
@@ -275,29 +317,143 @@ selectConditions<-function(Dataset = NULL,
     
     if (nc >= 0) {
         allsamples <- getSampleNames( colnames(Dataset), "all" )
-        
+
         lapply(seq_len(nc), function(i) {
+
             selected1 <- selectedSamples(2 * i - 1)
             selected2 <- selectedSamples( 2 * i )
-
             to_return <- list(column(12, getMetaSelector(metadata = metadata, input=input, n = i),
-            
+                    getGroupSelector(metadata, input, i, (2*i-1)),
+                    getGroupSelector(metadata, input, i, (2*i)),
                     getConditionSelectorFromMeta(metadata, input, i,
                         (2 * i - 1), allsamples, selected1),
                     getConditionSelectorFromMeta(metadata, input, i,
                         (2 * i), allsamples, selected2)
-    
             ),
             column(12, 
-                   column(1, helpText(" ")),
+                   # column(1, helpText(" ")),
                    getSelectInputBox("demethod", "DE Method", i, 
                         c("DESeq2", "EdgeR", "Limma"),
                         selectedInput("demethod", i, "DESeq2", input)),
-                   getMethodDetails(i, input)))
-           
+                   getMethodDetails(i, input)),
+            column(12,
+                   getCovariateDetails(i, input, metadata = metadata))
+            )
+            
+            # check DE conditions
+            if (!is.null(selectedInput("conditions_from_meta", 
+                i, NULL, input)) && selectedInput("conditions_from_meta", 
+                i, NULL, input) != "No Selection"){
+                facts <- levels(factor(metadata[,selectedInput("conditions_from_meta", 
+                     i, NULL, input)]))
+                facts <- facts[facts != "" & facts != "NA"]
+                if (length(facts) < 2) {
+                    showNotification("There must be more than 2 groups in the selected condition.", 
+                         type = "error")
+                    updateSelectInput(session, paste0("conditions_from_meta", i), selected="No Selection" )
+                }
+            }
+            
+            # update selected of the covariate
+            # if condition is selected, dont let the same column selected as covariate, then remove
+            metadata_columns <- colnames(metadata)[2:ncol(metadata)]
+            metadata_columns <- metadata_columns[!metadata_columns %in% selectedInput("conditions_from_meta", i, NULL, input)]
+            if(!is.null(selectedInput("conditions_from_meta", i, NULL, input)) && !is.null(selectedInput("covariate", i, NULL, input)) &&
+               selectedInput("conditions_from_meta", i, NULL, input) != "No Selection"){
+                if(selectedInput("conditions_from_meta", i, NULL, input) %in% selectedInput("covariate", i, NULL, input)){
+                    selected_meta <- selectedInput("covariate", i, NULL, input)
+                    selected_meta <- selected_meta[!selected_meta %in% selectedInput("conditions_from_meta", i, NULL, input)]
+                    updateSelectInput(session, paste0("covariate", i), choices = c(metadata_columns), 
+                                      selected = c(selected_meta))
+                    showNotification("Condition column is included in covariate list, removing!", 
+                                     type = "error")
+                    return(to_return)
+                } 
+            }
+    
+            # check appropriateness of covariates
+            if (!is.null(selectedInput("covariate", i, NULL, input))){
+                
+                # establish metadata with selected samples, conditions and covariates
+                selected_samples <- c(selected1,selected2)
+                match_selected_samples <- match(selected_samples, colnames(Dataset))
+                selected_covariate_names <- selectedInput("covariate",i, NULL, input)
+                selected_covariates_metadata <- metadata[match_selected_samples,selected_covariate_names, drop = FALSE]
+                selected_treatment <- rep(c("Cond1","Cond2"), c(length(selected1), length(selected2)))
+
+                # loop over all covariates, flag covariates to be removed
+                flag_selected <- rep(F,length(selected_covariate_names))
+                for(kk in 1:ncol(selected_covariates_metadata)){
+                    covariate <- selected_covariates_metadata[,kk]
+
+                    # check if there are at least two groups in metadata
+                    if (sum(is.na(covariate)) > 0) {
+                        showNotification("Covariate shouldnt have an NA or empty values in any selected sample.",
+                                         type = "error")
+                        flag_selected[kk] <- T
+                    }
+                    
+                    # check if there are at least two groups in metadata
+                    if (length(unique(covariate)) < 2) {
+                        showNotification("There must be at least 2 groups in the selected covariate.",
+                                         type = "error")
+                        flag_selected[kk] <- T
+                    }
+                    
+                    # check if there are confounding covariates with treatment
+                    covariate_vs_treatment <- table(covariate, selected_treatment)
+                    if (any(covariate_vs_treatment == 0)) {
+                        showNotification("Each condition should have at least one of all covariate groups.",
+                                         type = "error")
+                        flag_selected[kk] <- T
+                    }
+                }
+                
+                # remove covariates if an inappropriate flag is found
+                if(any(flag_selected)){
+                    new_covariate_names <- selected_covariate_names[!flag_selected]
+                    selected_covariate_names <- selectedInput("covariate",i, NULL, input)
+                    selected_covariate_names <- selected_covariate_names[selected_covariate_names %in% new_covariate_names]
+                    updateSelectInput(session, paste0("covariate", i), selected= c(selected_covariate_names))   
+                }
+            }
+            
             return(to_return)
         })
     }
+}
+
+#' getGroupSelector
+#' Return the groups 
+#'
+#' @param metadata, meta data table
+#' @param input, input params
+#' @param index, index
+#' @param num, num
+#' @return meta select box
+#'
+#' @examples
+#'     x<-getGroupSelector()
+#' @export
+#'
+getGroupSelector <- function(metadata = NULL, input = NULL, index = 1, num=0) {
+    a <- NULL
+    selected_meta <- selectedInput("conditions_from_meta", 
+        index, NULL, input)
+    if (is.null(selected_meta) || selected_meta == "No Selection") return(NULL) 
+    grps <- unique(metadata[selected_meta])
+    grps <- grps[grps!="NA"]
+    grps<- grps[!is.na(grps) ]
+    if (length(grps) > 2) {
+        grps_choices <- c("No Selection", grps)
+        a <- list(column(6, selectInput(paste0("group", num),
+            label = paste0("Group ", num),
+            choices = grps_choices, 
+            selected =  selectedInput("group",
+                num, NULL, input),
+            multiple = FALSE)))
+    }
+    return(a)
 }
 
 #' getMetaSelector
@@ -350,7 +506,7 @@ get_conditions_given_selection <- function(metadata = NULL, selection = NULL){
     facts <- levels(factor(df[,selection]))
     facts <- facts[facts != "" & facts != "NA"]
     if(length(facts) != 2){		
-        return("There must be exactly 2 groups.")		
+        return(NULL)	
     } else {
         # Assuming the first column has samples		
         sample_col_name <- colnames(df)[1]		
@@ -413,6 +569,7 @@ getSampleNames <- function(cnames = NULL, part = 1) {
 #' @param data, loaded dataset
 #' @param counter, the number of comparisons
 #' @param input, input parameters
+#' @param meta, loaded metadata
 #' @return data
 #' @export
 #'
@@ -420,11 +577,10 @@ getSampleNames <- function(cnames = NULL, part = 1) {
 #'     x <- prepDataContainer()
 #'
 prepDataContainer <- function(data = NULL, counter=NULL, 
-                              input = NULL) {
+                              input = NULL, meta = NULL) {
     if (is.null(data)) return(NULL)
     
     inputconds <- reactiveValues(demethod_params = list(), conds = list(), dclist = list())
-
     inputconds$conds <- list()
     for (cnt in seq(1:(2*counter))){
         inputconds$conds[cnt] <- list(isolate(input[[paste0("condition",cnt)]]))
@@ -432,16 +588,21 @@ prepDataContainer <- function(data = NULL, counter=NULL,
     #Get parameters for each method
     inputconds$demethod_params <- NULL
     for (cnt in seq(1:counter)){
+        covariate <- isolate(paste(input[[paste0("covariate",cnt)]], collapse = "|"))
+        covariate <- ifelse(covariate == "", "NoCovariate", covariate)
         if (isolate(input[[paste0("demethod",cnt)]]) == "DESeq2"){
             inputconds$demethod_params[cnt] <- paste(
                 isolate(input[[paste0("demethod",cnt)]]),
+                covariate,
                 isolate(input[[paste0("fitType",cnt)]]),
                 isolate(input[[paste0("betaPrior",cnt)]]),
-                isolate(input[[paste0("testType",cnt)]]), sep=",")
+                isolate(input[[paste0("testType",cnt)]]),
+                isolate(input[[paste0("shrinkage",cnt)]]), sep=",")
         }
         else if (isolate(input[[paste0("demethod",cnt)]]) == "EdgeR"){
             inputconds$demethod_params[cnt]<- paste(
                 isolate(input[[paste0("demethod",cnt)]]),
+                covariate,
                 isolate(input[[paste0("edgeR_normfact",cnt)]]),
                 isolate(input[[paste0("dispersion",cnt)]]),
                 isolate(input[[paste0("edgeR_testType",cnt)]]), sep=",")
@@ -449,6 +610,7 @@ prepDataContainer <- function(data = NULL, counter=NULL,
         else if (isolate(input[[paste0("demethod",cnt)]]) == "Limma"){
             inputconds$demethod_params[cnt] <- paste(
                 isolate(input[[paste0("demethod",cnt)]]),
+                covariate,
                 isolate(input[[paste0("limma_normfact",cnt)]]),
                 isolate(input[[paste0("limma_fitType",cnt)]]),
                 isolate(input[[paste0("normBetween",cnt)]]), sep=",")
@@ -464,17 +626,19 @@ prepDataContainer <- function(data = NULL, counter=NULL,
                   paste(inputconds$conds[[2*i]]))
         params <- unlist(strsplit(inputconds$demethod_params[i], ","))
         withProgress(message = 'Running DE Algorithms', detail = inputconds$demethod_params[i], value = 0, {
-            initd <- callModule(debrowserdeanalysis, paste0("DEResults",i), data = data, 
+            initd <- callModule(debrowserdeanalysis, paste0("DEResults",i), data = data, metadata = meta, 
                   columns = cols, conds = conds, params = params)
-            if (nrow(initd$dat()) > 1){
+            if (!is.null(initd$dat()) && nrow(initd$dat()) > 1){
                 inputconds$dclist[[i]] <- list(conds = conds, cols = cols, init_data=initd$dat(), 
                     demethod_params = inputconds$demethod_params[i])
+            }else{
+                return(NULL)
             }
             incProgress(1/counter)
         })
     }
 
-    if(length(inputconds$dclist) <1) return(NULL)
+    if(length(inputconds$dclist) < 1) return(NULL)
 
     inputconds$dclist
 }

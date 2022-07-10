@@ -4,12 +4,21 @@
 \alias{getGeneList}
 \title{getGeneList}
 \usage{
-getGeneList(genes = NULL, org = "org.Hs.eg.db")
+getGeneList(
+  genes = NULL,
+  org = "org.Hs.eg.db",
+  fromType = "SYMBOL",
+  toType = c("ENTREZID")
+)
 }
 \arguments{
 \item{genes, }{gene list}
 
 \item{org, }{orgranism for gene symbol entrez ID conversion}
+
+\item{fromType, }{from Type}
+
+\item{toType, }{to Type}
 }
 \value{
 ENTREZ ID list

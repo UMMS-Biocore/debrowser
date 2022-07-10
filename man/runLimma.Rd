@@ -4,11 +4,19 @@
 \alias{runLimma}
 \title{runLimma}
 \usage{
-runLimma(data = NULL, columns = NULL, conds = NULL, params = NULL)
+runLimma(
+  data = NULL,
+  metadata = NULL,
+  columns = NULL,
+  conds = NULL,
+  params = NULL
+)
 }
 \arguments{
 \item{data, }{A matrix that includes all the expression raw counts,
 rownames has to be the gene, isoform or region names/IDs}
+
+\item{metadata, }{metadata of the matrix of expression raw counts}
 
 \item{columns, }{is a vector that includes the columns that are going
 to be analyzed. These columns has to match with the given data.}
@@ -21,9 +29,7 @@ with the column order}
 fitType, fitting method; "ls" for least squares or "robust" 
     for robust regression
 normBet: Normalizes expression intensities so that the 
-    intensities or log-ratios have similar distributions across a set of arrays.
-rowsum.filter: regions/genes/isoforms with total count 
-    (across all samples) below this value will be filtered out}
+    intensities or log-ratios have similar distributions across a set of arrays.}
 }
 \value{
 Limma results

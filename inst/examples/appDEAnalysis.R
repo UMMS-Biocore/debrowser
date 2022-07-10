@@ -1,4 +1,5 @@
 library(debrowser)
+library(DESeq2)
 
 header <- dashboardHeader(
   title = "DEBrowser DE Analysis"
@@ -33,7 +34,7 @@ server <- function(input, output, session) {
  
   params <-
       #Run DESeq2 with the following parameters
-      c("DESeq2", "parametric", FALSE, "Wald")
+      c("DESeq2", "parametric", FALSE, "Wald", "None")
  
   cols <- 
       #For demo purpose use the coumns below;

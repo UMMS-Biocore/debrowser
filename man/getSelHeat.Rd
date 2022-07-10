@@ -4,10 +4,10 @@
 \alias{getSelHeat}
 \title{getSelHeat}
 \usage{
-getSelHeat(data = NULL, input = NULL)
+getSelHeat(expdata = NULL, input = NULL)
 }
 \arguments{
-\item{data, }{selected genes}
+\item{expdata, }{selected genes}
 
 \item{input, }{input params}
 }

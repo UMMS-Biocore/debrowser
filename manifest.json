@@ -1,0 +1,811 @@
+{
+  "version": 1,
+  "locale": "en_US",
+  "platform": "4.1.2",
+  "metadata": {
+    "appmode": "static",
+    "primary_rmd": null,
+    "primary_html": "vignettes/DEBrowser.html",
+    "content_category": null,
+    "has_parameters": false
+  },
+  "packages": null,
+  "files": {
+    ".Rbuildignore": {
+      "checksum": "b448807b8fb2d44e049c8d54dc8b2074"
+    },
+    "DESCRIPTION": {
+      "checksum": "a207c1441c8d4a86b371c9ca63b5482a"
+    },
+    "inst/CITATION": {
+      "checksum": "2e5f7315243a891daf649a37aef8f896"
+    },
+    "inst/examples/appAll2All.R": {
+      "checksum": "7f7b8f76735eca01068d1b3858dda8ce"
+    },
+    "inst/examples/appBarMain.R": {
+      "checksum": "87ac1e0b404a9de1446514293816ad5c"
+    },
+    "inst/examples/appBatchEffect.R": {
+      "checksum": "f54c3f7c6f37f83cf92704b5eb43aa2a"
+    },
+    "inst/examples/appBoxMain.R": {
+      "checksum": "b88d98f4f9adc735b7bdf81b6cb4f7b8"
+    },
+    "inst/examples/appCondSelect.R": {
+      "checksum": "f261d72dfb22300956ca06cf794a6663"
+    },
+    "inst/examples/appDataLoadHeatmap.R": {
+      "checksum": "61fbaba5bd65c839d1dd6ff399d9b844"
+    },
+    "inst/examples/appDataPrep.R": {
+      "checksum": "b0be48dbb0c9c79ee9bcd425e69ff028"
+    },
+    "inst/examples/appDEAnalysis.R": {
+      "checksum": "daba1452e2d3fb803efb6bae7df3a0b7"
+    },
+    "inst/examples/appDensity.R": {
+      "checksum": "788ac34f0d60d2e99b5e514a705035bb"
+    },
+    "inst/examples/appDEWithCond.R": {
+      "checksum": "01da3da61074101ef8f409a862b06b77"
+    },
+    "inst/examples/appHeatmap.R": {
+      "checksum": "7fc7ca07f0ee1271ffeeab48f7648fb3"
+    },
+    "inst/examples/appHistogram.R": {
+      "checksum": "3a5e171015c7aa36662e64950d9f850d"
+    },
+    "inst/examples/appIQR.R": {
+      "checksum": "dfb91a670f2b32e121273640417de8a0"
+    },
+    "inst/examples/appLowCountFilter.R": {
+      "checksum": "05dc66c17ddf8f52ab50641fa3cec832"
+    },
+    "inst/examples/appMain.R": {
+      "checksum": "d4f8c537ff6b3f3a90aa715ef602a22e"
+    },
+    "inst/examples/appMainHeatmap.R": {
+      "checksum": "ba22e648ee5fdf057ec2b36c66b6ba73"
+    },
+    "inst/examples/appMainHeatmapBar.R": {
+      "checksum": "ed57757b2a805b1ca6f6d136b00154ed"
+    },
+    "inst/examples/appPCA.R": {
+      "checksum": "eeb15cd5c070d2385dbe0e77cbdc0428"
+    },
+    "inst/examples/appUpload.R": {
+      "checksum": "caba91435c795d6efdc47079dfbbffe9"
+    },
+    "inst/extdata/demo/demodata.Rda": {
+      "checksum": "e7d4fe588f24ddb919964fa919ea9e4a"
+    },
+    "inst/extdata/demo/demodata2.Rda": {
+      "checksum": "014d06f8cc7abfc1a98b81d22e080d94"
+    },
+    "inst/extdata/www/countFile.txt": {
+      "checksum": "37e7acd16528bd41b74f52fa01a79f5a"
+    },
+    "inst/extdata/www/favicon.ico": {
+      "checksum": "e5a3ec8b4fbd7c0edb90b5914d714459"
+    },
+    "inst/extdata/www/images/delete_button.png": {
+      "checksum": "6ddcf278d2c3f54bff5b2eb0f667279c"
+    },
+    "inst/extdata/www/images/initial_loading.gif": {
+      "checksum": "6ae9a051dc9276820446605ca3b222b8"
+    },
+    "inst/extdata/www/images/loading_start.gif": {
+      "checksum": "9080607321ab98fa3e70dd24b2513a20"
+    },
+    "inst/extdata/www/images/loading.gif": {
+      "checksum": "69b2c3b0f4c7648664d7fa900ab3078e"
+    },
+    "inst/extdata/www/images/loading2.gif": {
+      "checksum": "71f0518dad0c74927f3bf3d4a5fb6fb2"
+    },
+    "inst/extdata/www/images/logo.png": {
+      "checksum": "2e0678672a2f045ee0ccaf772fefd981"
+    },
+    "inst/extdata/www/metaFile.txt": {
+      "checksum": "e79c7e0580791b769321d1e8066159ec"
+    },
+    "inst/extdata/www/shinydashboard_additional.css": {
+      "checksum": "69caaefa03b3d6587c7d557a6f23ef79"
+    },
+    "LICENSE": {
+      "checksum": "84dcc94da3adb52b53ae4fa38fe49e5d"
+    },
+    "man/actionButtonDE.Rd": {
+      "checksum": "a42f298d8d8c75a256fe88ca13390c2c"
+    },
+    "man/addDataCols.Rd": {
+      "checksum": "8dbd60076353d39ee7b084d77196c9a3"
+    },
+    "man/addID.Rd": {
+      "checksum": "7c2390b95560b82cc88e337056c35983"
+    },
+    "man/all2all.Rd": {
+      "checksum": "2e16b8e51d322f403ec89d7c8fca1a23"
+    },
+    "man/all2allControlsUI.Rd": {
+      "checksum": "a8c34733acc4ad803b9747ba33d5daf1"
+    },
+    "man/applyFilters.Rd": {
+      "checksum": "bb3cb1438c8a34f908334e824f0d30ba"
+    },
+    "man/applyFiltersNew.Rd": {
+      "checksum": "5283de4dbd68deea2c098546999bbca7"
+    },
+    "man/applyFiltersToMergedComparison.Rd": {
+      "checksum": "60871f5149247b97bf588f2d4d5cd516"
+    },
+    "man/barMainPlotControlsUI.Rd": {
+      "checksum": "8615808e913a16667ceb6eb1b25b2a8b"
+    },
+    "man/batchEffectUI.Rd": {
+      "checksum": "e50f9af82d355d2ba53e1fedfee33b77"
+    },
+    "man/batchMethod.Rd": {
+      "checksum": "97ef2d8ed9ad7174dacdaaa567b10672"
+    },
+    "man/BoxMainPlotControlsUI.Rd": {
+      "checksum": "b800b49be398fabd9981d464f3f40860"
+    },
+    "man/changeClusterOrder.Rd": {
+      "checksum": "eb21491ab9623206e4558bb389e8f738"
+    },
+    "man/checkCountData.Rd": {
+      "checksum": "349f7d02fb522cf8a3b8fac91ae64fef"
+    },
+    "man/checkMetaData.Rd": {
+      "checksum": "e51e1692b13099f7f23f60e94529a357"
+    },
+    "man/clusterData.Rd": {
+      "checksum": "4211175deb99aebedd8cb06d1df6ff6a"
+    },
+    "man/clustFunParamsUI.Rd": {
+      "checksum": "a5b9f0b65a73623c03fe60a069292536"
+    },
+    "man/compareClust.Rd": {
+      "checksum": "d9f57382cc70869b7926aa2fb6826500"
+    },
+    "man/condSelectUI.Rd": {
+      "checksum": "c084be8212af363ee2908bccf0889817"
+    },
+    "man/correctCombat.Rd": {
+      "checksum": "8b941ee3cd5545b75a0538b0b276b9b2"
+    },
+    "man/correctHarman.Rd": {
+      "checksum": "a10ff166f23bffb7b522f7b91d0cdb41"
+    },
+    "man/customColorsUI.Rd": {
+      "checksum": "24c72f38011da87a9819aee15615952c"
+    },
+    "man/cutOffSelectionUI.Rd": {
+      "checksum": "d3a7b33604ccec84aa35fc4c3b76f68d"
+    },
+    "man/dataLCFUI.Rd": {
+      "checksum": "af6012e934666032d079956c55d0b054"
+    },
+    "man/dataLoadUI.Rd": {
+      "checksum": "3b6a29579daf2ae62938e627df9f2c9b"
+    },
+    "man/debrowserall2all.Rd": {
+      "checksum": "37c48ac02c77f9544f57d0de09c8e67f"
+    },
+    "man/debrowserbarmainplot.Rd": {
+      "checksum": "ebda29448deea8df5cfadf088c7289d0"
+    },
+    "man/debrowserbatcheffect.Rd": {
+      "checksum": "41aa2ebccc608dc835ac7547259bc28d"
+    },
+    "man/debrowserboxmainplot.Rd": {
+      "checksum": "809d95c69615105a31adfee8d6019415"
+    },
+    "man/debrowsercondselect.Rd": {
+      "checksum": "170bd876a88e5d182ee43286674ced47"
+    },
+    "man/debrowserdataload.Rd": {
+      "checksum": "0520dceb6706741c36f0020507d49b51"
+    },
+    "man/debrowserdeanalysis.Rd": {
+      "checksum": "9cd2b4aa5ee53d5586c5b4e51637a221"
+    },
+    "man/debrowserdensityplot.Rd": {
+      "checksum": "703c4c83f8a1992c3ed4677e27bf6ac5"
+    },
+    "man/debrowserheatmap.Rd": {
+      "checksum": "f02256fe177fd74d8583589333326e63"
+    },
+    "man/debrowserhistogram.Rd": {
+      "checksum": "85dc9c67de7f234730ae2c00510c5e42"
+    },
+    "man/debrowserIQRplot.Rd": {
+      "checksum": "59ccdf52639bc06b2fe4c1bbb14e3f7d"
+    },
+    "man/debrowserlowcountfilter.Rd": {
+      "checksum": "acd847d5c4a43c5b0363d3b5fc828b41"
+    },
+    "man/debrowsermainplot.Rd": {
+      "checksum": "64c62a18bebf70dc89795d7153e5c9eb"
+    },
+    "man/debrowserpcaplot.Rd": {
+      "checksum": "1b1912fe0dbce025c7b41b2023a72767"
+    },
+    "man/dendControlsUI.Rd": {
+      "checksum": "a9dc382c34f3c703784136d0b3240d82"
+    },
+    "man/densityPlotControlsUI.Rd": {
+      "checksum": "5dcd2fb2bfa83783557df303c4ab6715"
+    },
+    "man/deServer.Rd": {
+      "checksum": "67538811cd3b1b726191d3942e8781e2"
+    },
+    "man/deUI.Rd": {
+      "checksum": "69a4aaf7c6744a50ddb0abcee72a6473"
+    },
+    "man/distFunParamsUI.Rd": {
+      "checksum": "c31b084f51c5e30781041c321136e876"
+    },
+    "man/drawKEGG.Rd": {
+      "checksum": "59115f373c49ddf5ff92930230e9de87"
+    },
+    "man/drawPCAExplained.Rd": {
+      "checksum": "59cdb0a2c76f9660b9f71f029d508989"
+    },
+    "man/fileTypes.Rd": {
+      "checksum": "fabc85483ec3eafe18d0b3bfa7e10466"
+    },
+    "man/fileUploadBox.Rd": {
+      "checksum": "c04c22cc2dce67128028b6a3f9797d0f"
+    },
+    "man/generateTestData.Rd": {
+      "checksum": "da1e0f9ce98a8251b95f39e02e6711ae"
+    },
+    "man/get_conditions_given_selection.Rd": {
+      "checksum": "2b5bb7c47642d1387952270c2946f503"
+    },
+    "man/getAfterLoadMsg.Rd": {
+      "checksum": "6931dd9edff6dc041546ecd82e7309ba"
+    },
+    "man/getAll2AllPlotUI.Rd": {
+      "checksum": "133479d9f2242c4604e25427ed57f517"
+    },
+    "man/getBarMainPlot.Rd": {
+      "checksum": "f9e166bcf7efee54135a533470d17ddf"
+    },
+    "man/getBarMainPlotUI.Rd": {
+      "checksum": "84516aa5c430fe72a1316c4027869b94"
+    },
+    "man/getBoxMainPlot.Rd": {
+      "checksum": "7757b1d63b9206449775f68d4492f9a5"
+    },
+    "man/getBoxMainPlotUI.Rd": {
+      "checksum": "d442cf156aac83ba288605cdcd253928"
+    },
+    "man/getBSTableUI.Rd": {
+      "checksum": "93841d06a33d3819bc8b7b9d6546e1b2"
+    },
+    "man/getColors.Rd": {
+      "checksum": "b9f076b1e50a605ed28eba5b543f9adf"
+    },
+    "man/getColorShapeSelection.Rd": {
+      "checksum": "e577899b917c5879e7a298bb452e5b5c"
+    },
+    "man/getCompSelection.Rd": {
+      "checksum": "8e72207878b7cfd5fa16d922af4998d5"
+    },
+    "man/getConditionSelector.Rd": {
+      "checksum": "0a730059c346f068ff0750101787f2d0"
+    },
+    "man/getConditionSelectorFromMeta.Rd": {
+      "checksum": "62c5896fe3e9077df32f095b6bbb59f3"
+    },
+    "man/getCondMsg.Rd": {
+      "checksum": "cd7462c17202f8218124a2d4acad83d9"
+    },
+    "man/getCovariateDetails.Rd": {
+      "checksum": "c471b77141f4d2713031b89481767682"
+    },
+    "man/getCutOffSelection.Rd": {
+      "checksum": "5b163812906bf3e08add47a06a008da8"
+    },
+    "man/getDataAssesmentText.Rd": {
+      "checksum": "6e77cfb0c5256cbb485713ae21ac2c2a"
+    },
+    "man/getDataForTables.Rd": {
+      "checksum": "49165df7484bc1a1ca00db806aa4e117"
+    },
+    "man/getDataPreparationText.Rd": {
+      "checksum": "d45f448db124ef941d8121c3b49b1a58"
+    },
+    "man/getDEAnalysisText.Rd": {
+      "checksum": "6e185018ed89f354efd3d4912de4e5b9"
+    },
+    "man/getDensityPlot.Rd": {
+      "checksum": "71d0db5f4a374c0b66820d8850779f91"
+    },
+    "man/getDensityPlotUI.Rd": {
+      "checksum": "a0d4376584ea82466c9dc8a1eed8145f"
+    },
+    "man/getDEResultsUI.Rd": {
+      "checksum": "f6d4ab5354e73afac09fd61933abb85a"
+    },
+    "man/getDomains.Rd": {
+      "checksum": "ff3b26aed8895dc705e058a7c50adc3d"
+    },
+    "man/getDown.Rd": {
+      "checksum": "356740668f43e30d270802cfedbf34c3"
+    },
+    "man/getDownloadSection.Rd": {
+      "checksum": "785a944cc30be98a14fb8a856e9f0e66"
+    },
+    "man/getEnrichDO.Rd": {
+      "checksum": "f46a6f636bea02bd5b36091d71f9b7e8"
+    },
+    "man/getEnrichGO.Rd": {
+      "checksum": "2d89d630f5fcc6e74fa087d9b19e2049"
+    },
+    "man/getEnrichKEGG.Rd": {
+      "checksum": "3022b9f2953dc1359c71a0d60e24a3dd"
+    },
+    "man/getEntrezIds.Rd": {
+      "checksum": "5ac0fa26230565ada92cc5f788219644"
+    },
+    "man/getEntrezTable.Rd": {
+      "checksum": "d6201570ddf9cfd673349b8d09b7952d"
+    },
+    "man/getGeneList.Rd": {
+      "checksum": "0c9d9747c068320eee42a8c8a94d74e7"
+    },
+    "man/getGeneSetData.Rd": {
+      "checksum": "6ae8ebde1223ce0ed8cbb29efe5f3325"
+    },
+    "man/getGOLeftMenu.Rd": {
+      "checksum": "8d8d64ddab8b23c1ec45b3e76138e1b8"
+    },
+    "man/getGoPanel.Rd": {
+      "checksum": "0543f073a6a492b00078178477e983d9"
+    },
+    "man/getGOPlots.Rd": {
+      "checksum": "2ca8f8c33689d42dd610505abed8c29c"
+    },
+    "man/getGroupSelector.Rd": {
+      "checksum": "6edaf22117061d3f1e96ac2c235d075b"
+    },
+    "man/getGSEA.Rd": {
+      "checksum": "346a1c8d4d34e257452bd355c4eba7b7"
+    },
+    "man/getHeatmapUI.Rd": {
+      "checksum": "dc82852c13368ba32b2df9ddce780aa0"
+    },
+    "man/getHelpButton.Rd": {
+      "checksum": "652a295eddc4f08ee0908aed907d7b16"
+    },
+    "man/getHideLegendOnOff.Rd": {
+      "checksum": "efad3538cf6b8801d3aae5aab6f4f10f"
+    },
+    "man/getHistogramUI.Rd": {
+      "checksum": "6cb72088be210ca08893fc02da221689"
+    },
+    "man/getIntroText.Rd": {
+      "checksum": "52fcbf1a8fbc8d23b0b0f541fea49037"
+    },
+    "man/getIQRPlot.Rd": {
+      "checksum": "78fec8ab1e310c7fa6c67ae835787a75"
+    },
+    "man/getIQRPlotUI.Rd": {
+      "checksum": "16a70affee51a2e9d880b6facba63ca5"
+    },
+    "man/getJSLine.Rd": {
+      "checksum": "6135286b1161589ce5beefa96693a431"
+    },
+    "man/getKEGGModal.Rd": {
+      "checksum": "f8c21e15eafe3b3fc3129ea294f668b4"
+    },
+    "man/getLeftMenu.Rd": {
+      "checksum": "69e0d9c7707643322bdda645f3ac124d"
+    },
+    "man/getLegendColors.Rd": {
+      "checksum": "3aa3708c52706e12746e7784b8c4d46e"
+    },
+    "man/getLegendRadio.Rd": {
+      "checksum": "e1761d38413fae672b012f79ebe6c8a4"
+    },
+    "man/getLegendSelect.Rd": {
+      "checksum": "6c2072744053bfedaf2ec27ff300f3bb"
+    },
+    "man/getLevelOrder.Rd": {
+      "checksum": "9cb5405161935b662b8d431f0f7fd49e"
+    },
+    "man/getLoadingMsg.Rd": {
+      "checksum": "c3a9d8996cfe23c6e8ea1ad6ccc688a6"
+    },
+    "man/getLogo.Rd": {
+      "checksum": "462e0b07d0da0292d83d98b37ba52e49"
+    },
+    "man/getMainPanel.Rd": {
+      "checksum": "c05352c2136b58c4099f15ff76b0530a"
+    },
+    "man/getMainPlotsLeftMenu.Rd": {
+      "checksum": "107a3c61d953699cdd699272666c804e"
+    },
+    "man/getMainPlotUI.Rd": {
+      "checksum": "dcb250969ac633f270a6f753a563a7b5"
+    },
+    "man/getMean.Rd": {
+      "checksum": "d739feedd53a3d016db894f21292b191"
+    },
+    "man/getMergedComparison.Rd": {
+      "checksum": "79456a87ca6006f0a0d4659b86353c94"
+    },
+    "man/getMetaSelector.Rd": {
+      "checksum": "f40fac3f7373b4a70ae22485f3de914a"
+    },
+    "man/getMethodDetails.Rd": {
+      "checksum": "d2d2c5eaec8872dca9c3cb73de7d76a2"
+    },
+    "man/getMostVariedList.Rd": {
+      "checksum": "11b106b3b7b576f83a7beb39c392fb2b"
+    },
+    "man/getNormalizedMatrix.Rd": {
+      "checksum": "ea78fbc02ce9bae023dcf24f343edd6a"
+    },
+    "man/getOrganism.Rd": {
+      "checksum": "d758c876554b4647bdafdfc6e8d0b514"
+    },
+    "man/getOrganismBox.Rd": {
+      "checksum": "b18bd7a76423c5564248ab54a76cf8dd"
+    },
+    "man/getOrganismPathway.Rd": {
+      "checksum": "c30a937139788fe7af3555a1d025a147"
+    },
+    "man/getPCAcontolUpdatesJS.Rd": {
+      "checksum": "28bd7aa16abf31d87aea55ce8a11857e"
+    },
+    "man/getPCAexplained.Rd": {
+      "checksum": "a951859352d4d654accfeaae4a6e4597"
+    },
+    "man/getPCAPlotUI.Rd": {
+      "checksum": "1a01ecf3717d222dc20eb73a7cf11f10"
+    },
+    "man/getPCselection.Rd": {
+      "checksum": "70c1cc6bdf829bc7b6c75df8a5fd89c2"
+    },
+    "man/getPlotArea.Rd": {
+      "checksum": "74320919001caf9973da6c98b2b4cbc6"
+    },
+    "man/getProgramTitle.Rd": {
+      "checksum": "92fefb6ab27400c148727a359d17fc5c"
+    },
+    "man/getQAText.Rd": {
+      "checksum": "8cc26d405525664531843cb833b157d0"
+    },
+    "man/getQCLeftMenu.Rd": {
+      "checksum": "e637283a636779b9129ffbc6bf8d1d5a"
+    },
+    "man/getQCPanel.Rd": {
+      "checksum": "c0ee409d905ed0846292fe3d07e40745"
+    },
+    "man/getSampleDetails.Rd": {
+      "checksum": "cc4842571b32b249f09536d911a72e35"
+    },
+    "man/getSampleNames.Rd": {
+      "checksum": "bde34c89851522555b8457261619a404"
+    },
+    "man/getSamples.Rd": {
+      "checksum": "b15738e493e5a89777f37bf8a78ddab1"
+    },
+    "man/getSearchData.Rd": {
+      "checksum": "4bea6401e6f1f508fcf3b68602d6ed64"
+    },
+    "man/getSelectedCols.Rd": {
+      "checksum": "1d0cc4a8cd11a91108239426e02233ed"
+    },
+    "man/getSelectedDatasetInput.Rd": {
+      "checksum": "40d1fbc22637968a4b0976b4844e45d4"
+    },
+    "man/getSelectInputBox.Rd": {
+      "checksum": "23f53216531796a6e7ffe6e8e2c7cd27"
+    },
+    "man/getSelHeat.Rd": {
+      "checksum": "131ce59064e050c1cd35d38f0b950187"
+    },
+    "man/getShapeColor.Rd": {
+      "checksum": "32e8047b09885141becf718456a2c4a8"
+    },
+    "man/getStartPlotsMsg.Rd": {
+      "checksum": "731133586f97f95583b31de9b56dda80"
+    },
+    "man/getStartupMsg.Rd": {
+      "checksum": "6a5243787e4c3d96ebf6933a5c5a863a"
+    },
+    "man/getTableDetails.Rd": {
+      "checksum": "744c3f72b98d5e83acf9d13db6525606"
+    },
+    "man/getTableModal.Rd": {
+      "checksum": "b7b83b04d868d65917add2fc0a93901f"
+    },
+    "man/getTableStyle.Rd": {
+      "checksum": "97ce621e9e360427674a6553db292826"
+    },
+    "man/getTabUpdateJS.Rd": {
+      "checksum": "57fec528d020430d85e9c16202f5586b"
+    },
+    "man/getTextOnOff.Rd": {
+      "checksum": "1920afe24e5081490b301c36ddebb1a1"
+    },
+    "man/getUp.Rd": {
+      "checksum": "52eb1731ba7c623adefb4dd2d2b38b9e"
+    },
+    "man/getUpDown.Rd": {
+      "checksum": "a2250b2f89dd81906850668d95359833"
+    },
+    "man/getVariationData.Rd": {
+      "checksum": "19b9f19c185bdb40ba071f2c1c730097"
+    },
+    "man/heatmapControlsUI.Rd": {
+      "checksum": "7dba19539d151e1d7bc2ea1b833e7317"
+    },
+    "man/heatmapJScode.Rd": {
+      "checksum": "f73274bdce207eb6b2e3e7f0a68e9190"
+    },
+    "man/heatmapServer.Rd": {
+      "checksum": "35c5ef0f86d42a84a7d75bc604343df7"
+    },
+    "man/heatmapUI.Rd": {
+      "checksum": "49207c5f8a4b16429dd7f04136d99091"
+    },
+    "man/hideObj.Rd": {
+      "checksum": "d86fc5fd730524d17d22c40a85d4cb81"
+    },
+    "man/histogramControlsUI.Rd": {
+      "checksum": "80bf4aab6ebe35682d5ac990799501cd"
+    },
+    "man/installpack.Rd": {
+      "checksum": "e65687962c02668cea90092fd436b660"
+    },
+    "man/IQRPlotControlsUI.Rd": {
+      "checksum": "3b9269c3e7856568637ddf3725e3b4f4"
+    },
+    "man/kmeansControlsUI.Rd": {
+      "checksum": "d0aef3fcb82ddba79f4edad1afca5d8b"
+    },
+    "man/lcfMetRadio.Rd": {
+      "checksum": "7b3df08111ccaaa5a3139267cbd3ac87"
+    },
+    "man/loadpack.Rd": {
+      "checksum": "e61546b1a82dfbd870383831b787e42f"
+    },
+    "man/mainPlotControlsUI.Rd": {
+      "checksum": "3980f5e2eea5c42d32401ac9d45e9c43"
+    },
+    "man/mainScatterNew.Rd": {
+      "checksum": "e41726ac35c0a2a208a7af0919212a2c"
+    },
+    "man/niceKmeans.Rd": {
+      "checksum": "7485fc3808a54111dfa4d75b827c9bbc"
+    },
+    "man/normalizationMethods.Rd": {
+      "checksum": "f2901e9e055a0a0d996e95d3b9ff48fe"
+    },
+    "man/palUI.Rd": {
+      "checksum": "42f5e07c096a32fe0fbea042eff8bed0"
+    },
+    "man/panel.cor.Rd": {
+      "checksum": "6536039b1015106deb4f96ce39df948e"
+    },
+    "man/panel.hist.Rd": {
+      "checksum": "cfa3383e7a0eb94000e01e41af3cd272"
+    },
+    "man/pcaPlotControlsUI.Rd": {
+      "checksum": "278160b6d3f6320dd389ddc9ddf1c42a"
+    },
+    "man/plot_pca.Rd": {
+      "checksum": "962b4398160fb787f6c350cb86601616"
+    },
+    "man/plotData.Rd": {
+      "checksum": "5ea92d2ecb00fd13248a468ae42a5246"
+    },
+    "man/plotMarginsUI.Rd": {
+      "checksum": "2bcfdcd6d0aa04dfbb77727588086fd6"
+    },
+    "man/plotSizeMarginsUI.Rd": {
+      "checksum": "2bf650f307bc11301a8b4f4fce24bfb2"
+    },
+    "man/plotSizeUI.Rd": {
+      "checksum": "c159a5d9de294f8b28798712e66898bb"
+    },
+    "man/plotTypeUI.Rd": {
+      "checksum": "3a23667941a18924ba4f58420afbbf30"
+    },
+    "man/prepDataContainer.Rd": {
+      "checksum": "6cca374c1bc4c676d18bd4ff4725307d"
+    },
+    "man/prepDEOutput.Rd": {
+      "checksum": "f9b999c3b22ecc4128ca5e5a12be2afe"
+    },
+    "man/prepGroup.Rd": {
+      "checksum": "cee7a4494c40731a733f9be0f2843e16"
+    },
+    "man/prepHeatData.Rd": {
+      "checksum": "004dfc3e25699015796387afd7d90052"
+    },
+    "man/prepPCADat.Rd": {
+      "checksum": "0a3a9f6018bb871c153fa0c3e496af65"
+    },
+    "man/push.Rd": {
+      "checksum": "5e52efb970d5adfaadf15784d4d78637"
+    },
+    "man/removeCols.Rd": {
+      "checksum": "43f05cdd5f90c97fc1a4118b60b35074"
+    },
+    "man/removeExtraCols.Rd": {
+      "checksum": "8b22e77d588de61d8f3091241132feb1"
+    },
+    "man/round_vals.Rd": {
+      "checksum": "296fe645c7e4e64de5744f3bf3f45a3a"
+    },
+    "man/run_pca.Rd": {
+      "checksum": "9490a2e70282d941256d50958d2390eb"
+    },
+    "man/runDE.Rd": {
+      "checksum": "e762f5d0dadc4d6a0b22e0221dffff92"
+    },
+    "man/runDESeq2.Rd": {
+      "checksum": "d732f4fdb9e4bc76f7d55b453aa92c3a"
+    },
+    "man/runEdgeR.Rd": {
+      "checksum": "e8b0f02c7592a30d4a5a58f3a53a6e32"
+    },
+    "man/runHeatmap.Rd": {
+      "checksum": "2b976f81a04c303d17aa9d904f091d31"
+    },
+    "man/runHeatmap2.Rd": {
+      "checksum": "52df9d9e3e9e7be22e561985322ba242"
+    },
+    "man/runLimma.Rd": {
+      "checksum": "3ec3680e6f4283a59d1f2b4813710013"
+    },
+    "man/selectConditions.Rd": {
+      "checksum": "3a50de13c78b29d0c6d7a6ea80e18d12"
+    },
+    "man/selectedInput.Rd": {
+      "checksum": "02783d3c4384823bce1f97c2c56009bf"
+    },
+    "man/selectGroupInfo.Rd": {
+      "checksum": "ae75d9f904214019064be63f97396421"
+    },
+    "man/sepRadio.Rd": {
+      "checksum": "d4c147ce876ac7010bff94b842fe1fc4"
+    },
+    "man/setBatch.Rd": {
+      "checksum": "b89b11784e32d0c075ed61fccb468dcb"
+    },
+    "man/showObj.Rd": {
+      "checksum": "4d2398462dfb66014e250a02d6bab8a5"
+    },
+    "man/startDEBrowser.Rd": {
+      "checksum": "555b0878503059884ba86b9e9dce2ccc"
+    },
+    "man/startHeatmap.Rd": {
+      "checksum": "cb3894ad844d77ece8780dc896d18566"
+    },
+    "man/textareaInput.Rd": {
+      "checksum": "5e2f4b69167af5f489b5ca3b5e67d7cb"
+    },
+    "man/togglePanels.Rd": {
+      "checksum": "88b0451641d862b77da4c397bb20151f"
+    },
+    "NAMESPACE": {
+      "checksum": "d785e235b77127fd80b1a7ed6103adf5"
+    },
+    "NEWS": {
+      "checksum": "cbc74e10543a041c64168a7ce3b5d239"
+    },
+    "R/all2all.R": {
+      "checksum": "a94288eb81a422d4820f928396fbd5b4"
+    },
+    "R/barmain.R": {
+      "checksum": "b30d19876eb9350188078bc2e198fb69"
+    },
+    "R/batcheffect.R": {
+      "checksum": "3326f3e817b7549090017085f73bea16"
+    },
+    "R/boxmain.R": {
+      "checksum": "77fc5851b50eb8f3f42d9472d80455df"
+    },
+    "R/condSelect.R": {
+      "checksum": "3b0ad8b693b48aba823700658398cd6b"
+    },
+    "R/dataLoad.R": {
+      "checksum": "033ce7208e2ca57833677e8e915e9981"
+    },
+    "R/density.R": {
+      "checksum": "39ca443f798eda18954597740422bfb1"
+    },
+    "R/deprogs.R": {
+      "checksum": "4023cfe856da91b75e13c0aa86b74ca0"
+    },
+    "R/funcs.R": {
+      "checksum": "fddffbe3b101190f1b6e259e76b97115"
+    },
+    "R/gopanel.R": {
+      "checksum": "862750f55d78ce4a8ed1dc3a9768b038"
+    },
+    "R/GOterm.R": {
+      "checksum": "561ae105b71736345dd502b2657a1eb8"
+    },
+    "R/heatmap.R": {
+      "checksum": "35f7c018f9b880fb8bd94f61da05ea7c"
+    },
+    "R/help.R": {
+      "checksum": "e134a5565b9e072f7763e6afd7534c5a"
+    },
+    "R/histogram.R": {
+      "checksum": "6cf57bb7fa8a6a8a5dc97d2bbfdb7cf5"
+    },
+    "R/installpack.R": {
+      "checksum": "a3dcfca643dcfafda67ec88876bb2f9e"
+    },
+    "R/IQR.R": {
+      "checksum": "b16fa58169bd27b43297b81a70e4aee6"
+    },
+    "R/lowcountfilter.R": {
+      "checksum": "86b6ed468726db7014e2486a7322ba59"
+    },
+    "R/mainScatter.R": {
+      "checksum": "c131665974dd4c1ebe5c0d3f73ca1242"
+    },
+    "R/pca.R": {
+      "checksum": "5c733067320790f437de5f731a0dbb58"
+    },
+    "R/plotSize.R": {
+      "checksum": "dc5391167fd6af5bb245fdac96c502d6"
+    },
+    "R/prepdata.R": {
+      "checksum": "5027e937744bcf62caac4b4441097b6a"
+    },
+    "R/server.R": {
+      "checksum": "c93e6c6a999d63843c493a4af233a399"
+    },
+    "R/startShiny.R": {
+      "checksum": "f99fdbf8496f6e71d0bac6001b721f53"
+    },
+    "R/ui.R": {
+      "checksum": "7d428a4f0818f0c991d83da7a432a626"
+    },
+    "R/uifuncs.R": {
+      "checksum": "3ebb062edfe39e77f7b492145d6e0c64"
+    },
+    "README.md": {
+      "checksum": "21457094a2d7f5ef1cd8baeb4880b3db"
+    },
+    "tests/test-demo.R": {
+      "checksum": "f8697ed90437f92e3f9b10aecbad3bde"
+    },
+    "tests/test-deseq.R": {
+      "checksum": "80af5367f65216ed52172a19d8866e79"
+    },
+    "tests/test-null.R": {
+      "checksum": "ba63b7f8d28643aacbc76d11fc4368d0"
+    },
+    "tests/test-ui.R": {
+      "checksum": "a7376431e1bd919bd2eb762e47f6c166"
+    },
+    "vignettes/DEBrowser.html": {
+      "checksum": "34ecec5f2d228d26be40127caac29bbe"
+    },
+    "vignettes/DEBrowser.md": {
+      "checksum": "32f71015550780acf6f4c05e47d66665"
+    },
+    "vignettes/DEBrowser.R": {
+      "checksum": "88ffa7f627e62bca302a64c8412cb2b7"
+    },
+    "vignettes/DEBrowser.Rmd": {
+      "checksum": "191d32cb414396355e58806b3ea68c6f"
+    }
+  },
+  "users": null
+}

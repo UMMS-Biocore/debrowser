@@ -1,5 +1,6 @@
 library(debrowser)
-
+library(DESeq2)
+library(Harman)
 options(warn =-1)
 source("../../R/batcheffect.R")
 source("../../R/funcs.R")

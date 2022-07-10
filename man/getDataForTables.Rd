@@ -5,9 +5,15 @@
 \title{getDataForTables
 get data to fill up tables tab}
 \usage{
-getDataForTables(input = NULL, init_data = NULL, filt_data = NULL,
-  selected = NULL, getMostVaried = NULL, mergedComp = NULL,
-  explainedData = NULL)
+getDataForTables(
+  input = NULL,
+  init_data = NULL,
+  filt_data = NULL,
+  selected = NULL,
+  getMostVaried = NULL,
+  mergedComp = NULL,
+  explainedData = NULL
+)
 }
 \arguments{
 \item{input, }{input parameters}

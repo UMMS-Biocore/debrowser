@@ -4,8 +4,16 @@
 \alias{debrowserdeanalysis}
 \title{debrowserdeanalysis}
 \usage{
-debrowserdeanalysis(input = NULL, output = NULL, session = NULL,
-  data = NULL, columns = NULL, conds = NULL, params = NULL)
+debrowserdeanalysis(
+  input = NULL,
+  output = NULL,
+  session = NULL,
+  data = NULL,
+  metadata = NULL,
+  columns = NULL,
+  conds = NULL,
+  params = NULL
+)
 }
 \arguments{
 \item{input, }{input variables}
@@ -15,6 +23,8 @@ debrowserdeanalysis(input = NULL, output = NULL, session = NULL,
 \item{session, }{session}
 
 \item{data, }{a matrix that includes expression values}
+
+\item{metadata, }{metadata}
 
 \item{columns, }{columns}
 

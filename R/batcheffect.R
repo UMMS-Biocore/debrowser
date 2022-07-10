@@ -27,8 +27,8 @@ debrowserbatcheffect <- function(input, output, session, ldata = NULL) {
         }
     })
     withProgress(message = 'Batch Effect Correction', detail = "Adjusting the Data", value = NULL, {
-    if (input$batchmethod == "Combat"){
-        batchdata$count <- correctCombat(input, countData, ldata$meta)
+    if (input$batchmethod == "CombatSeq" |  input$batchmethod == "Combat"){
+        batchdata$count <- correctCombat(input, countData, ldata$meta, method = input$batchmethod)
     }
     else if (input$batchmethod == "Harman"){
         batchdata$count <- correctHarman(input, countData, ldata$meta)
@@ -37,7 +37,7 @@ debrowserbatcheffect <- function(input, output, session, ldata = NULL) {
         batchdata$count <-  countData
     }
     })
-    
+    if (is.null(batchdata$count)) return(NULL)
     batchdata$meta <- ldata$meta
   })
   
@@ -59,13 +59,13 @@ debrowserbatcheffect <- function(input, output, session, ldata = NULL) {
   observe({
     getSampleDetails(output, "uploadSummary", "sampleDetails", ldata)
     getSampleDetails(output, "filteredSummary", "filteredDetails", batcheffectdata())
-    getTableDetails(output, session, "beforebatchtable", ldata$count, modal=TRUE)
+    getTableDetails(output, session, "beforebatchtable", ldata$count, modal = TRUE)
     callModule(debrowserpcaplot, "beforeCorrectionPCA", ldata$count, ldata$meta)
     callModule(debrowserIQRplot, "beforeCorrectionIQR",  ldata$count)
     callModule(debrowserdensityplot, "beforeCorrectionDensity", ldata$count)
     if ( !is.null(batcheffectdata()$count ) && nrow(batcheffectdata()$count)>2 ){
       withProgress(message = 'Drawing the plot', detail = "Preparing!", value = NULL, {
-       getTableDetails(output, session, "afterbatchtable", batcheffectdata()$count, modal=TRUE)
+       getTableDetails(output, session, "afterbatchtable", batcheffectdata()$count, modal = TRUE)
        callModule(debrowserpcaplot, "afterCorrectionPCA",  batcheffectdata()$count, batcheffectdata()$meta)
        callModule(debrowserIQRplot, "afterCorrectionIQR",  batcheffectdata()$count)
        callModule(debrowserdensityplot, "afterCorrectionDensity", batcheffectdata()$count)
@@ -107,7 +107,7 @@ batchEffectUI <- function (id) {
                 normalizationMethods(id),
                 batchMethod(id),
                 uiOutput(ns("batchfields")),
-                actionButton(ns("submitBatchEffect"), label = "Submit", styleclass = "primary")
+                actionButtonDE(ns("submitBatchEffect"), label = "Submit", styleclass = "primary")
            )
           ),
           column(5,div(style = 'overflow: scroll', 
@@ -117,10 +117,10 @@ batchEffectUI <- function (id) {
           )
         ),
         conditionalPanel(condition = paste0("input['", ns("submitBatchEffect"),"']"),
-        actionButton("goDE", "Go to DE Analysis", styleclass = "primary"),
-        actionButton("goQCplots", "Go to QC plots", styleclass = "primary"))),
-      shinydashboard::box(title = "Plots",
-        solidHeader = T, status = "info",  width = 12, 
+        actionButtonDE("goDE", "Go to DE Analysis", styleclass = "primary"),
+        actionButtonDE("goQCplots", "Go to QC plots", styleclass = "primary"))),
+    shinydashboard::box(title = "Plots",
+        solidHeader = TRUE, status = "info",  width = 12, 
         fluidRow(column(1, div()),
             tabsetPanel( id = ns("batchTabs"),
                 tabPanel(id = ns("PCA"), "PCA",
@@ -192,7 +192,7 @@ normalizationMethods <- function(id) {
 batchMethod <- function(id) {
   ns <- NS(id)
   selectInput(ns("batchmethod"), "Correction Method:",
-              choices = c("none", "Combat", "Harman"),
+              choices = c("none", "Combat", "CombatSeq", "Harman"),
                selected='none'
   )
 }
@@ -203,31 +203,47 @@ batchMethod <- function(id) {
 #' @param input, input values
 #' @param idata, data
 #' @param metadata, metadata
+#' @param method, method: either Combat or CombatSeq
 #' @return data
 #' @export
 #'
 #' @examples
 #'     x<-correctCombat ()
-correctCombat <- function (input = NULL, idata = NULL, metadata = NULL) {
-  if (is.null(idata) || input$batch == "None") return(NULL)
+correctCombat <- function (input = NULL, idata = NULL, metadata = NULL, method = NULL) {
+  if (is.null(idata)) return(NULL)
+  
+  if (input$batch == "None") {
+      showNotification("Please select the batch field to use Combat!", type = "error")
+      return(NULL)
+  }
+  
   batch <- metadata[, input$batch]
-  treatment <- metadata[, input$treatment]
+  
   columns <- colnames(idata)
-  meta <- data.frame(cbind(columns, treatment, batch))
   datacor <- data.frame(idata[, columns])
   datacor[, columns] <- apply(datacor[, columns], 2,
-                              function(x) as.integer(x))
+      function(x) as.integer(x) + runif(1, 0, 0.01))
   
-  datacor[, columns] <- apply(datacor[, columns], 2,
-                              function(x) return(x + runif(1, 0, 0.01)))
+  if (input$treatment != "None") {
+      treatment <- metadata[, input$treatment]
+      meta <- data.frame(cbind(columns, treatment, batch))
+      modcombat = model.matrix(~as.factor(treatment), data = meta)
+      if(method == "Combat"){
+        combat_res = sva::ComBat(dat=as.matrix(datacor), mod=modcombat, batch=batch)
+      } else {
+        combat_res = sva::ComBat_seq(counts=as.matrix(datacor), covar_mod = modcombat, batch=batch)
+      }
+  } else {
+      if(method == "Combat"){
+        combat_res = sva::ComBat(dat=as.matrix(datacor), batch=batch)
+      } else {
+        combat_res = sva::ComBat_seq(counts=as.matrix(datacor), batch=batch)
+      }
+  }
   
-  modcombat = model.matrix(~1, data = meta)
-  
-  combat_blind = sva::ComBat(dat=as.matrix(datacor), batch=batch)
-  
-  a <- cbind(idata[rownames(combat_blind), 2], combat_blind)
-  
+  a <- cbind(idata[rownames(combat_res), 2], combat_res)
   a[, columns] <- apply(a[, columns], 2, function(x) ifelse(x<0, 0, x))
+  a[, columns] <- apply(a[, columns], 2, function(x) as.integer(x))
   colnames(a[, 1]) <- colnames(idata[, 1])
   a[,columns]
 }
@@ -245,11 +261,17 @@ correctCombat <- function (input = NULL, idata = NULL, metadata = NULL) {
 #'     x<-correctHarman ()
 correctHarman <- function (input = NULL, idata = NULL, metadata = NULL) {
   if (is.null(idata)) return(NULL)
+  if (input$treatment == "None" || input$batch == "None") {
+      showNotification("Please select the batch and treatment fields to use Harman!", type = "error")
+      return(NULL)
+  }
+
   batch.info <- data.frame(metadata[, c(input$treatment, input$batch)])
   rownames(batch.info) <- rownames(metadata)
   colnames(batch.info) <- c("treatment", "batch") 
   
   harman.res <- harman(idata, expt= batch.info$treatment, batch= batch.info$batch, limit=0.95)
   harman.corrected <- reconstructData(harman.res)
+  harman.corrected[harman.corrected<0] <- 0
   harman.corrected
 }

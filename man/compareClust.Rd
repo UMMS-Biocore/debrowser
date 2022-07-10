@@ -4,9 +4,14 @@
 \alias{compareClust}
 \title{compareClust}
 \usage{
-compareClust(dat = NULL, ont = "CC", org = "org.Hs.eg.db",
-  fun = "enrichGO", title = "Ontology Distribution Comparison",
-  pvalueCutoff = 0.01)
+compareClust(
+  dat = NULL,
+  ont = "CC",
+  org = "org.Hs.eg.db",
+  fun = "enrichGO",
+  title = "Ontology Distribution Comparison",
+  pvalueCutoff = 0.01
+)
 }
 \arguments{
 \item{dat, }{data to compare clusters}

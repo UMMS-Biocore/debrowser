@@ -18,7 +18,8 @@
 plotSizeMarginsUI <- function(id, w=800, h=640, t=20, b=100, l=100, r=20) {
     shinydashboard::menuItem(paste0(id, " - Size & Margins"),
     plotSizeUI(id, w, h),
-    plotMarginsUI(id, t, b, l, r)
+    plotMarginsUI(id, t, b, l, r),
+    plotTypeUI(id)
     )
 }
 
@@ -77,5 +78,23 @@ plotMarginsUI <- function(id, t=20, b=100, l=100, r=20){
         sliderInput(ns("bottom"), "Margin Bottom", min = 0, max = 200, value = b),
         sliderInput(ns("left"), "Margin Left", min = 0, max = 200, value = l),
         sliderInput(ns("right"), "Margin Right", min = 0, max = 200, value = r))
+    )
+}
+
+#' plotTypeUI
+#'
+#' Plot download type
+#'
+#' @note \code{plotTypeUI}
+#' @param id, id
+#' @return size and margins controls
+#' @examples
+#'     x <- plotTypeUI("heatmap")
+#' @export
+#'
+plotTypeUI <- function(id){
+    ns <- NS(id)
+    list(
+        checkboxInput(ns('svg'), paste0('Download SVG'), value = FALSE)
     )
 }

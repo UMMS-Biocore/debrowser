@@ -12,12 +12,12 @@
 #'
 
 deUI <- function() {
-    dbHeader <- dashboardHeader(titleWidth = 250)
+    dbHeader <- shinydashboard::dashboardHeader(titleWidth = 250)
     dbHeader$children[[2]]$children <- tags$a(style='color: white;',
-         id="top_logo" , "DEBrowser")
+         id="top_logo" , paste0("DEBrowser v",getNamespaceVersion("debrowser")))
     addResourcePath(prefix = "www", directoryPath = system.file("extdata",
         "www", package = "debrowser"))
-     
+    library("debrowser")
     debrowser <- (fluidPage(
         shinyjs::useShinyjs(),
         shinyjs::inlineCSS("
@@ -33,9 +33,9 @@ deUI <- function() {
         color: #EFEFEF;
     }"),
     # Loading message
-    tags$div(h4("Loading DEBrowser"), id = "loading-debrowser",
+    tags$div(h4(paste0("Loading DEBrowser v",getNamespaceVersion("debrowser"))), id = "loading-debrowser",
         tags$img(src = "www/images/initial_loading.gif")),
-    tags$head(tags$title("DEBrowser"),
+    tags$head(tags$title(paste0("DEBrowser v",getNamespaceVersion("debrowser"))),
         tags$link(rel = "stylesheet", type = "text/css",
         href = "www/shinydashboard_additional.css")
     ),
@@ -43,7 +43,7 @@ deUI <- function() {
         dbHeader,
         dashboardSidebar(
             width = 250,
-            getJSLine(),
+            debrowser::getJSLine(),
                 uiOutput("loading"),
                 tabsetPanel(id = "menutabs", type = "tabs",
                 tabPanel(title = "Data Prep", value = "dataprep", id="dataprep",
@@ -68,7 +68,7 @@ deUI <- function() {
                 tabPanel(title = "Discover", value = "discover", id="discover",
                 conditionalPanel(condition = "(output.dataready)",
                     conditionalPanel( (condition <- "input.methodtabs=='panel1'"),
-                    mainPlotControlsUI("main")),
+                    debrowser::mainPlotControlsUI("main")),
                     uiOutput("downloadSection"),
                     uiOutput('cutoffSelection'),
                     uiOutput("leftMenu"))
@@ -83,24 +83,24 @@ deUI <- function() {
                 tabsetPanel(id = "methodtabs", type = "tabs",
                     tabPanel(title = "Data Prep", value = "panel0", id="panel0",
                              tabItems(
-                                 tabItem(tabName="Intro", getIntroText()),
-                                 tabItem(tabName="assesment", getDataAssesmentText()),
-                                 tabItem(tabName="preparation", getDataPreparationText()),
-                                 tabItem(tabName="deanalysis", getDEAnalysisText()),
-                                 tabItem(tabName="FAQ", getQAText()),
-                                 tabItem(tabName="Upload", dataLoadUI("load")),
+                                 tabItem(tabName="Intro", debrowser::getIntroText()),
+                                 tabItem(tabName="assesment", debrowser::getDataAssesmentText()),
+                                 tabItem(tabName="preparation", debrowser::getDataPreparationText()),
+                                 tabItem(tabName="deanalysis", debrowser::getDEAnalysisText()),
+                                 tabItem(tabName="FAQ",  debrowser::getQAText()),
+                                 tabItem(tabName="Upload", debrowser::dataLoadUI("load")),
                                  tabItem(tabName="Filter",
                                          conditionalPanel(
                                              (condition <- "input.Filter"),
-                                         dataLCFUI("lcf"))),
+                                         debrowser::dataLCFUI("lcf"))),
                                  tabItem(tabName="BatchEffect", 
                                          conditionalPanel(
                                              (condition <- "input.Batch"),
-                                         batchEffectUI("batcheffect"))),
+                                         debrowser::batchEffectUI("batcheffect"))),
                                  tabItem(tabName="CondSelect", 
                                          conditionalPanel(
                                              (condition <- "input.goDE || input.goDEFromFilter"),
-                                         condSelectUI())),
+                                        debrowser::condSelectUI())),
                                  tabItem(tabName="DEAnalysis", 
                                          conditionalPanel(
                                              (condition <- "input.goDE || input.goDEFromFilter"),
@@ -114,9 +114,9 @@ deUI <- function() {
                     tabPanel(title = "GO Term", value = "panel3", id="panel3",
                             uiOutput("gopanel")),
                     tabPanel(title = "Tables", value = "panel4", id="panel4",
-                            dataTableOutput("tables")))
+                            DT::dataTableOutput("tables")))
         ),
-        getTabUpdateJS()
+        debrowser::getTabUpdateJS()
         ))
     )
     )

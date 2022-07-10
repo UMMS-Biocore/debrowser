@@ -4,8 +4,7 @@
 \alias{getVariationData}
 \title{getVariationData}
 \usage{
-getVariationData(inputdata = NULL, cols = NULL, conds = NULL,
-  key = NULL)
+getVariationData(inputdata = NULL, cols = NULL, conds = NULL, key = NULL)
 }
 \arguments{
 \item{inputdata, }{dataset}

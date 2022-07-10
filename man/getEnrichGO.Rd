@@ -4,8 +4,12 @@
 \alias{getEnrichGO}
 \title{getEnrichGO}
 \usage{
-getEnrichGO(genelist = NULL, pvalueCutoff = 0.01, org = "org.Hs.eg.db",
-  ont = "CC")
+getEnrichGO(
+  genelist = NULL,
+  pvalueCutoff = 0.01,
+  org = "org.Hs.eg.db",
+  ont = "CC"
+)
 }
 \arguments{
 \item{genelist, }{gene list}

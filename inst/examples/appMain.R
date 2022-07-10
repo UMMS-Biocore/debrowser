@@ -1,5 +1,6 @@
 library(plotly)
 library(debrowser)
+library(DESeq2)
 
 header <- dashboardHeader(
     title = "DEBrowser Main Plots"

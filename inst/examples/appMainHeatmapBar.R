@@ -2,6 +2,8 @@ library(debrowser)
 library(plotly)
 library(heatmaply)
 library(gplots)
+library(DESeq2)
+source("../../R/mainScatter.R")
 
 header <- dashboardHeader(
     title = "DEBrowser Main Plots"
@@ -59,7 +61,7 @@ server <- function(input, output, session) {
     #                        "shKRAS", "shKRAS", "shKRAS") )
     # dat$data <- data.frame(data[, dat$columns])
     #
-    #xdata <- generateTestData(dat)
+    xdata <- generateTestData(dat)
 
     selected <- reactiveVal()
     observe({

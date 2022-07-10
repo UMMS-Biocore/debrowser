@@ -47,6 +47,8 @@ debrowserhistogram <- function(input = NULL, output = NULL, session = NULL, data
                       r = input$right
         ))
       p$elementId <- NULL
+      if (!is.null(input$svg) && input$svg == TRUE)
+          p <- p %>% config(toImageButtonOptions = list(format = "svg"))
       p
     })
     output$histogramUI <- renderUI({

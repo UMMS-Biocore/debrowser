@@ -4,8 +4,15 @@
 \alias{getSelectInputBox}
 \title{getSelectInputBox}
 \usage{
-getSelectInputBox(id = NULL, name = NULL, num = 0, choices = NULL,
-  selected = NULL, cw = 2)
+getSelectInputBox(
+  id = NULL,
+  name = NULL,
+  num = 0,
+  choices = NULL,
+  selected = NULL,
+  cw = 2,
+  multiple = FALSE
+)
 }
 \arguments{
 \item{id, }{input id}
@@ -19,6 +26,8 @@ getSelectInputBox(id = NULL, name = NULL, num = 0, choices = NULL,
 \item{selected, }{selected smaple list}
 
 \item{cw, }{column width}
+
+\item{multiple, }{if multiple choices are available}
 }
 \description{
 Selects user input conditions to run in DESeq.

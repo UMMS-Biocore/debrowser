@@ -10,22 +10,24 @@
 #' symobol to ENTREZ ID conversion
 #' @param genes, gene list
 #' @param org, orgranism for gene symbol entrez ID conversion
+#' @param fromType, from Type
+#' @param toType, to Type 
 #' @return ENTREZ ID list
 #'
 #' @examples
 #'     x <- getGeneList(c('OCLN', 'ABCC2'))
 #'
-getGeneList <- function(genes = NULL, org = "org.Hs.eg.db") {
+getGeneList <- function(genes = NULL, org = "org.Hs.eg.db", 
+    fromType= "SYMBOL", toType = c("ENTREZID")) {
     # Get the entrez gene identifiers that are mapped to a gene symbol
-    installpack(org)
-    allkeys <- AnnotationDbi::keys(eval(parse(text = org)), 
-        keytype="SYMBOL")
-    existinggenes <- unique(as.vector(unlist(lapply(toupper(genes), 
-        function(x){ allkeys[x == toupper(allkeys)] }))))
-    mapped_genes <- mapIds(eval(parse(text = org)), keys = existinggenes, 
-        column="ENTREZID", keytype="SYMBOL",
-        multiVals = "first")
-    genelist <- unique(as.vector(unlist(mapped_genes)))
+    if (!installpack(org)) return(NULL)
+
+    mapped_genes <- bitr(genes, fromType = fromType,
+         toType = toType,
+         OrgDb = org)
+    #genelist <- unique(as.vector(unlist(mapped_genes[toType])))
+    genelist <- data.frame(mapped_genes)
+    colnames(genelist) <- c(fromType, toType)
     genelist
 }
 
@@ -49,7 +51,7 @@ getGeneList <- function(genes = NULL, org = "org.Hs.eg.db") {
 #'
 getEntrezTable <- function(genes = NULL, dat = NULL, org = "org.Hs.eg.db") {
     if (is.null(genes)) return(NULL)
-    installpack(org)
+    if (!installpack(org)) return(NULL)
     allkeys <- AnnotationDbi::keys(eval(parse(text = org)),
                                    keytype="SYMBOL")
     entrezIDs <- unlist(strsplit(genes, "/"))
@@ -82,7 +84,7 @@ getEntrezTable <- function(genes = NULL, dat = NULL, org = "org.Hs.eg.db") {
 #'
 getEntrezIds <- function(genes = NULL, org = "org.Hs.eg.db") {
     if (is.null(genes)) return(NULL)
-    installpack(org)
+    if (!installpack(org)) return(NULL)
     allkeys <- AnnotationDbi::keys(eval(parse(text = org)),
         keytype="SYMBOL")
     
@@ -90,15 +92,13 @@ getEntrezIds <- function(genes = NULL, org = "org.Hs.eg.db") {
         column="ENTREZID", keytype="SYMBOL",
         multiVals = "first")
     mapped_genes <- mapped_genes[!is.na(mapped_genes)]
-    genelist <- cbind(mapped_genes, genes[names(mapped_genes), "log2FoldChange"])
+    genelist <- cbind(mapped_genes, names(mapped_genes), genes[names(mapped_genes), "log2FoldChange"])
     
-    colnames(genelist) <- c("ENTREZID", "log2FoldChange")
+    colnames(genelist) <- c("ENTREZID", "SYMBOL", "log2FoldChange")
     genelist <- data.frame(genelist)
     genelist$log2FoldChange <- as.numeric(as.character(genelist$log2FoldChange))
     rownames(genelist) <- genelist$ENTREZID
-    fchange <- genelist$log2FoldChange
-    names(fchange) <- genelist$ENTREZID
-    fchange
+    genelist
 }
 #' getEnrichGO
 #'
@@ -119,8 +119,8 @@ getEntrezIds <- function(genes = NULL, org = "org.Hs.eg.db") {
 getEnrichGO <- function(genelist = NULL, pvalueCutoff = 0.01,
     org = "org.Hs.eg.db", ont="CC") {
     if (is.null(genelist)) return(NULL)
+    if (!installpack(org)) return(NULL)
     res <- c()
-    installpack(org)
     res$enrich_p <- clusterProfiler::enrichGO(gene = genelist, OrgDb = org,
     # res$enrich_p <- enrichGO(gene = genelist, organism = "human",
         ont = ont, pvalueCutoff = pvalueCutoff)
@@ -160,6 +160,53 @@ getEnrichKEGG <- function(genelist = NULL, pvalueCutoff = 0.01,
     if (!is.null(nrow(res$enrich_p@result)) )
         res$table <- res$enrich_p@result[,c("ID", "Description", 
             "GeneRatio", "pvalue", "p.adjust", "qvalue")]
+    return(res)
+}
+
+#' getGSEA
+#'
+#' Gathers the Enriched KEGG analysis data to be used within the
+#' GO Term plots.
+#'
+#' @note \code{getGSEA}
+#' @param org, the organism used
+#' @param dataset, dataset
+#' @param pvalueCutoff, the p value cutoff
+#' @param sortfield, sort field for GSEA
+#' @return GSEA
+#' @examples
+#'     x <- getGSEA()
+#' @export
+#'
+getGSEA <- function(dataset=NULL, pvalueCutoff = 0.01,
+                    org = "org.Hs.eg.db", sortfield = "log2FoldChange") {
+    if (is.null(dataset)) return(NULL)
+    
+    genelist <- getGeneList(rownames(dataset), org, 
+        fromType = "SYMBOL",toType = c("ENTREZID"))
+    #symbol <- getGeneList(genelist, org, 
+    #    fromType = "ENTREZID",toType = c("SYMBOL") )
+    dataset[is.na(dataset[,sortfield]),sortfield] <- 0 
+    data <- dataset[genelist$SYMBOL, c("ID", sortfield)]
+    rownames(data) <- genelist$ENTREZID
+    newdata <- data[order(-data[,sortfield]),] 
+    newdatatmp <- newdata[,sortfield]
+    names(newdatatmp) <- rownames(newdata)
+    
+    res <- c()
+    OrgDb <- org
+    if (is(OrgDb, "character")) {
+        require(OrgDb, character.only = TRUE)
+        OrgDb <- eval(parse(text = OrgDb))
+    }
+    res$enrich_p <- gseGO(geneList=newdatatmp, ont="All", OrgDb = OrgDb, verbose=F,
+        pvalueCutoff=pvalueCutoff)
+    
+    res$table <- NULL
+    if (nrow(res$enrich_p@result)>0 )
+        res$table <- res$enrich_p@result[,c("ID", "Description", 
+           "setSize", "enrichmentScore", "pvalue", "p.adjust", "qvalues")]
+
     return(res)
 }
 
@@ -232,7 +279,7 @@ compareClust <- function(dat = NULL, ont = "CC", org = "org.Hs.eg.db",
     fun = "enrichGO", title = "Ontology Distribution Comparison",
     pvalueCutoff = 0.01) {
         if (is.null(dat)) return(NULL)
-        installpack(org)
+        if (!installpack(org)) return(NULL)
         res <- c()
         genecluster <- list()
         k <- max(dat$fit.cluster)
@@ -252,7 +299,7 @@ compareClust <- function(dat = NULL, ont = "CC", org = "org.Hs.eg.db",
                     organism = getOrganism(org),
                     pvalueCutoff = pvalueCutoff)
             } else if (fun == "enrichDO") {
-                 installpack("DOSE")
+                 if (!installpack("DOSE")) return(NULL)
                  xx <- compareCluster(genecluster, fun = fun,
                      pvalueCutoff = pvalueCutoff) 
             } else {
@@ -295,3 +342,38 @@ getEnrichDO <- function(genelist = NULL, pvalueCutoff = 0.01) {
             "GeneRatio", "pvalue", "p.adjust", "qvalue")]
     res
 }
+
+#' drawKEGG
+#'
+#' draw KEGG patwhay with expression values
+#'
+#' @note \code{drawKEGG}
+#' @param input, input
+#' @param dat, expression matrix
+#' @param pid, pathway id
+#' @return enriched DO
+#' @examples
+#'     x <- drawKEGG()
+#' @importFrom pathview pathview 
+#' @export
+#'
+drawKEGG <- function(input = NULL, dat = NULL, pid = NULL) {
+    if (is.null(dat) && is.null(pid)) return(NULL)
+    tryCatch({
+        if (installpack("pathview")){
+            org <- input$organism
+            genedata <- getEntrezIds(dat[[1]], org)
+            foldChangeData <- data.frame(genedata$log2FoldChange)
+            rownames(foldChangeData) <- rownames(genedata)
+            pathview(gene.data = foldChangeData,
+               pathway.id = pid,
+               species = substr(pid,0,3),
+               gene.idtype="entrez",
+               out.suffix = "b.2layer", kegg.native = TRUE)
+    
+            unlink(paste0(pid,".png"))
+            unlink(paste0(pid,".xml"))
+        }
+    })
+}
+

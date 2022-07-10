@@ -94,6 +94,8 @@ getDensityPlot <- function(data=NULL, input = NULL, title = ""){
   if (!is.null(input$top))
       p <- p + theme( plot.margin = margin(t = input$top, r =input$right, b =input$bottom, l = input$left, "pt"))
   p <- ggplotly(p, width = input$width, height = input$height)
+  if (!is.null(input$svg) && input$svg == TRUE)
+    p <- p %>% config(toImageButtonOptions = list(format = "svg"))
   p$elementId <- NULL
   p
 }

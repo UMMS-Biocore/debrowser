@@ -4,8 +4,13 @@
 \alias{getTableDetails}
 \title{getTableDetails}
 \usage{
-getTableDetails(output = NULL, session = NULL, tablename = NULL,
-  data = NULL, modal = NULL)
+getTableDetails(
+  output = NULL,
+  session = NULL,
+  tablename = NULL,
+  data = NULL,
+  modal = NULL
+)
 }
 \arguments{
 \item{output, }{output}

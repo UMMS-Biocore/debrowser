@@ -4,8 +4,7 @@
 \alias{debrowsermainplot}
 \title{debrowsermainplot}
 \usage{
-debrowsermainplot(input = NULL, output = NULL, session = NULL,
-  data = NULL)
+debrowsermainplot(input = NULL, output = NULL, session = NULL, data = NULL)
 }
 \arguments{
 \item{input, }{input variables}

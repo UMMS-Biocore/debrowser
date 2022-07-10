@@ -4,8 +4,7 @@
 \alias{textareaInput}
 \title{textareaInput}
 \usage{
-textareaInput(id, label, value, rows = 20, cols = 35,
-  class = "form-control")
+textareaInput(id, label, value, rows = 20, cols = 35, class = "form-control")
 }
 \arguments{
 \item{id, }{id of the control}
