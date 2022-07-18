@@ -508,11 +508,12 @@ distFunParamsUI <- function() {
 #'
 palUI <- function(id) {
     ns <- NS(id)
-    colSel='RdBu'
+    # colSel='RdBu'
+    colSel='BlueRed'
     selectizeInput(inputId = ns("pal"), 
     label ="Select Color Palette",
-    choices = c('RdBu' = 'RdBu',
-        'BlueRed' = 'bluered',
+    choices = c('BlueRed' = 'bluered',
+        'RdBu' = 'RdBu',
         'RedBlue' = 'redblue',
         'RdYlBu' = 'RdYlBu',
         'RdYlGn' = 'RdYlGn',
