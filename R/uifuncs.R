@@ -594,8 +594,14 @@ getQCPanel <- function(input = NULL) {
         width = input$width
     }
     qcPanel <- list(
-        wellPanel(helpText( "Please select the parameters and press the 
-                            submit button in the left menu for the plots" ),
+        wellPanel(helpText( HTML("Please select the parameters and press the 
+                            submit button in the left menu for the plots. 
+                            The default data set is <b>'most-varied'</b> 500 genes 
+                            and total min count is 10 in QC plots. Make sure to
+                            change the parameters, if you need to look another part of th data. 
+                            For example if you need to draw plots for all detected genes after
+                            filtering, select <b>'alldetected'</b> in 
+                            'Data Options' -> 'Choose Dataset' on the left menu.") ),
                   getHelpButton("method", 
                                 "http://debrowser.readthedocs.io/en/master/quickstart/quickstart.html#quality-control-plots")),
         conditionalPanel(condition = "input.qcplot == 'pca'",
