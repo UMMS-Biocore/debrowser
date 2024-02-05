@@ -157,7 +157,7 @@ getConditionSelector<- function(num=NULL, choices = NULL, selected = NULL) {
     if (is.null(num)) return(NULL)
     if (!is.null(choices))
         list(column(3, selectInput(paste0("condition", num),
-            label = paste0("Condition ", num),
+            label = paste0("Condition ", num, ifelse(num %% 2 == 0, "(Numerator)", "(Denominator)")),
             choices = choices, multiple = TRUE,
             selected = selected)))
 }
@@ -182,7 +182,7 @@ getConditionSelectorFromMeta <- function(metadata = NULL, input = NULL, index = 
     choices = NULL, selected = NULL) {
     if (is.null(metadata)) return(NULL)
      a <- list(column(6, selectInput(paste0("condition", num),
-            label = paste0("Condition ", num),
+            label = paste0("Condition ", num, ifelse(num %% 2 == 0, "(Numerator)", "(Denominator)")),
             choices = choices, multiple = TRUE,
             selected = selected)))
 
@@ -201,7 +201,8 @@ getConditionSelectorFromMeta <- function(metadata = NULL, input = NULL, index = 
         grps <- unique(metadata[selected_meta])
         grps <- grps[grps!="NA"]
         grps<- grps[!is.na(grps) ]
-        if (length(grps) == 2) {
+
+        if (length(grps) == -1) {
             meta_choices_all <- NULL
             if (!is.null(selected_meta))
                 meta_choices_all <- get_conditions_given_selection(metadata,
@@ -209,7 +210,7 @@ getConditionSelectorFromMeta <- function(metadata = NULL, input = NULL, index = 
             if(old_selection != selected_meta){
                 if(typeof(meta_choices_all) == "character"){
                     meta_choices <- list("There must be exactly 2 groups.")
-                } else{
+                } else {
                     meta1 <- meta_choices_all[[2 - (num %% 2)]]
                     meta_choices <- unlist(meta1, recursive=FALSE)
                 }
@@ -222,7 +223,7 @@ getConditionSelectorFromMeta <- function(metadata = NULL, input = NULL, index = 
         }
     
         a <- list(column(6, selectInput(paste0("condition", num),
-            label = paste0("Condition ", num),
+            label = paste0("Condition ", num, ifelse(num %% 2 == 0, "(Numerator)", "(Denominator)")),
             choices = choices, multiple = TRUE,
             selected = selected)))
         }
@@ -323,8 +324,8 @@ selectConditions<-function(Dataset = NULL,
             selected1 <- selectedSamples(2 * i - 1)
             selected2 <- selectedSamples( 2 * i )
             to_return <- list(column(12, getMetaSelector(metadata = metadata, input=input, n = i),
-                    getGroupSelector(metadata, input, i, (2*i-1)),
-                    getGroupSelector(metadata, input, i, (2*i)),
+                    isolate(getGroupSelector(metadata, input, i, (2*i-1))),
+                    isolate(getGroupSelector(metadata, input, i, (2*i))),
                     getConditionSelectorFromMeta(metadata, input, i,
                         (2 * i - 1), allsamples, selected1),
                     getConditionSelectorFromMeta(metadata, input, i,
@@ -444,15 +445,21 @@ getGroupSelector <- function(metadata = NULL, input = NULL, index = 1, num=0) {
     grps <- unique(metadata[selected_meta])
     grps <- grps[grps!="NA"]
     grps<- grps[!is.na(grps) ]
-    if (length(grps) > 2) {
+
+    sel <- NULL
+    if ( is.null(input[[paste0("group", num)]]) || input[[paste0("group", num)]] %in% grps ){
+        sel <- selectedInput("group",
+            num, grps[num], input)
+    }
+    if (length(grps) > 1) {
         grps_choices <- c("No Selection", grps)
         a <- list(column(6, selectInput(paste0("group", num),
             label = paste0("Group ", num),
             choices = grps_choices, 
-            selected =  selectedInput("group",
-                num, NULL, input),
+            selected =  sel,
             multiple = FALSE)))
-    }
+    } 
+
     return(a)
 }
 
